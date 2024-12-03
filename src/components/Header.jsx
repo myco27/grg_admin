@@ -12,7 +12,7 @@ export default function Header() {
       <div className="flex items-center gap-4 w-full md:w-auto">
         <Sidebar />
         <Typography variant="h2" className="text-gray-900">
-          Dashboard
+          Dashboard Test
         </Typography>
       </div>
 
