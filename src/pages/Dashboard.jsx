@@ -13,46 +13,11 @@ import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle
 import Header from "../components/Header";
 import { dashboardData } from "../data/dashboardData";
 
-const mainInfoIcons = {
-  customerName: {
-    icon: UserCircle,
-    color: "text-orange-400"
-  },
-  orderDate: {
-    icon: CalendarDays,
-    color: "text-purple-400"
-  },
-  destination: {
-    icon: MapPin,
-    color: "text-blue-400"
-  }
-};
-
 const Dashboard = () => {
   const { orderDetails, recentPayment } = dashboardData;
 
-  const renderMainInfoItem = (key, info) => {
-    const IconConfig = mainInfoIcons[key];
-    const Icon = IconConfig.icon;
-    
-    return (
-      <div key={key} className="flex items-start gap-3">
-        <Icon className={`w-12 h-12 ${IconConfig.color} mt-0.5`} />
-        <div>
-          <Typography color="gray" className="font-semibold">
-            {info.label}
-          </Typography>
-          <Typography color="black" className="font-bold">
-            {info.value}
-          </Typography>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <Fragment>
-
       <div className="flex min-h-screen bg-gray-100">
         {/* Main Content */}
         <main className="flex-1 max-w-[1600px] mx-auto p-8 overflow-x-hidden">
@@ -96,9 +61,43 @@ const Dashboard = () => {
                       <div className="mt-8">
                         <div className="h-px bg-gray-200 mb-8" />
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {Object.entries(orderDetails.mainInfo).map(([key, info]) => 
-                            renderMainInfoItem(key, info)
-                          )}
+
+                          <div className="flex items-start gap-2">
+                            <UserCircle className="w-12 h-12 text-blue-500 mt-0.5" />
+                            <div>
+                              <Typography color="gray" className="font-semibold">
+                                {orderDetails.mainInfo.customerName.label}
+                              </Typography>
+                              <Typography color="black" className="font-bold">
+                                {orderDetails.mainInfo.customerName.value}
+                              </Typography>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-2">
+                            <CalendarDays className="w-12 h-12 text-green-500 mt-0.5" />
+                            <div>
+                              <Typography color="gray" className="font-semibold">
+                                {orderDetails.mainInfo.orderDate.label}
+                              </Typography>
+                              <Typography color="black" className="font-bold">
+                                {orderDetails.mainInfo.orderDate.value}
+                              </Typography>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-12 h-12 text-orange-500 mt-0.5" />
+                            <div>
+                              <Typography color="gray" className="font-semibold">
+                                {orderDetails.mainInfo.destination.label}
+                              </Typography>
+                              <Typography color="black" className="font-bold">
+                                {orderDetails.mainInfo.destination.value}
+                              </Typography>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                     </div>
@@ -108,6 +107,7 @@ const Dashboard = () => {
                         <QrCode className="w-20 h-20 text-gray-500" />
                       </div>
                     </div>
+
                   </div>
                 </CardBody>
               </Card>
@@ -270,9 +270,7 @@ const Dashboard = () => {
 
         </main>
       </div>
-
-
-
+      
     </Fragment>
   );
 };
