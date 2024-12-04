@@ -1,25 +1,22 @@
 import React from "react";
 import {
   Drawer,
-  Button,
   Typography,
   IconButton,
   List,
   ListItem,
   ListItemPrefix,
   ListItemSuffix,
-  Chip,
 } from "@material-tailwind/react";
 import {
   LayoutDashboard,
   CircleUserRound,
   Package,
-  Inbox,
   Settings,
-  LogOut,
   Menu,
   ShoppingBag,
-  Map
+  Map,
+  LogOut
 } from "lucide-react";
 
 const Sidebar = () => {
