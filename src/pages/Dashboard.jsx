@@ -30,7 +30,7 @@ const Dashboard = () => {
         <main className="flex-1 p-4 lg:p-8 overflow-x-hidden">
           <Header />
 
-          <div className="w-full">
+          <div className="w-full scale-95">
             {/* Main Content Area */}
             <div className="w-full overflow-y-auto pb-4">
               {/* Order Details Card */}
@@ -279,7 +279,7 @@ const Dashboard = () => {
         </main>
 
         {/* Timeline Section - Right Side */}
-        <div className="p-4 lg:p-0 lg:w-80 bg-gray-100">
+        <div className="p-8 lg:p-0 lg:w-80 bg-gray-100 transform">
           <div className="lg:sticky lg:top-0 lg:h-screen w-full">
             <Card className="h-full lg:h-screen flex flex-col justify-center mx-auto">
               <CardBody className="p-8 h-full flex items-center">
