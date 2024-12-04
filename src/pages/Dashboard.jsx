@@ -279,7 +279,7 @@ const Dashboard = () => {
         </main>
 
         {/* Timeline Section - Right Side */}
-        <div className="w-full lg:w-80 bg-gray-100">
+        <div className="p-4 lg:p-0 lg:w-80 bg-gray-100">
           <div className="lg:sticky lg:top-0 lg:h-screen w-full">
             <Card className="h-full lg:h-screen flex flex-col justify-center mx-auto">
               <CardBody className="p-8 h-full flex items-center">
