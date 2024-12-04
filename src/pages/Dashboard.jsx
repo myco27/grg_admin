@@ -16,7 +16,7 @@ import {
   TimelineBody,
   Button
 } from "@material-tailwind/react";
-import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle2, Image, Home, Bell, Banknote } from "lucide-react";
+import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle2, Image, Home, Bell, Banknote, LogOut } from "lucide-react";
 import Header from "../components/Header";
 import { dashboardData } from "../data/dashboardData";
 
@@ -289,6 +289,7 @@ const Dashboard = () => {
                   </Typography>
                   <div className="flex-1 overflow-y-auto">
                     <Timeline>
+
                       <TimelineItem className="pt-4">
                         <TimelineConnector />
                         <TimelineHeader>
@@ -356,8 +357,11 @@ const Dashboard = () => {
                         </TimelineBody>
                       </TimelineItem>
                     </Timeline>
-                    <div className="flex flex-col justify-center">
-                      <Button className="mt-8">Log Out</Button>
+                    <div className="mt-10 flex flex-col justify-center">
+                      <Button variant="text" className="text-sm flex items-center justify-center">
+                        Log Out
+                        <LogOut className="h-6 w-6 ml-4" />
+                      </Button>
                     </div>
 
                   </div>
@@ -366,8 +370,8 @@ const Dashboard = () => {
             </Card>
           </div>
         </div>
+
       </div>
-      
     </Fragment>
   );
 };
