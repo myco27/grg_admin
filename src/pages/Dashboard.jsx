@@ -13,6 +13,7 @@ import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle
 import Header from "../components/Header";
 import { dashboardData } from "../data/dashboardData";
 import TimelineSection from "../components/TimelineSection";
+import Footer from "../components/Footer";
 
 const Dashboard = () => {
   const { orderDetails, recentPayment } = dashboardData;
@@ -276,6 +277,9 @@ const Dashboard = () => {
         <TimelineSection/>
 
       </div>
+
+      <Footer/>
+
     </Fragment>
   );
 };

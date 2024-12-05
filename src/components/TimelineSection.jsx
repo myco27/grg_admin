@@ -17,7 +17,7 @@ const TimelineSection = () => {
   return (
     <div className="p-4 lg:p-0 lg:w-80 bg-gray-100 transform">
       <div className="lg:sticky lg:top-0 lg:h-screen w-full">
-        <Card className="h-full lg:h-screen flex flex-col mx-auto lg:rounded-none">
+        <Card className="h-full lg:h-screen flex flex-col mx-auto lg:rounded-none shadow-none border-l border-gray-200">
           <CardBody className="p-8 h-full flex">
             <div className="w-full">
               <Typography variant="h4" className="text-gray-900 mb-4">
