@@ -21,41 +21,37 @@ const Dashboard = () => {
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
 
         {/* Main Content */}
-        <main className="flex-1 px-8 py-4 overflow-x-hidden w-full">
+        <main className="px-8 py-4 overflow-x-hidden w-full overflow-y-auto pb-4">
 
-          {/* Main Content Area */}
-          <div className="w-full overflow-y-auto pb-4">
+          {/* Order Details Card */}
+          <div className="w-full mx-auto">
 
-            {/* Order Details Card */}
-            <div className="w-full mx-auto">
+            <Typography variant="h4" className="text-gray-900 mb-2">
+              Order Details
+            </Typography>
+            
+            <DetailsCard order={order} />
 
-              <Typography variant="h4" className="text-gray-900 mb-2">
-                Order Details
-              </Typography>
-              
-              <DetailsCard order={order} />
+            {/* Tabs Section */}
+            <Typography variant="h4" className="text-gray-900 mb-1">
+              Main Info
+            </Typography>
 
-              {/* Tabs Section */}
-              <Typography variant="h4" className="text-gray-900 mb-1">
-                Main Info
-              </Typography>
-
-              <TabsCard order={order}/>
-
-            </div>
-
-            {/* Recent Payment Section */}
-            <div className="w-full mx-auto">
-
-              <Typography variant="h4" className="text-gray-900 mb-2 mt-8">
-                Payment Information
-              </Typography>
-
-              <PaymentCard order={order}/>
-
-            </div>
+            <TabsCard order={order}/>
 
           </div>
+
+          {/* Recent Payment Section */}
+          <div className="w-full mx-auto">
+
+            <Typography variant="h4" className="text-gray-900 mb-2 mt-8">
+              Payment Information
+            </Typography>
+
+            <PaymentCard order={order}/>
+
+          </div>
+
         </main>
 
         <TimelineSection/>
