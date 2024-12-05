@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
-import OrderDetails from "../components/OrderCard";
-import Pagination from "../components/Pagination";
-import DatePicker from "../components/DatePicker";
+import OrderDetails from "../components/OrdersPage/OrderCard";
+import Pagination from "../components/OrdersPage/Pagination";
+import DatePicker from "../components/OrdersPage/DatePicker";
 import {
   Typography,
   Input,
