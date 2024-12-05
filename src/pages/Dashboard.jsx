@@ -21,7 +21,7 @@ const Dashboard = () => {
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
 
         {/* Main Content */}
-        <main className="px-8 py-4 overflow-x-hidden w-full overflow-y-auto pb-4">
+        <main className="px-3 md:px-8 py-4 overflow-x-hidden w-full overflow-y-auto pb-4">
 
           {/* Order Details Card */}
           <div className="w-full mx-auto">
@@ -54,7 +54,9 @@ const Dashboard = () => {
 
         </main>
 
-        <TimelineSection/>
+        <div className="px-3 py-4 md:px-8 lg:px-0 lg:py-0">
+         <TimelineSection/>
+        </div>
 
       </div>
 

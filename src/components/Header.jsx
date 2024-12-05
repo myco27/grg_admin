@@ -25,7 +25,7 @@ export default function Header() {
         </Typography>
       </div>
 
-      <div className="flex justify-center w-full max-w-xs">
+      <div className="flex justify-center w-xs lg:w-full max-w-xs">
         <Input
           type="text"
           placeholder="Search"
@@ -47,10 +47,10 @@ export default function Header() {
                 <span className="text-blue-600 font-semibold text-md">JM</span>
               </div>
               <div className="flex flex-col items-start">
-                <Typography variant="h6" color="blue-gray">
+                <Typography variant="h6" color="black">
                   John Michael
                 </Typography>
-                <Typography variant="paragraph" color="gray" className="font-semibold mt-[-6px]">
+                <Typography variant="paragraph" className="font-semibold mt-[-6px] text-gray-600">
                   Admin
                 </Typography>
               </div>
