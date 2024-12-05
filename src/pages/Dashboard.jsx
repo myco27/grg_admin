@@ -1,4 +1,4 @@
-import {React, Fragment} from "react";
+import {React, Fragment, useEffect} from "react";
 import { Typography } from "@material-tailwind/react";
 import Header from "../components/Header";
 import { orders } from "../data/orders.json";
@@ -12,6 +12,10 @@ import PaymentCard from "../components/DashboardPage/PaymentCard";
 const Dashboard = () => {
   const { orderId } = useParams();
   const order = orders.find(o => o.id === orderId) || orders[0];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Fragment>

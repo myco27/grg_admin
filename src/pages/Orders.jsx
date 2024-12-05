@@ -58,7 +58,7 @@ export default function Orders() {
         <div className="flex flex-col min-h-screen bg-gray-100">
             <main className="flex-1 px-3 md:px-8 py-4">
 
-            {/* Header and Controls */}
+                {/* Header and Controls */}
                 <div className="flex flex-col gap-4 mb-6">
                     <Typography variant="h4" className="text-gray-900">
                     Transaction
