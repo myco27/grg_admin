@@ -15,15 +15,15 @@ import { Home, Bell, MapPin, Banknote, LogOut } from "lucide-react";
 
 const TimelineSection = () => {
   return (
-    <div className="lg:w-80 bg-gray-100 transform">
+    <div className="lg:w-80 bg-gray-100 transform h-full">
       <div className="lg:sticky lg:top-0 lg:h-screen w-full">
-        <Card className="h-full lg:h-screen flex flex-col mx-auto lg:rounded-none shadow-md lg:shadow-none border-l border-gray-300 overflow-y-auto">
-          <CardBody className="p-8 h-full flex">
+        <Card className="h-full flex flex-col mx-auto lg:rounded-none shadow-md lg:shadow-none border-l border-gray-300 overflow-y-auto">
+          <CardBody className="p-8 h-auto flex">
             <div className="w-full">
               <Typography variant="h4" className="text-gray-900 mb-4">
                 Timeline
               </Typography>
-              <div className="flex-1 overflow-y-auto">
+              <div className="">
                 <Timeline>
                   <TimelineItem className="pt-4">
                     <TimelineConnector />
