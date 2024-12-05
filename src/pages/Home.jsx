@@ -1,16 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Button } from "@material-tailwind/react"
+import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const navigate = useNavigate();
 
   return (
-    <div>
+    <div className='flex-col flex items-center mx-auto'>
       <h1>Welcome to Home</h1>
       <h1>Welcome to Test</h1>
-      <button onClick={() => navigate('/dashboard')}>
-        Go to Dashboard
-      </button>
+      <Button>
+        <Link to="/orders">
+          Go to Orders
+        </Link>
+      </Button>
     </div>
   );
 };

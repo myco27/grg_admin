@@ -58,7 +58,7 @@ const Sidebar = () => {
   return (
     <>
       <IconButton variant="text" size="lg" onClick={openDrawer}>
-        <Menu className="h-8 w-8" />
+        <Menu className="h-7 w-7" />
       </IconButton>
       <Drawer open={open} onClose={closeDrawer}>
         <div className="mb-2 flex items-center justify-between p-4">
@@ -67,7 +67,7 @@ const Sidebar = () => {
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={closeDrawer}>
             <svg
-              xmlns="http://www.w3.org/2000/svg"
+            xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
