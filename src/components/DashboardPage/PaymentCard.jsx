@@ -55,7 +55,7 @@ export default function PaymentCard({order}) {
                         </Typography>
                     </div>
 
-                    <div className="flex justify-end xl:ml-auto">
+                    <div className="flex-shrink-0 ml-auto">
                         <Chip
                         value={order.status}
                         className={`text-sm px-3 py-2 rounded-full ${
