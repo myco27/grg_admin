@@ -8,15 +8,8 @@ import {
   TabsBody,
   Tab,
   TabPanel,
-  Timeline,
-  TimelineItem,
-  TimelineConnector,
-  TimelineHeader,
-  TimelineIcon,
-  TimelineBody,
-  Button
 } from "@material-tailwind/react";
-import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle2, Image, Home, Bell, Banknote, LogOut } from "lucide-react";
+import { QrCode, UserCircle, CalendarDays, MapPin, Info, DollarSign, CheckCircle2, Image} from "lucide-react";
 import Header from "../components/Header";
 import { dashboardData } from "../data/dashboardData";
 import TimelineSection from "../components/TimelineSection";
@@ -280,7 +273,6 @@ const Dashboard = () => {
           </div>
         </main>
 
-        {/* Timeline Section */}
         <TimelineSection/>
 
       </div>
