@@ -58,7 +58,7 @@ const Sidebar = () => {
   return (
     <>
       <IconButton variant="text" size="lg" onClick={openDrawer}>
-        <Menu className="h-7 w-7" />
+        <Menu className="h-8 w-8 text-white mt-[-4px]"/>
       </IconButton>
       <Drawer open={open} onClose={closeDrawer}>
         <div className="mb-2 flex items-center justify-between p-4">
