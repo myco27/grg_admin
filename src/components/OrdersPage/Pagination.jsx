@@ -19,7 +19,7 @@ export default function Pagination({
             </Typography>
             <div className="flex gap-2">
                 <IconButton 
-                    color="blue"
+                    color="purple"
                     size="sm"
                     onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
                     disabled={currentPage === 1}
@@ -27,7 +27,7 @@ export default function Pagination({
                  <ChevronLeft className="h-5 w-5" />
                 </IconButton>
                 <IconButton 
-                    color="blue"
+                    color="purple"
                     size="sm"
                     onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
                     disabled={currentPage === totalPages}
