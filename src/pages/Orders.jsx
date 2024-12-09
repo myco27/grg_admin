@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import OrderDetails from "../components/OrdersPage/OrderCard";
 import Pagination from "../components/OrdersPage/Pagination";
 import DatePicker from "../components/OrdersPage/DatePicker";
+import { useSearchParams } from "react-router-dom";
 import {
   Typography,
   Input,
@@ -15,11 +16,24 @@ import Footer from "../components/Footer";
 import { Search } from "lucide-react";
 
 export default function Orders() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("all");
-  const [selectedDate, setSelectedDate] = useState(null);
-  const ordersPerPage = 6;
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "all");
+    const ordersPerPage = 6;
+    const [selectedDate, setSelectedDate] = useState(() => {
+        const dateParam = searchParams.get('date');
+        return dateParam ? new Date(dateParam) : null;
+    })
+
+    useEffect(() => {
+        const params = new URLSearchParams();
+        if (searchQuery) params.set ('search', searchQuery);
+        if (currentPage > 1) params.set ('page', currentPage.toString());
+        if (activeTab !== "all") params.set ('tab', activeTab);
+        if (selectedDate) params.set ('date', selectedDate.toISOString());
+        setSearchParams(params);
+    },[searchQuery, currentPage, activeTab, selectedDate, setSearchParams]);
 
    // Filter orders based on search query, status tab, and date
     const filterOrders = () => {
@@ -77,7 +91,10 @@ export default function Orders() {
                                 <Tab 
                                 key={value}
                                 value={value}
-                                onClick={() => setActiveTab(value)}
+                                onClick={() => {
+                                    setActiveTab(value);
+                                    setCurrentPage(1);
+                                }}
                                 className="text-sm font-medium text-gray-800"
                                 >
                                 {label}
@@ -87,21 +104,31 @@ export default function Orders() {
                         </Tabs>
 
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+
+                            <div className="w-full sm:w-72">
+                                <Input
+                                    label="Search orders..."
+                                    icon={<Search className="h-5 w-5" />}
+                                    size="md"
+                                    className="bg-white"
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        setCurrentPage(1);
+                                    }}
+                                />
+                            </div>
+
                             <DatePicker
                             selected={selectedDate}
-                            onChange={date => setSelectedDate(date)}
+                            onChange={date => {
+                                setSelectedDate(date)
+                                setCurrentPage(1);
+                            }}
                             placeholder="Filter by date"
                             isClearable
                             />
-                            <div className="w-full sm:w-72">
-                            <Input
-                                label="Search orders..."
-                                icon={<Search className="h-5 w-5" />}
-                                className="bg-white"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            </div>
+
                         </div>
 
                     </div>
