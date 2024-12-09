@@ -21,12 +21,13 @@ export default function Orders() {
   const [selectedDate, setSelectedDate] = useState(null);
   const ordersPerPage = 6;
 
-  // Filter orders based on search query, status tab, and date
+   // Filter orders based on search query, status tab, and date
     const filterOrders = () => {
         return ordersData.orders.filter((order) => {
-        const matchesSearch = order.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.id.includes(searchQuery);
+        const matchesSearch = order.products.some (product => product.name.toLowerCase().includes(searchQuery.toLowerCase()) 
+        ) ||
+        order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.id.includes(searchQuery);
         
         const matchesStatus = activeTab === "all" || order.status.toLowerCase() === activeTab;
         
@@ -45,7 +46,7 @@ export default function Orders() {
         { label: "All", value: "all" },
         { label: "Pending", value: "pending" },
         { label: "Processing", value: "processing" },
-        { label: "Shipped", value: "shipped" },
+        { label: "Completed", value: "completed" },
         { label: "Delivered", value: "delivered" },
         { label: "Cancelled", value: "cancelled" },
     ];
@@ -69,7 +70,7 @@ export default function Orders() {
                             <TabsHeader 
                                 className="bg-transparent"
                                 indicatorProps={{
-                                    className: "bg-blue-200 shadow-none",
+                                    className: "bg-purple-200 shadow-none",
                                 }}>
 
                             {tabs.map(({ label, value }) => (
