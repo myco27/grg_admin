@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography, IconButton, Button } from "@material-tailwind/react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({ 
     currentPage, 
@@ -27,13 +27,14 @@ export default function Pagination({
         if (currentPage - delta > 2) {
             range.unshift("...");
         }
+        
         if (currentPage + delta < totalPages - 1) {
             range.push("...");
         }
 
         if (totalPages > 1) {
             range.unshift(1);
-            if (totalPages > 1) {
+            if (totalPages > 1 && !range.includes(totalPages)) {
                 range.push(totalPages);
             }
         }
@@ -67,7 +68,7 @@ export default function Pagination({
                 {getPageNumbers().map((page, index) => (
                     <div key={index}>
                         { page === "..." ? (
-                            <span className="px-2 py-1">...</span>
+                            <span className="px-2 py-1 text-black">...</span>
                         ) : (
                             <IconButton
                                 className={`${currentPage === page ? "bg-gray-300" : ""}`}
