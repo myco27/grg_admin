@@ -15,7 +15,7 @@ import { Home, Bell, MapPin, Banknote, LogOut } from "lucide-react";
 
 const TimelineSection = () => {
   return (
-    <div className="lg:w-80 bg-gray-100 transform h-full">
+    <div className="lg:w-64 bg-gray-100 transform h-full">
       <div className="lg:sticky lg:top-0 lg:h-screen w-full">
         <Card className="h-full flex flex-col mx-auto lg:rounded-none shadow-md lg:shadow-none border-l border-gray-300 overflow-y-auto">
           <CardBody className="p-8 h-auto flex">
@@ -31,12 +31,12 @@ const TimelineSection = () => {
                       <TimelineIcon className="p-2">
                         <Home className="h-4 w-4" />
                       </TimelineIcon>
-                      <Typography variant="h5" color="blue-gray">
+                      <Typography variant="h6" color="black">
                         Order Placed
                       </Typography>
                     </TimelineHeader>
-                    <TimelineBody className="pb-16">
-                      <Typography color="gray" className="font-normal">
+                    <TimelineBody className="pb-12">
+                      <Typography color="gray" className="font-normal text-sm">
                         Order has been placed and is being processed for delivery.
                       </Typography>
                     </TimelineBody>
@@ -48,12 +48,12 @@ const TimelineSection = () => {
                       <TimelineIcon className="p-2">
                         <Bell className="h-4 w-4" />
                       </TimelineIcon>
-                      <Typography variant="h5" color="blue-gray">
+                      <Typography variant="h6" color="black">
                         Order Confirmed
                       </Typography>
                     </TimelineHeader>
-                    <TimelineBody className="pb-16">
-                      <Typography color="gray" className="font-normal">
+                    <TimelineBody className="pb-12">
+                      <Typography color="gray" className="font-normal text-sm">
                         Your order has been confirmed and is being prepared for shipping.
                       </Typography>
                     </TimelineBody>
@@ -65,12 +65,12 @@ const TimelineSection = () => {
                       <TimelineIcon className="p-2">
                         <MapPin className="h-4 w-4" />
                       </TimelineIcon>
-                      <Typography variant="h5" color="blue-gray">
+                      <Typography variant="h6" color="black">
                         Order Shipped
                       </Typography>
                     </TimelineHeader>
-                    <TimelineBody className="pb-16">
-                      <Typography color="gray" className="font-normal">
+                    <TimelineBody className="pb-12">
+                      <Typography color="gray" className="font-normal text-sm">
                         Your order has been shipped and is on its way to the delivery address.
                       </Typography>
                     </TimelineBody>
@@ -81,18 +81,18 @@ const TimelineSection = () => {
                       <TimelineIcon className="p-2">
                         <Banknote className="h-4 w-4" />
                       </TimelineIcon>
-                      <Typography variant="h5" color="blue-gray">
+                      <Typography variant="h6" color="black">
                         Order Delivered
                       </Typography>
                     </TimelineHeader>
-                    <TimelineBody className="pb-[13px]">
-                      <Typography color="gray" className="font-normal">
+                    <TimelineBody>
+                      <Typography color="gray" className="font-normal text-sm">
                         Order has been successfully delivered to the destination.
                       </Typography>
                     </TimelineBody>
                   </TimelineItem>
                 </Timeline>
-                <div className="mt-10 flex flex-col justify-center">
+                <div className="mt-12 flex flex-col justify-center">
                   <Button variant="text" className="text-sm flex items-center justify-center">
                     Log Out
                     <LogOut className="h-6 w-6 ml-4" />
