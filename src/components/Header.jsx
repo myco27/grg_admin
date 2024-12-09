@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Input,
@@ -13,48 +13,41 @@ import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
-    <div className="bg-white border-b border-gray-300 shadow-sm px-6 py-2 flex flex-col md:flex-row justify-between items-center">
+    <div className="bg-purple-500 border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
       
       <div className="flex items-center">
         <Sidebar />
-        <Typography variant="h3" className="text-gray-900">
+        <Typography variant="h4" className="text-gray-900">
           <Link to="/orders">
-            Dashboard
+          <img 
+          src="/src/assets/rockygo_logo.png"
+          alt="RockyGo"
+          className="h-7"
+          />
           </Link>
         </Typography>
-      </div>
-
-      <div className="flex justify-center w-xs lg:w-full max-w-xs">
-        <Input
-          type="text"
-          placeholder="Search"
-          className="text-lg !border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 placeholder:text-gray-500 focus:!border-gray-900"
-          labelProps={{
-            className: "hidden",
-          }}
-          containerProps={{ className: "min-w-[100px]" }}
-          icon={<Search className="h-5 w-5 text-gray-500" />}
-        />
       </div>
 
       <div className="flex items-center">
 
         <Menu placement="bottom-end">
           <MenuHandler>
-            <Button variant="text" className="flex items-center gap-3 p-2 normal-case">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-semibold text-md">JM</span>
+            <Button variant="text" className="flex items-center gap-2 p-2 normal-case">
+              <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
+                <span className="text-blue-600 font-bold text-lg">JM</span>
               </div>
-              <div className="flex flex-col items-start">
-                <Typography variant="h6" color="black">
+              <div className="hidden sm:flex flex-col items-start">
+                <Typography color="white" className="font-medium">
                   John Michael
                 </Typography>
-                <Typography variant="paragraph" className="font-semibold mt-[-6px] text-gray-600">
+                <Typography className="text-gray-300 mt-[-6px]">
                   Admin
                 </Typography>
               </div>
-              <ChevronDown className="h-4 w-4" strokeWidth={2} />
+              <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
             </Button>
           </MenuHandler>
           <MenuList>
@@ -63,6 +56,18 @@ export default function Header() {
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Settings className="h-4 w-4" /> Settings
+            </MenuItem>
+            <MenuItem>
+              <Input
+                label="Search orders..."
+                icon={<Search className="h-5 w-5" />}
+                className="bg-white"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                containerProps={{
+                  onClick: (e) => e.stopPropagation()
+                }}
+              />
             </MenuItem>
             <hr className="my-2 border-blue-gray-50" />
             <MenuItem className="flex items-center gap-2 text-red-500">
