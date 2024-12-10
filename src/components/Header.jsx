@@ -11,6 +11,7 @@ import {
 import { Search, ChevronDown, Settings, LogOut, User } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
+import rockygoLogo from "../assets/rockygo_logo.png";
 
 export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +23,7 @@ export default function Header() {
         <Sidebar />
           <Link to="/orders">
             <img 
-            src="/src/assets/rockygo_logo.png"
+            src={rockygoLogo}
             alt="RockyGo"
             className="h-7"
             />
