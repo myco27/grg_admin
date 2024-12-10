@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect, Children } from 'react';
 import {
   Card,
   Tabs,
@@ -9,7 +9,7 @@ import {
   Typography,
   Button,
 } from '@material-tailwind/react';
-
+import { useSearchParams } from 'react-router-dom';
 import {ChevronUp, ChevronDown} from "lucide-react";
 
 export default function TabsCard({ order }) {
@@ -19,32 +19,49 @@ export default function TabsCard({ order }) {
   const productsCount = order.products.reduce((sum, product) => sum + product.quantity, 0);
   const [showAllProducts, setShowAllProducts] = useState(false);
   const displayedProducts = showAllProducts ? order.products : [order.products[0]];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "order");
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    if (activeTab !== "order") params.set('tab', activeTab);
+    else params.delete('tab');
+    setSearchParams(params);
+  }, [activeTab, searchParams])
+
+  const tabs =[
+    {label: "Detail Order", value: "order"},
+    {label: "Rider Information", value: "rider"},
+    {label: "Customer Information", value: "customer"},
+    {label: "Documents", value: "documents"},
+  ];
 
   return (
     <Card>
-      <Tabs value="detail-order">
+      <Tabs value={activeTab}>
+        
         <TabsHeader
           className="rounded-none border-b border-gray-200 bg-transparent p-0 overflow-x-auto"
           indicatorProps={{
             className: "bg-transparent border-b-2 border-purple-500 shadow-none rounded-none",
           }}
         >
-          <Tab value="detail-order" className="text-gray-900">
-            Detail Order
-          </Tab>
-          <Tab value="rider-information" className="text-gray-900">
-            Rider Information
-          </Tab>
-          <Tab value="customer-information" className="text-gray-900">
-            Customer Information
-          </Tab>
-          <Tab value="documents" className="text-gray-900">
-            Documents
-          </Tab>
+          {tabs.map(({ label, value }) => (
+            <Tab
+            key = {value}
+            value= {value}
+            onClick={() => setActiveTab(value)}
+            className='text-gray-900'
+            >
+              {label}
+            </Tab>
+          ))}
+
         </TabsHeader>
 
         <TabsBody>
-          <TabPanel value="detail-order">
+          <TabPanel value="order">
             <div className="px-4 py-2 flex flex-col items-center md:items-start gap-8">
               {displayedProducts.map((product, index) => (
                 <div key={index} className='w-full'>
@@ -138,13 +155,13 @@ export default function TabsCard({ order }) {
             </div>
           </TabPanel>
 
-          <TabPanel value="rider-information">
+          <TabPanel value="rider">
             <div className="p-4">
               <Typography>Rider: {order.riderName}</Typography>
             </div>
           </TabPanel>
 
-          <TabPanel value="customer-information">
+          <TabPanel value="customer">
             <div className="p-4">
               <Typography>Customer: {order.customerName}</Typography>
             </div>
