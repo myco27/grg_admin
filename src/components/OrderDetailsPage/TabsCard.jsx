@@ -69,11 +69,11 @@ export default function TabsCard({ order }) {
                   <div className="pb-4 flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-gray-300">
                     <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
                        <img
-                          src={product.image || '/src/assets/rockygo_logo.png'}
+                          src={product.image || '/rockygo_logo.png'}
                           alt={product.name}
                           className="h-full w-full object-contain p-2"
                           onError={(e) => {
-                            e.target.src = '/src/assets/rockygo_logo.png';
+                            e.target.src = '/rockygo_logo.png';
                             e.target.onerror = null;
                           }}
                         />
