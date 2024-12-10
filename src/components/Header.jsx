@@ -20,15 +20,13 @@ export default function Header() {
       
       <div className="flex items-center">
         <Sidebar />
-        <Typography variant="h4" className="text-gray-900">
           <Link to="/orders">
-          <img 
-          src="/src/assets/rockygo_logo.png"
-          alt="RockyGo"
-          className="h-7"
-          />
+            <img 
+            src="/src/assets/rockygo_logo.png"
+            alt="RockyGo"
+            className="h-7"
+            />
           </Link>
-        </Typography>
       </div>
 
       <div className="flex items-center">

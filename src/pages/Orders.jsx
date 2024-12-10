@@ -9,6 +9,7 @@ import {
   Tabs,
   TabsHeader,
   Tab,
+  Badge,
 } from "@material-tailwind/react";
 import ordersData from "../data/orders.json";
 import Header from "../components/Header";
@@ -35,7 +36,7 @@ export default function Orders() {
         setSearchParams(params);
     },[searchQuery, currentPage, activeTab, selectedDate, setSearchParams]);
 
-   // Filter orders based on search query, status tab, and date
+    // Filter orders based on search query, status tab, and date
     const filterOrders = () => {
         return ordersData.orders.filter((order) => {
         const matchesSearch = order.products.some (product => product.name.toLowerCase().includes(searchQuery.toLowerCase()) 
@@ -52,9 +53,15 @@ export default function Orders() {
     };
 
     const filteredOrders = filterOrders();
+
+    const tabCount = (status) => {
+        return ordersData.orders.filter(order => status === "all" ? true : order.status.toLowerCase() === status).length;
+    };
+
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+
 
     const tabs = [
         { label: "All", value: "all" },
@@ -79,29 +86,33 @@ export default function Orders() {
                     Transaction
                     </Typography>
 
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <Tabs value={activeTab} className="w-full md:w-fit border border-gray-400 bg-white rounded-lg overflow-x-auto">
-                            <TabsHeader 
-                                className="bg-transparent"
-                                indicatorProps={{
-                                    className: "bg-purple-200 shadow-none",
-                                }}>
+                    <div className=" relative flex flex-col md:flex-row items-center justify-between gap-4">
+                            <Tabs value={activeTab} className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-visible">
+                                <TabsHeader 
+                                    className="bg-transparent gap-x-4"
+                                    indicatorProps={{
+                                        className: "bg-purple-200 shadow-none",
+                                    }}>
 
-                            {tabs.map(({ label, value }) => (
-                                <Tab 
-                                key={value}
-                                value={value}
-                                onClick={() => {
-                                    setActiveTab(value);
-                                    setCurrentPage(1);
-                                }}
-                                className="text-sm font-medium text-gray-800"
-                                >
-                                {label}
-                                </Tab>
-                            ))}
-                            </TabsHeader>
-                        </Tabs>
+                                {tabs.map(({ label, value }) => (
+
+                                <Badge content={tabCount(value)} className="absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px]">
+                                    <Tab 
+                                        key={value}
+                                        value={value}
+                                        onClick={() => {
+                                            setActiveTab(value);
+                                            setCurrentPage(1);
+                                        }}
+                                        className="text-sm font-medium text-gray-800"
+                                        >
+                                        {label}
+                                    </Tab>
+                                </Badge>
+
+                                ))}
+                                </TabsHeader>
+                            </Tabs>
 
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
 
@@ -120,13 +131,13 @@ export default function Orders() {
                             </div>
 
                             <DatePicker
-                            selected={selectedDate}
-                            onChange={date => {
-                                setSelectedDate(date)
-                                setCurrentPage(1);
-                            }}
-                            placeholder="Filter by date"
-                            isClearable
+                                selected={selectedDate}
+                                onChange={date => {
+                                    setSelectedDate(date)
+                                    setCurrentPage(1);
+                                }}
+                                placeholder="Filter by date"
+                                isClearable
                             />
 
                         </div>

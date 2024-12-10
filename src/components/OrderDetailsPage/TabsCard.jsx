@@ -40,7 +40,7 @@ export default function TabsCard({ order }) {
   return (
     <Card>
       <Tabs value={activeTab}>
-        
+
         <TabsHeader
           className="rounded-none border-b border-gray-200 bg-transparent p-0 overflow-x-auto"
           indicatorProps={{
@@ -68,11 +68,15 @@ export default function TabsCard({ order }) {
 
                   <div className="pb-4 flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-gray-300">
                     <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                       <img
+                          src={product.image || '/src/assets/rockygo_logo.png'}
+                          alt={product.name}
+                          className="h-full w-full object-contain p-2"
+                          onError={(e) => {
+                            e.target.src = '/src/assets/rockygo_logo.png';
+                            e.target.onerror = null;
+                          }}
+                        />
                     </div>
 
                     <div className="flex-1 space-y-6 w-full">
