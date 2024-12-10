@@ -11,7 +11,7 @@ import PaymentCard from "../components/OrderDetailsPage/PaymentCard";
 
 const Dashboard = () => {
   const { orderId } = useParams();
-  const order = orders.find( o => o.id === orderId) || orders[0];
+  const order = orders.find( order => order.id === orderId) || orders[0];
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -59,7 +59,7 @@ const Dashboard = () => {
         </main>
 
         <div className="px-3 py-4 md:px-8 lg:px-0 lg:py-0">
-         <TimelineSection/>
+         <TimelineSection order={order}/>
         </div>
 
       </div>

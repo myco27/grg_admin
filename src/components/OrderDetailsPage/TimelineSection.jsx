@@ -9,11 +9,45 @@ import {
   TimelineHeader,
   TimelineIcon,
   TimelineBody,
-  Button
+  Button,
 } from "@material-tailwind/react";
-import { Home, Bell, MapPin, Banknote, LogOut } from "lucide-react";
+import { Home, Bell, Truck, CheckCircle, XCircle, Package, LogOut } from "lucide-react";
 
-const TimelineSection = () => {
+const TimelineSection = ({ order }) => {
+
+  const timelineItems = [
+      {
+        icon: <Home className="h-4 w-4" />,
+        title: "Order Placed",
+        description: "Order has been placed and is being processed.",
+        active: true 
+      },
+      {
+        icon: <Bell className="h-4 w-4" />,
+        title: "Order Confirmed",
+        description: "Your order has been confirmed and is being prepared.",
+        active: ["Processing", "Delivered", "Completed"].includes(order.status)
+      },
+      {
+        icon: <Truck className="h-4 w-4" />,
+        title: "Out for Delivery",
+        description: `${order.riderName} is delivering your order.`,
+        active: ["Out for Delivery", "Delivered"].includes(order.status)
+      },
+      {
+        icon: <Package className="h-4 w-4" />,
+        title: "Order Delivered",
+        description: `${order.riderName} has delivered your order.`,
+        active: ["Out for Delivery", "Delivered",].includes(order.status)
+      },
+      {
+        icon: order.status === "Cancelled" ? <XCircle className="h-4 w-4"/> : <CheckCircle className="h-4 w-4"/>,
+        title: order.status === "Cancelled" ? "Order Cancelled" : "Order Completed",
+        description: order.status === "Cancelled" ? "Order is cancelled" : "Order is Completed",
+        active: ["Cancelled", "Completed", "Delivered"].includes(order.status)
+      },
+    ];
+
   return (
     <div className="lg:w-64 bg-gray-100 transform h-full">
       <div className="lg:sticky lg:top-0 lg:h-screen w-full">
@@ -23,82 +57,38 @@ const TimelineSection = () => {
               <Typography variant="h4" className="text-gray-900 mb-4">
                 Timeline
               </Typography>
-              <div className="">
+              
+              <div>
                 <Timeline>
-                  <TimelineItem className="pt-4">
-                    <TimelineConnector />
-                    <TimelineHeader>
-                      <TimelineIcon className="p-2">
-                        <Home className="h-4 w-4" />
-                      </TimelineIcon>
-                      <Typography variant="h6" color="black">
-                        Order Placed
-                      </Typography>
-                    </TimelineHeader>
-                    <TimelineBody className="pb-12">
-                      <Typography color="gray" className="font-normal text-sm">
-                        Order has been placed and is being processed for delivery.
-                      </Typography>
-                    </TimelineBody>
-                  </TimelineItem>
-
-                  <TimelineItem>
-                    <TimelineConnector />
-                    <TimelineHeader>
-                      <TimelineIcon className="p-2">
-                        <Bell className="h-4 w-4" />
-                      </TimelineIcon>
-                      <Typography variant="h6" color="black">
-                        Order Confirmed
-                      </Typography>
-                    </TimelineHeader>
-                    <TimelineBody className="pb-12">
-                      <Typography color="gray" className="font-normal text-sm">
-                        Your order has been confirmed and is being prepared for shipping.
-                      </Typography>
-                    </TimelineBody>
-                  </TimelineItem>
-
-                  <TimelineItem>
-                    <TimelineConnector />
-                    <TimelineHeader>
-                      <TimelineIcon className="p-2">
-                        <MapPin className="h-4 w-4" />
-                      </TimelineIcon>
-                      <Typography variant="h6" color="black">
-                        Order Shipped
-                      </Typography>
-                    </TimelineHeader>
-                    <TimelineBody className="pb-12">
-                      <Typography color="gray" className="font-normal text-sm">
-                        Your order has been shipped and is on its way to the delivery address.
-                      </Typography>
-                    </TimelineBody>
-                  </TimelineItem>
-
-                  <TimelineItem>
-                    <TimelineHeader>
-                      <TimelineIcon className="p-2">
-                        <Banknote className="h-4 w-4" />
-                      </TimelineIcon>
-                      <Typography variant="h6" color="black">
-                        Order Delivered
-                      </Typography>
-                    </TimelineHeader>
-                    <TimelineBody>
-                      <Typography color="gray" className="font-normal text-sm">
-                        Order has been successfully delivered to the destination.
-                      </Typography>
-                    </TimelineBody>
-                  </TimelineItem>
+                  {timelineItems.map((timelineItem, index) => (
+                    <TimelineItem key={index} className={index === 0 ? "pt-4" : ""}>
+                      {index !== timelineItems.length - 1 && <TimelineConnector />}
+                      <TimelineHeader>
+                        <TimelineIcon className={`p-2 ${timelineItem.active ? (order.status === "Cancelled" ? "bg-red-500" : "bg-green-500 text-white") : "bg-gray-300 text-gray-600"}`}>
+                          {timelineItem.icon}
+                        </TimelineIcon>
+                        <Typography variant="h6" color={timelineItem.active ? "black" : "gray"}>
+                          {timelineItem.title}
+                        </Typography>
+                      </TimelineHeader>
+                      <TimelineBody className="pb-12">
+                        <Typography color="gray" className="font-normal text-sm">
+                          {timelineItem.description}
+                        </Typography>
+                      </TimelineBody>
+                    </TimelineItem>
+                  ))}
                 </Timeline>
-                <div className="mt-12 flex flex-col justify-center">
+
+                <div className="flex flex-col justify-center">
                   <Button variant="text" className="text-sm flex items-center justify-center">
                     Log Out
                     <LogOut className="h-6 w-6 ml-4" />
                   </Button>
                 </div>
+
               </div>
+
             </div>
           </CardBody>
         </Card>
