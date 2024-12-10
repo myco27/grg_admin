@@ -62,11 +62,11 @@ export default function OrderDetails({ order }) {
               <div key={index} className="flex items-start gap-4">
                 <div className="h-16 w-16 rounded-lg bg-gray-100 p-2 flex-shrink-0">
                   <img
-                    src={product.image || '/src/assets/rockygo_logo.png'}
+                    src={product.image || '/rockygo_logo.png'}
                     alt={product.name}
                     className="h-full w-full object-contain"
                     onError={(e) => {
-                      e.target.src = '/src/assets/rockygo_logo.png';
+                      e.target.src = '/rockygo_logo.png';
                       e.target.onerror = null;
                     }}
                   />
