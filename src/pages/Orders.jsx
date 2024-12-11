@@ -97,7 +97,16 @@ export default function Orders() {
 
                                         {tabs.map(({ label, value }) => (
 
-                                            <Badge key={value} content={tabCount(value)} className="absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px]">
+                                            <Badge key={value} content={tabCount(value)} 
+                                             className={`absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px] 
+                                                ${value === "cancelled" ? "bg-red-100 text-red-600" :
+                                                value === "pending" ? "bg-yellow-100 text-yellow-800" :
+                                                value === "delivered" ? "bg-green-100 text-green-600" :
+                                                value === "processing" ? "bg-blue-100 text-blue-600" :
+                                                value === "completed" ? "bg-purple-100 text-purple-600" :
+                                                value === "all" ? "" :
+                                                "bg-gray-100 text-gray-900"}`}
+                                            >
                                                 <Tab 
                                                     key={value}
                                                     value={value}
@@ -109,6 +118,7 @@ export default function Orders() {
                                                     >
                                                     {label}                                                                                            
                                                 </Tab>
+
                                             </Badge>
 
                                         ))}
