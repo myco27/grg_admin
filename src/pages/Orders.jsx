@@ -87,31 +87,33 @@ export default function Orders() {
                     </Typography>
 
                     <div className=" relative flex flex-col md:flex-row items-center justify-between gap-4">
-                            <Tabs value={activeTab} className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-visible">
-                                <TabsHeader 
-                                    className="bg-transparent gap-x-4"
-                                    indicatorProps={{
-                                        className: "bg-purple-200 shadow-none",
-                                    }}>
+                            <Tabs value={activeTab} className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-x-auto xl:overflow-visible">
+                                <div>
+                                    <TabsHeader 
+                                        className="bg-transparent gap-x-4"
+                                        indicatorProps={{
+                                            className: "bg-purple-200 shadow-none",
+                                        }}>
 
-                                {tabs.map(({ label, value }) => (
+                                        {tabs.map(({ label, value }) => (
 
-                                <Badge content={tabCount(value)} className="absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px]">
-                                    <Tab 
-                                        key={value}
-                                        value={value}
-                                        onClick={() => {
-                                            setActiveTab(value);
-                                            setCurrentPage(1);
-                                        }}
-                                        className="text-sm font-medium text-gray-800"
-                                        >
-                                        {label}
-                                    </Tab>
-                                </Badge>
+                                            <Badge key={value} content={tabCount(value)} className="absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px]">
+                                                <Tab 
+                                                    key={value}
+                                                    value={value}
+                                                    onClick={() => {
+                                                        setActiveTab(value);
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    className="text-sm font-medium text-gray-800"
+                                                    >
+                                                    {label}                                                                                            
+                                                </Tab>
+                                            </Badge>
 
-                                ))}
-                                </TabsHeader>
+                                        ))}
+                                    </TabsHeader>
+                                </div>
                             </Tabs>
 
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
