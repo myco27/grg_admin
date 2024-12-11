@@ -135,7 +135,7 @@ export default function OrderDetails({ order }) {
                 Rider:
                 </Typography>
                 <Typography className="text-gray-900 text-md font-bold truncate">
-                {order.riderName}
+                {order.riderData[0].name}
                 </Typography>
             </div>
 
@@ -145,7 +145,7 @@ export default function OrderDetails({ order }) {
                 Customer
                 </Typography>
                 <Typography className="text-gray-900 text-md font-bold truncate">
-                    {order.customerName}
+                    {order.customerData[0].name}
                 </Typography>
             </div>
 
