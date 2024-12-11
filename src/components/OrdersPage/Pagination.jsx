@@ -47,7 +47,7 @@ export default function Pagination({
             <Typography variant="small" color="blue-gray" className="font-normal mb-4">
                 Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} items
             </Typography>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
                 <Button 
                     color="purple"
                     size="sm"
