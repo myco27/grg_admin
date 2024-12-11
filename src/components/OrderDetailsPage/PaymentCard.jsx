@@ -49,7 +49,7 @@ export default function PaymentCard({order}) {
                     <div>
                         <Typography color="gray" className="flex items-center text-md font-medium">
                         <DollarSign className="w-5 h-5" />
-                        Price
+                        Total Price
                         </Typography>
                         <Typography color="blue-gray" className="font-semibold text-md">
                         ${totalPrice}
