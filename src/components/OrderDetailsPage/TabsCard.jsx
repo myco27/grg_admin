@@ -160,14 +160,139 @@ export default function TabsCard({ order }) {
           </TabPanel>
 
           <TabPanel value="rider">
-            <div className="p-4">
-              <Typography>Rider: {order.riderName}</Typography>
+            <div className="px-4 py-2 flex flex-col items-center md:items-start gap-8">
+
+              <div className='w-full'>
+
+                <div className="pb-4 flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-gray-300">
+                  <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <img
+                        src={order.riderData[0].image || '/rockygo_logo.png'}
+                        alt={order.riderData[0].name}
+                        className="h-full w-full object-contain p-2"
+                        onError={(e) => {
+                          e.target.src = '/rockygo_logo.png';
+                          e.target.onerror = null;
+                        }}
+                      />
+                  </div>
+
+                  <div className="flex-1 space-y-6 w-full">
+                    <div className="space-y-1">
+                      <div className="flex flex-col md:flex-row justify-between gap-4">
+                        <div className="w-full md:w-auto">
+                          <Typography color="gray" className="font-medium text-sm">
+                            Delivery Rider
+                          </Typography>
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.riderData[0].name}
+                          </Typography>
+                        </div>
+                        <div className="w-full md:w-auto md:text-right">
+                          <Typography color="gray" className="font-medium text-sm">
+                            Plate # 
+                          </Typography>
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.riderData[0].licensePlate}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row justify-between items-center w-full pt-4 border-t border-gray-200">
+                      <div>
+                        <Typography color="gray" className="font-medium text-sm">
+                          Email
+                        </Typography>
+                        <div className="flex items-center gap-2">
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.riderData[0].email}
+                          </Typography>
+                        </div>
+                      </div>
+                      <div className="w-auto text-right">
+                        <Typography color="gray" className="font-medium text-sm">
+                          Cellphone #
+                        </Typography>
+                        <div className="flex justify-end">
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.riderData[0].phoneNumber}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           </TabPanel>
 
           <TabPanel value="customer">
-            <div className="p-4">
-              <Typography>Customer: {order.customerName}</Typography>
+            <div className="px-4 py-2">
+              <div className='w-full'>
+                <div className="pb-4 flex flex-col md:flex-row items-center md:items-start gap-6 border-b border-gray-300">
+                  <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <img
+                        src={order.customerData[0].image || '/rockygo_logo.png'}
+                        alt={order.customerData[0].name}
+                        className="h-full w-full object-contain p-2"
+                        onError={(e) => {
+                          e.target.src = '/rockygo_logo.png';
+                          e.target.onerror = null;
+                        }}
+                      />
+                  </div>
+
+                  <div className="flex-1 space-y-6 w-full">
+                    <div className="space-y-1">
+                      <div className="flex flex-col md:flex-row justify-between gap-4">
+                        <div className="w-full md:w-auto">
+                          <Typography color="gray" className="font-medium text-sm">
+                            Customer Name:
+                          </Typography>
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.customerData[0].name}
+                          </Typography>
+                        </div>
+                        <div className="w-full md:w-auto md:text-right">
+                          <Typography color="gray" className="font-medium text-sm">
+                            Home Address:
+                          </Typography>
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.customerData[0].address}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row justify-between items-center w-full pt-4 border-t border-gray-200">
+                      <div>
+                        <Typography color="gray" className="font-medium text-sm">
+                          Email:
+                        </Typography>
+                        <div className="flex items-center gap-2">
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.customerData[0].email}
+                          </Typography>
+                        </div>
+                      </div>
+                      <div className="w-auto text-right">
+                        <Typography color="gray" className="font-medium text-sm">
+                          Cellphone #
+                        </Typography>
+                        <div className="flex justify-end">
+                          <Typography color="black" className="font-semibold text-sm">
+                            {order.customerData[0].phoneNumber}
+                          </Typography>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </TabPanel>
 

@@ -8,11 +8,12 @@ const Home = () => {
     <div className='flex-col flex items-center mx-auto'>
       <h1>Welcome to Home</h1>
       <h1>Welcome to Test</h1>
-      <Button>
-        <Link to="/orders">
+      <Link to="/orders">
+        <Button>
           Go to Orders
-        </Link>
-      </Button>
+        </Button>
+      </Link>
+
     </div>
   );
 };
