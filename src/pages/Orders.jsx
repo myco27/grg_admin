@@ -100,7 +100,7 @@ export default function Orders() {
                                             <Badge key={value} content={tabCount(value)} 
                                              className={`absolute top-1 z-50 text-[8px] min-w-[14px] min-h-[14px] px-[6px] py-[2px] 
                                                 ${value === "cancelled" ? "bg-red-100 text-red-600" :
-                                                value === "pending" ? "bg-yellow-100 text-yellow-800" :
+                                                value === "pending" ? "bg-yellow-200 text-yellow-900" :
                                                 value === "delivered" ? "bg-green-100 text-green-600" :
                                                 value === "processing" ? "bg-blue-100 text-blue-600" :
                                                 value === "completed" ? "bg-purple-100 text-purple-600" :
