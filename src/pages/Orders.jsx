@@ -12,7 +12,6 @@ import {
   Badge,
 } from "@material-tailwind/react";
 import ordersData from "../data/orders.json";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Search } from "lucide-react";
 
@@ -74,8 +73,6 @@ export default function Orders() {
 
   return (
     <Fragment>
-
-      <Header />
 
         <div className="flex flex-col min-h-screen bg-gray-100">
             <main className="flex-1 px-3 md:px-8 py-4">

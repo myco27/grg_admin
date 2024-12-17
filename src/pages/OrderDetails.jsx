@@ -1,6 +1,5 @@
 import {React, Fragment, useEffect} from "react";
 import { Typography } from "@material-tailwind/react";
-import Header from "../components/Header";
 import { orders } from "../data/orders.json";
 import { useParams } from "react-router-dom";
 import TimelineSection from "../components/OrderDetailsPage/TimelineSection";
@@ -20,8 +19,6 @@ const Dashboard = () => {
   return (
     <Fragment>
       
-      <Header />
-
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
 
         {/* Main Content */}
