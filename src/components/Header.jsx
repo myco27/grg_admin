@@ -10,11 +10,16 @@ import {
 } from "@material-tailwind/react";
 import { Search, ChevronDown, Settings, LogOut, User } from "lucide-react";
 import Sidebar from "./Sidebar";
-import { Link } from "react-router-dom";
-import rockygoLogo from "/rockygo_logo.png";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function Header() {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function Header({handleLogout}) {
+
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    handleLogout();
+    navigate('/')
+  }
 
   return (
     <div className="bg-purple-500 border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
@@ -61,7 +66,7 @@ export default function Header() {
                 label="Search orders..."
                 icon={<Search className="h-5 w-5" />}
                 className="bg-white"
-                value={searchQuery}
+                // value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 containerProps={{
                   onClick: (e) => e.stopPropagation()
@@ -69,7 +74,7 @@ export default function Header() {
               />
             </MenuItem>
             <hr className="my-2 border-blue-gray-50" />
-            <MenuItem className="flex items-center gap-2 text-red-500">
+            <MenuItem className="flex items-center gap-2 text-red-500" onClick={onLogout}>
               <LogOut className="h-4 w-4" /> Sign Out
             </MenuItem>
           </MenuList>
