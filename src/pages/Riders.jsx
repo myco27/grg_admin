@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Typography, Input } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
-import DetailsCard from '../components/RidersPage/DetailsCard';
-import PaymentCard from '../components/RidersPage/PaymentCard';
+import DetailsCard from '../components/RidersPage/OrderDetailsCard';
+import RiderDetails from '../components/RidersPage/RiderDetailsCard';
 import MapCard from '../components/RidersPage/MapCard';
 import ordersData from '../data/orders.json';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -86,7 +86,7 @@ export default function Riders() {
         <div className="mx-auto p-4">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Left side - Rider List */}
-            <div className="h-[89dvh] overflow-y-auto lg:w-1/5 bg-white rounded-lg border border-gray-300 py-4">
+            <div className="h-[89dvh] overflow-y-auto lg:w-[340px] bg-white rounded-lg border border-gray-300 py-4">
               <Typography variant="h5" className="font-semibold text-black ml-4">All Riders</Typography>
               <div className="w-full p-2 mb-2">
                 <Input
@@ -126,10 +126,10 @@ export default function Riders() {
                   {ordersForSelectedRider.length > 0 ? (
                     ordersForSelectedRider.map(order => (
                       <div key={order.id}>
+                        <Typography variant='h5' className='text-black mb-2'>Rider Details</Typography>
+                        <RiderDetails className="mb-4" order={order} />
                         <Typography variant='h5' className='text-black mb-2'>Order Details: {order.index}</Typography>
                         <DetailsCard order={order} />
-                        <Typography variant='h5' className='text-black mb-2'>Payment Details</Typography>
-                        <PaymentCard className="mb-4" order={order} />
                         <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
                         <MapCard order={order} />
                         <div className="h-px bg-gray-300 mb-6 mt-8" />
