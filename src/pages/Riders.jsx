@@ -124,17 +124,20 @@ export default function Riders() {
               {selectedRider ? (
                 <div className="h-[89dvh] overflow-y-auto bg-white rounded-lg border border-gray-300 p-4">
                   {ordersForSelectedRider.length > 0 ? (
-                    ordersForSelectedRider.map(order => (
-                      <div key={order.id}>
-                        <Typography variant='h5' className='text-black mb-2'>Rider Details</Typography>
-                        <RiderDetails className="mb-4" order={order} />
-                        <Typography variant='h5' className='text-black mb-2'>Order Details: {order.index}</Typography>
-                        <DetailsCard order={order} />
-                        <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
-                        <MapCard order={order} />
-                        <div className="h-px bg-gray-300 mb-6 mt-8" />
-                      </div>
-                    ))
+                    <>
+                      <Typography variant='h5' className='text-black mb-2'>Rider Details</Typography>
+                      <RiderDetails className="mb-4" order={ordersForSelectedRider[0]} />
+                      <div className="h-px bg-gray-300 mb-6 mt-8" />
+                      {ordersForSelectedRider.map(order => (
+                        <div key={order.id}>
+                          <Typography variant='h5' className='text-black mb-2'>Order Details: {order.index}</Typography>
+                          <DetailsCard order={order} />
+                          <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
+                          <MapCard order={order} />
+                          <div className="h-px bg-gray-300 mb-6 mt-8" />
+                        </div>
+                      ))}
+                    </>
                   ) : (
                     <div className="text-center py-8">
                       <Typography color="gray" className="font-medium">
