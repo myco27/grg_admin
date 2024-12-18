@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardBody, Typography } from '@material-tailwind/react';
-import { UserCircle, CalendarDays, MapPin, QrCode } from 'lucide-react';
+import { CalendarDays, MapPin, QrCode, Wallet } from 'lucide-react';
 
 export default function DetailsCard({ order }) {
   const getRiderInitials = (name) => {
@@ -8,6 +8,8 @@ export default function DetailsCard({ order }) {
   };
 
   if (!order) return null;
+
+  const totalPrice = order.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
   return (
     <Card className="mb-3 shadow-none border border-gray-300">
@@ -18,14 +20,14 @@ export default function DetailsCard({ order }) {
             <div className="flex flex-col sm:flex-row justify-between gap-4">
               <div className="flex gap-4">
                 <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-xl">{getRiderInitials(order.riderName)}</span>
+                  <span className="text-blue-600 font-semibold text-xl">{getRiderInitials(order.customerName)}</span>
                 </div>
                 <div className="mt-1">
                   <Typography color="black" className='font-bold text-md'>
-                    {order.riderName}
+                    {order.customerName}
                   </Typography>
                   <Typography color="gray" className="font-medium text-md">
-                    Delivery Rider
+                    Customer
                   </Typography>
                 </div>
               </div>
@@ -43,15 +45,15 @@ export default function DetailsCard({ order }) {
 
             <div className="mt-4">
               <div className="h-px bg-gray-200 mb-3" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-start gap-2">
-                  <UserCircle className="w-9 h-9 text-blue-500 mt-1" />
+                  <Wallet className="w-9 h-9 text-blue-500 mt-1" />
                   <div>
                     <Typography color="gray" className="font-medium mb-[-4px] text-md">
-                      Customer Name
+                      Total Price
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.customerName}
+                      $ {totalPrice}
                     </Typography>
                   </div>
                 </div>
