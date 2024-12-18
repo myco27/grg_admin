@@ -1,6 +1,6 @@
 import React from 'react'
 import {Card, CardBody, Typography, Chip} from '@material-tailwind/react'
-import { UserCircle, Info, CreditCard, DollarSign } from 'lucide-react'
+import { UserCircle, Info, CreditCard, DollarSign, Bike, Mail, Phone, SmartphoneIcon } from 'lucide-react'
 
 export default function PaymentCard({order}) {
     const totalPrice = order.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
@@ -13,46 +13,56 @@ export default function PaymentCard({order}) {
 
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-xl">{order.customerName.split(' ').map(n => n[0]).join('')}</span>
+                        <span className="text-blue-600 font-semibold text-xl">{order.riderName.split(' ').map(n => n[0]).join('')}</span>
                         </div>
                         <div>
                         <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
                             <UserCircle className="w-5 h-5" />
-                            Customer Name
+                            Rider
                         </Typography>
                         <Typography color="blue-gray" className="font-semibold text-md">
-                            {order.customerName}
+                            {order.riderData[0].name}
                         </Typography>
                         </div>
+                    </div>
+
+                    <div>
+                        <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
+                        <Mail className="w-5 h-5" />
+                        Email
+                        </Typography>
+                        <Typography color="blue-gray" className="font-semibold text-md">
+                        {order.riderData[0].email}
+                        </Typography>
+                    </div>
+
+                    <div>
+                        <Typography color="gray" className="flex items-center text-md font-medium">
+                        <SmartphoneIcon className="w-5 h-5" />
+                        Phone #
+                        </Typography>
+                        <Typography color="blue-gray" className="font-semibold text-md">
+                        {order.riderData[0].phoneNumber}
+                        </Typography>
+                    </div>
+
+                    <div>
+                        <Typography color="gray" className="flex items-center text-md font-medium">
+                        <Bike className="w-5 h-5 mr-1" />
+                        Motorcyle
+                        </Typography>
+                        <Typography color="blue-gray" className="font-semibold text-md">
+                        {order.riderData[0].motorBrand}
+                        </Typography>
                     </div>
 
                     <div>
                         <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
                         <Info className="w-5 h-5" />
-                        Order ID
+                        Plate #
                         </Typography>
                         <Typography color="blue-gray" className="font-semibold text-md">
-                        #{order.id}
-                        </Typography>
-                    </div>
-
-                    <div>
-                        <Typography color="gray" className="flex items-center text-md font-medium">
-                        <CreditCard className="w-5 h-5 mr-1" />
-                        Payment Method
-                        </Typography>
-                        <Typography color="blue-gray" className="font-semibold text-md">
-                        {order.paymentMethod}
-                        </Typography>
-                    </div>
-
-                    <div>
-                        <Typography color="gray" className="flex items-center text-md font-medium">
-                        <DollarSign className="w-5 h-5" />
-                        Total Price
-                        </Typography>
-                        <Typography color="blue-gray" className="font-semibold text-md">
-                        ${totalPrice}
+                        {order.riderData[0].licensePlate}
                         </Typography>
                     </div>
 
