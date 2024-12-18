@@ -35,7 +35,7 @@ export default function MapCard({ order }) {
                 </Typography>
                 <div className="flex items-center gap-2">
                     <Typography color="black" className="font-semibold text-sm">
-                    {order.riderData[0].email}
+                    {order.customerData[0].email}
                     </Typography>
                 </div>
                 </div>
@@ -45,7 +45,7 @@ export default function MapCard({ order }) {
                 </Typography>
                 <div className="flex justify-end">
                     <Typography color="black" className="font-semibold text-sm">
-                    {order.riderData[0].phoneNumber}
+                    {order.customerData[0].phoneNumber}
                     </Typography>
                 </div>
                 </div>
