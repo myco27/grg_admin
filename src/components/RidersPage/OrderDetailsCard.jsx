@@ -53,7 +53,7 @@ export default function DetailsCard({ order }) {
                       Total Price
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      $ {totalPrice}
+                      $ {totalPrice.toFixed(2)}
                     </Typography>
                   </div>
                 </div>
