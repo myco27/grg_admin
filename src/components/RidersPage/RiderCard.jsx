@@ -15,27 +15,27 @@ function RiderCard({ rider, order }) {
           }}
         />
         <div className='w-full mr-[-1rem]'>
-          <div className='flex flex-row justify-between'>
-            <Typography color="black" className="font-medium text-md">
-              #{order.id}
-            </Typography>
+            <div className='flex flex-row justify-between mb-[-2px]'>
+                <Typography color="black" className="font-semibold text-sm">
+                {rider.name}
+                </Typography>
 
-            <Chip
-            value={order.status}
-            className={`text-[10px] px-1 py-1 rounded-full bg-transparent ${
-                order.status === "Cancelled" ? "text-red-600" :
-                order.status === "Pending" ? "text-yellow-800" :
-                order.status === "Delivered" ? "text-green-600" :
-                order.status === "Processing" ? "text-blue-600" :
-                order.status === "Shipped" ? "text-purple-600" :
-                order.status === "Completed" ? "text-purple-600" :
-                "text-gray-900"
-            }`}
-            />
-          </div>
-          <Typography color="gray" className="font-normal text-xs">
-            {rider.name}
-          </Typography>
+                <Chip
+                value={order.status}
+                className={`text-[10px] px-1 py-1 rounded-full bg-transparent ${
+                    order.status === "Cancelled" ? "text-red-600" :
+                    order.status === "Pending" ? "text-yellow-800" :
+                    order.status === "Delivered" ? "text-green-600" :
+                    order.status === "Processing" ? "text-blue-600" :
+                    order.status === "Shipped" ? "text-purple-600" :
+                    order.status === "Completed" ? "text-purple-600" :
+                    "text-gray-900"
+                }`}
+                />
+            </div>
+            <Typography color="gray" className="font-normal text-xs">
+                Plate #{rider.licensePlate}
+            </Typography>
 
         </div>
       </CardBody>

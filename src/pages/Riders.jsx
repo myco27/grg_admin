@@ -71,7 +71,7 @@ export default function Riders() {
 
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    navigate(`/riders/${rider.name}?search=${searchQuery}`); // Preserve search query in URL
+    navigate(`/riders/${rider.name}?search=${searchQuery}`); 
   };
 
   const handleSearchChange = (e) => {
