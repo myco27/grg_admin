@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Card, Typography, Input, Button } from '@material-tailwind/react';
 import loginData from "../data/users.json";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function Login({setIsAuthenticated}) {
+function Login({setIsAuthenticated, setUser}) {
     const navigate = useNavigate();
-    const location = useLocation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');

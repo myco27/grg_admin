@@ -6,7 +6,7 @@ export default function PaymentCard({order}) {
     const totalPrice = order.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
   return (
     <div>
-        <Card className="w-full mx-auto mb-8">
+        <Card className="w-full mx-auto mb-3 shadow-none border border-gray-300">
             <CardBody className="px-6 py-4">
 
                 <div className="flex flex-col xl:flex-row items-start xl:items-center gap-10">

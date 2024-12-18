@@ -34,7 +34,7 @@ const Dashboard = () => {
             <DetailsCard order={order} />
 
             {/* Tabs Section */}
-            <Typography variant="h4" className="text-gray-900 mb-1">
+            <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
               Main Info
             </Typography>
 
@@ -45,7 +45,7 @@ const Dashboard = () => {
           {/* Recent Payment Section */}
           <div className="w-full mx-auto">
 
-            <Typography variant="h4" className="text-gray-900 mb-2 mt-8">
+            <Typography variant="h4" className="text-gray-900 mb-2 mt-4">
               Payment Information
             </Typography>
 

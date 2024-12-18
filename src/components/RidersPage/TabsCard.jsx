@@ -1,4 +1,4 @@
-import { React, useState, useEffect, Children } from 'react';
+import { React, useState, useEffect } from 'react';
 import {
   Card,
   Tabs,
@@ -38,7 +38,7 @@ export default function TabsCard({ order }) {
   ];
 
   return (
-    <Card>
+    <Card className='shadow-none border border-gray-300'>
       <Tabs value={activeTab}>
 
         <TabsHeader
