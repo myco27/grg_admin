@@ -10,7 +10,7 @@ export default function DetailsCard({ order }) {
   if (!order) return null;
 
   return (
-    <Card className="mb-8">
+    <Card>
       <CardBody className='px-6 py-4'>
         <div className="flex flex-col lg:flex-row justify-between gap-8">
           <div className="flex-1">
