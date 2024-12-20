@@ -31,3 +31,22 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 5px; /* Thin scrollbar */
+  height: 5px; /* Thin scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.5); /* Light gray thumb */
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.8); /* Darker gray on hover */
+}
