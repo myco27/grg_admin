@@ -1,5 +1,4 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import Footer from "../components/Footer"
 import { Typography, Input } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
@@ -158,7 +157,6 @@ export default function Riders() {
           </div>
         </div>
       </div>
-      <Footer/>
     </Fragment>
   );
 }
