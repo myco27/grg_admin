@@ -42,7 +42,7 @@ const Dashboard = () => {
 
           </div>
 
-          {/* Recent Payment Section */}
+        {/* Recent Payment Section */}
           <div className="w-full mx-auto">
 
             <Typography variant="h4" className="text-gray-900 mb-2 mt-4">
