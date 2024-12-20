@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import PrivateRoute from './components/PrivateRoute';
 import Header from './components/Header';
 import Riders from './pages/Riders';
+import NotFound from './pages/NotFound';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true' ? true : false);
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path="/" element={isAuthenticated ? <Navigate to="/orders" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<NotFound />} />
 
         <Route element={<PrivateRoute isAuthenticated={isAuthenticated} />}>
           <Route path="/orders/:orderId" element={<Dashboard />} />
