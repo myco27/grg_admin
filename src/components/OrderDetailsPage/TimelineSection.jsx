@@ -80,13 +80,6 @@ const TimelineSection = ({ order }) => {
                   ))}
                 </Timeline>
 
-                <div className="flex flex-col justify-center">
-                  <Button variant="text" className="text-sm flex items-center justify-center">
-                    Log Out
-                    <LogOut className="h-6 w-6 ml-4" />
-                  </Button>
-                </div>
-
               </div>
 
             </div>
