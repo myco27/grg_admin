@@ -26,7 +26,7 @@ export default function OrderDetails({ order }) {
   const displayedProducts = showAllProducts ? order.products : [order.products[0]];
 
   return (
-      <Card className="w-full h-auto cursor-pointer hover:shadow-lg transition-shadow" onClick={handleCardClick}>
+      <Card className="w-full h-full cursor-pointer hover:shadow-lg transition-shadow" onClick={handleCardClick}>
         <CardBody className="p-4 flex flex-col h-full">
           {/* Header Section */}
           <div className="flex items-center justify-between border-b border-gray-200 pb-2">
@@ -46,7 +46,7 @@ export default function OrderDetails({ order }) {
             </div>
             <Chip
               value={order.status}
-              className={`text-xs px-3 py-1 rounded-full ${
+              className={`text-xs px-2 py-1 rounded-full ${
                 order.status === "Cancelled" ? "bg-red-100 text-red-600" :
                 order.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
                 order.status === "Delivered" ? "bg-green-100 text-green-600" :
@@ -58,6 +58,7 @@ export default function OrderDetails({ order }) {
 
           {/* Product Section */}
           <div className="flex-1 flex flex-col gap-4 py-4">
+            <Typography className="text-black text-sm">Store Name:</Typography>
             {displayedProducts.map((product, index) => (
               <div key={index} className="flex items-start gap-4">
                 <div className="h-16 w-16 rounded-lg bg-gray-100 p-2 flex-shrink-0">
