@@ -1,13 +1,13 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import Footer from "../components/Footer"
-import { Typography, Input } from "@material-tailwind/react";
+import { Typography, Input, Button } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
 import RiderDetails from '../components/RidersPage/RiderDetailsCard';
 import MapCard from '../components/RidersPage/MapCard';
 import ordersData from '../data/orders.json';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Search } from "lucide-react";
+import { Search, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function Riders() {
   const { riderName } = useParams(); 
@@ -81,6 +81,17 @@ export default function Riders() {
     setSearchParams({ search: query }); 
   };
 
+  const [showMore, setShowMore] = useState(
+    ordersData.orders.reduce((acc, order) => {
+      acc[order.id] = false;
+      return acc;
+    }, {})
+  );
+
+  const handleShowMore = (orderId) => {
+    setShowMore(prevState => ({ ...prevState, [orderId]: !prevState[orderId] }));
+  }
+
   return (
     <Fragment>
       <div className='bg-gray-100 w-full'>
@@ -132,12 +143,45 @@ export default function Riders() {
                       {ordersForSelectedRider.map(order => (
                         <div key={order.id}>
                           <Typography variant='h5' className='text-black mb-2'>Order Details: {order.index}</Typography>
-                          <DetailsCard order={order} />
-                          <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
-                          <MapCard order={order} />
-                          <div className="h-px bg-gray-300 mb-6 mt-8" />
+                          {order.status !== "Completed" ? (
+                            <div>
+                              <DetailsCard order={order} />
+                              <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
+                              <MapCard order={order} />
+                            </div>
+                          ) : (
+                            <div>
+                              {showMore[order.id] ? (
+                                <>
+                                  <DetailsCard order={order}/>
+                                  <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
+                                  <MapCard order={order} />
+                                  <div className='flex justify-center'>
+                                    <Button
+                                    className='text-black flex flex-row gap-2'
+                                    onClick={() => handleShowMore(order.id)}
+                                    variant='text'
+                                    >
+                                      Show Less <ChevronUp className='h-4 w-4 text-black' />
+                                    </Button>
+                                  </div>
+                                </>
+                              ) : (
+                                <div className='flex justify-center'>
+                                  <Button
+                                  className='text-black flex flex-row gap-2'
+                                  onClick={() => handleShowMore(order.id)}
+                                  variant='text'
+                                  >
+                                    Show More <ChevronDown className='h-4 w-4 text-black' />
+                                  </Button>
+                                </div>
+                              )}    
+                            </div>
+                          )}
                         </div>
                       ))}
+                      <div className="h-px bg-gray-300 mb-6 mt-8" />
                     </>
                   ) : (
                     <div className="text-center py-8">
