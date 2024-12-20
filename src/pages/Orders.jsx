@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import OrderDetails from "../components/OrdersPage/OrderCard";
+import OrderCard from "../components/OrdersPage/OrderCard";
 import Pagination from "../components/OrdersPage/Pagination";
 import DatePicker from "../components/OrdersPage/DatePicker";
 import { useSearchParams } from "react-router-dom";
@@ -155,11 +155,11 @@ export default function Orders() {
                 </div>
 
             {/* Orders Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {currentOrders.map((order) => (
-                <div key={order.id} className="w-full">
-                    <OrderDetails order={order} />
-                </div>
+                    <div key={order.id} className="w-full">
+                        <OrderCard order={order} />
+                    </div>
                 ))}
             </div>
 
