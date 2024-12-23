@@ -12,7 +12,6 @@ import {
   Badge,
 } from "@material-tailwind/react";
 import ordersData from "../data/orders.json";
-import Footer from "../components/Footer";
 import { Search } from "lucide-react";
 
 export default function Orders() {
@@ -173,8 +172,6 @@ export default function Orders() {
             
             </main>
         </div>
-
-      <Footer />
 
     </Fragment>
   );

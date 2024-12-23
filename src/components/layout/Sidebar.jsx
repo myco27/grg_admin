@@ -33,14 +33,14 @@ const Sidebar = () => {
       path: "/orders" // Add path for navigation
     },
     {
+      icon: <ShoppingBag className="h-5 w-5" />,
+      title: "Orders",
+      path: "/orders" // Add path for navigation
+    },
+    {
       icon: <Bike className="h-5 w-5" />,
       title: "Riders",
       path: "/riders" // Add path for navigation
-    },
-    {
-      icon: <ShoppingBag className="h-5 w-5" />,
-      title: "Shopping Bag",
-      path: "/shopping-bag" // Add path for navigation
     },
     {
       icon: <Map className="h-5 w-5" />,
