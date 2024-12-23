@@ -20,7 +20,7 @@ function RiderCard({ rider, order }) {
                 {rider.name}
                 </Typography>
 
-                <Chip
+                {/* <Chip
                 value={order.status}
                 className={`text-[10px] px-1 py-1 rounded-full bg-transparent ${
                     order.status === "Cancelled" ? "text-red-600" :
@@ -31,7 +31,7 @@ function RiderCard({ rider, order }) {
                     order.status === "Completed" ? "text-purple-600" :
                     "text-gray-900"
                 }`}
-                />
+                /> */}
             </div>
             <Typography color="gray" className="font-normal text-xs">
                 Plate #{rider.licensePlate}

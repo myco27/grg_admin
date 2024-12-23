@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   Map,
   LogOut,
-  Bike
+  Bike,
+  BoxIcon
 } from "lucide-react";
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
@@ -28,8 +29,8 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      icon: <LayoutDashboard className="h-5 w-5" />,
-      title: "Dashboard",
+      icon: <Package className="h-5 w-5" />,
+      title: "Orders",
       path: "/orders" // Add path for navigation
     },
     {
