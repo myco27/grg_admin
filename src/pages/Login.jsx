@@ -19,15 +19,23 @@ function Login() {
         email: email,
         password: password,
       });
-      
-      if (response.status == 200) {
+
+      if (response.data.status_code == 200) {
         setUser(response.data.user.first_name);
         setToken(response.data.token);
 
         showAlert("Login successful!", "success");
       }
     } catch (error) {
-      showAlert("An error occurred. Please try again.", "error");
+      if (error.response.data.errors) {
+        Object.values(error.response.data.errors).flat().forEach((errorMessage) => {
+          showAlert(`${errorMessage}`, "error");
+        });
+      } else if (error.response.data.message) {
+        showAlert(`${error.response.data.message}`, "error"); 
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
     }
   };
 
