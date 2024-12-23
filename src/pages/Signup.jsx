@@ -11,9 +11,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAlert } from "../contexts/alertContext";
 
 function Signup() {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [agree, setAgree] = useState(false);
 
   const navigate = useNavigate();
@@ -22,9 +24,15 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (password !== confirmPassword) {
+      showAlert("Passwords do not match", "error");
+      return;
+    }
+
     try {
       const response = await axiosClient.post(`/admin/register`, {
-        name: name,
+        first_name: firstName,
+        last_name: lastName,
         email: email,
         password: password,
       });
@@ -34,7 +42,13 @@ function Signup() {
         navigate("/admin/login");
       }
     } catch (error) {
-      showAlert("An error occurred. Please try again.", "error");
+      if (error.response.data.errors) {
+        Object.values(error.response.data.errors).flat().forEach((errorMessage) => {
+          showAlert(`${errorMessage}`, "error");
+        });
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
     }
   };
 
@@ -50,16 +64,25 @@ function Signup() {
         <form className="mt-8 mb-2 w-full" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
             <Typography variant="h6" color="blue-gray" className="-mb-3">
-              Your Name
+              First Name
             </Typography>
             <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               size="lg"
-              label="Enter name here..."
+              label="Enter first name here..."
             />
             <Typography variant="h6" color="blue-gray" className="-mb-3">
-              Your Email
+              Last Name
+            </Typography>
+            <Input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              size="lg"
+              label="Enter last name here..."
+            />
+            <Typography variant="h6" color="blue-gray" className="-mb-3">
+              Email
             </Typography>
             <Input
               value={email}
@@ -73,6 +96,16 @@ function Signup() {
             <Input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              size="lg"
+              label="********"
+            />
+            <Typography variant="h6" color="blue-gray" className="-mb-3">
+              Confirm Password
+            </Typography>
+            <Input
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               type="password"
               size="lg"
               label="********"
