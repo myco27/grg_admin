@@ -19,8 +19,8 @@ function Login() {
         email: email,
         password: password,
       });
-
-      if (response.data.status_code == 200) {
+      
+      if (response.status == 200) {
         setUser(response.data.user.first_name);
         setToken(response.data.token);
 

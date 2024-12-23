@@ -21,24 +21,22 @@ export default function Header() {
   const { setUser, setToken } = useStateContext();
 
   const handleLogout = async () => {
-    // try {
-    // const response = await axiosClient.post("/admin/logout");
-    // console.log('Logout response:', response);
-    // if (response.status === 200) {
-    localStorage.removeItem("ACCESS_TOKEN");
+    try {
+      const response = await axiosClient.post("/admin/logout");
+      if (response.status === 204) {
+        localStorage.removeItem("ACCESS_TOKEN");
 
-    setUser(null);
-    setToken(null);
+        setUser(null);
+        setToken(null);
 
-    showAlert("Logged out successfully!", "success");
-
-    // }
-    // } catch (error) {
-    //   showAlert(
-    //     "An error occurred while logging out. Please try again.",
-    //     "error"
-    //   );
-    // }
+        showAlert("Logged out successfully!", "success");
+      }
+    } catch (error) {
+      showAlert(
+        "An error occurred while logging out. Please try again.",
+        "error"
+      );
+    }
   };
 
   return (
