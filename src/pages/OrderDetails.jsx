@@ -3,7 +3,6 @@ import { Typography } from "@material-tailwind/react";
 import { orders } from "../data/orders.json";
 import { useParams } from "react-router-dom";
 import TimelineSection from "../components/OrderDetailsPage/TimelineSection";
-import Footer from "../components/Footer";
 import DetailsCard from "../components/OrderDetailsPage/DetailsCard";
 import TabsCard from "../components/OrderDetailsPage/TabsCard";
 import PaymentCard from "../components/OrderDetailsPage/PaymentCard";
@@ -60,8 +59,6 @@ const Dashboard = () => {
         </div>
 
       </div>
-
-      <Footer/>
 
     </Fragment>
   );

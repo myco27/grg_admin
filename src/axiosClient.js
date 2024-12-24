@@ -5,13 +5,15 @@ const axiosClient = axios.create({
   baseURL: "http://localhost/grg_v2/api",
   headers: {
     "Content-Type": "application/json",
-    Accept: "application/json",
+    "Accept": "application/json",
   },
+  withCredentials: true,
 });
 
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("ACCESS_TOKEN");
-  config.headers.Authorization = `Bearer ${token}`;
+ 
+  config.headers.Authorization = token ? `Bearer ${token}` : '';
   return config;
 });
 

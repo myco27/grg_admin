@@ -4,6 +4,7 @@ import DefaultLayout from "./components/layout/DefaultLayout";
 import GuestLayout from "./components/layout/GuestLayout";
 
 import Orders from "./pages/Orders";
+import OrderDetails from "./pages/OrderDetails";
 import Riders from "./pages/Riders";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
       {
         path: "orders",
         element: <Orders />,
+      },
+      {
+        path: "orders/:order_id",
+        element: <OrderDetails />,
       },
       {
         path: "riders",
