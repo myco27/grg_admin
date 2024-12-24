@@ -23,9 +23,6 @@ export default function Orders() {
   const [status, setStatus] = useState(searchParams.get("status") ?? "");
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [currentHeaderStatus, setCurrentHeaderStatus] = useState(
-    searchParams.get("status") ?? ""
-  );
 
   const fetchCountOrders = async () => {
     try {
@@ -76,7 +73,6 @@ export default function Orders() {
   // EVENT LISTENERS
   const handleClickStatus = (status) => {
     const updatedStatus = status === "all" ? "" : status;
-
     setStatus(updatedStatus);
 
     if (updatedStatus) {
