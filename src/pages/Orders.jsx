@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import OrderCard from "../components/OrdersPage/OrderCard";
 import Pagination from "../components/OrdersPage/Pagination";
 import Loading from "../components/layout/Loading";
+import Notfound from "./NotFound";
 import DatePicker from "../components/OrdersPage/DatePicker";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -32,7 +33,7 @@ export default function Orders() {
   const [links, setLinks] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(0);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchCountOrders = async () => {
     try {
@@ -63,7 +64,7 @@ export default function Orders() {
         },
       });
 
-      console.log(response.data.data);
+      // console.log(response.data.data);
 
       if (response.status === 200) {
         const { data, current_page, last_page, total, links, per_page } =
@@ -103,10 +104,19 @@ export default function Orders() {
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = async (newPage) => {
+    setIsLoading(true);
     setPage(newPage);
     newSearchParams.set("page", newPage);
     navigate(`?${newSearchParams.toString()}`, { replace: true });
+  
+    try {
+      await fetchOrders(newPage);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -223,8 +233,8 @@ export default function Orders() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center text-gray-500">
-                  No data available
+                <div className="w-full md:col-span-2 lg:col-span-3">
+                  <Notfound/>
                 </div>
               )}
             </div>
@@ -235,7 +245,7 @@ export default function Orders() {
               totalItems={totalItems}
               itemsPerPage={itemsPerPage}
               totalPages={totalPages}
-              onPageChange={handlePageChange}
+              onPageChange={(newPage) => handlePageChange(newPage)}
               links={links}
             />
           </main>
