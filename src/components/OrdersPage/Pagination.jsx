@@ -5,10 +5,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export default function Pagination({ 
     currentPage, 
     totalItems, 
-    itemsPerPage, 
+    itemsPerPage,
+    totalPages, 
     onPageChange 
 }) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    // const totalPages = Math.ceil(totalItems / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const [isLoading, setIsLoading] = useState(false);
