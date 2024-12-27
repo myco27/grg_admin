@@ -7,7 +7,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 function NotFound() {
   return (
-    <div className="flex flex-col mx-auto items-center justify-center h-screen bg-gray-50">
+    <div className="flex flex-col mx-auto items-center justify-center h-screen min-w-screen mt-[-12vh]">
         <ExclamationTriangleIcon className="h-20 w-20 text-red-500 mb-4" />
         <Typography variant="h1" color="red" className="mb-4">
           Error 404
@@ -15,11 +15,11 @@ function NotFound() {
       <Typography variant="h5" color="gray" className="mb-8">
         Oops! The page you're looking for could not be found.
       </Typography>
-      <Link to="/orders">
+      {/* <Link to="/orders">
         <Button variant="filled" color="blue">
           Go Back Home
         </Button>
-      </Link>
+      </Link> */}
     </div>
   );
 }
