@@ -1,7 +1,9 @@
 import axios from "axios";
+const baseURL = import.meta.env.BASE_URL;
+
 
 const axiosClient = axios.create({
-  //   baseURL: `${process.env.REACT_APP_APP_URL}/api`,
+  // baseURL: baseURL,
   baseURL: "http://localhost/grg_v2/api",
   headers: {
     "Content-Type": "application/json",
