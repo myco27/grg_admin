@@ -46,11 +46,9 @@ export default function Pagination({
 
     const handlePageChange = (newPage) => {
         setIsLoading(true);
-        onPageChange(newPage);
-        // Wait for the new page to load
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 500); // Timeout 500ms to prevent
+        onPageChange(newPage).finally(() => {
+          setIsLoading(false);
+        });
     };
 
     return (
