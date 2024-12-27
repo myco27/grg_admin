@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Typography, IconButton, Button } from "@material-tailwind/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -11,10 +11,11 @@ export default function Pagination({
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const [isLoading, setIsLoading] = useState(false);
 
     // Generate page numbers to display
     const getPageNumbers = () => {
-        const delta = 2; 
+        const delta = 1; 
         const range = [];
         for (
             let i = Math.max(2, currentPage - delta);
@@ -42,6 +43,15 @@ export default function Pagination({
         return range;
     };
 
+    const handlePageChange = (newPage) => {
+        setIsLoading(true);
+        onPageChange(newPage);
+        // Wait for the new page to load
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 500); // Timeout 500ms to prevent
+    };
+
     return (
         <div className="mt-8 flex flex-col md:flex-row items-center justify-between">
             <Typography variant="small" color="blue-gray" className="font-normal mb-4">
@@ -51,16 +61,16 @@ export default function Pagination({
                 <Button 
                     color="purple"
                     size="sm"
-                    onClick={() => onPageChange(1)}
-                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1 || isLoading}
                 >
                  First
                 </Button>
                 <IconButton 
                     color="purple"
                     size="sm"
-                    onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                    disabled={currentPage === 1 || isLoading}
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </IconButton>
@@ -74,7 +84,8 @@ export default function Pagination({
                                 className={`${currentPage === page ? "bg-gray-300" : ""}`}
                                 variant="text"
                                 size="sm"
-                                onClick={() => onPageChange(page)}
+                                onClick={() => handlePageChange(page)}
+                                disabled={isLoading}
                             >
                              {page}
                             </IconButton>
@@ -85,16 +96,16 @@ export default function Pagination({
                 <IconButton 
                     color="purple"
                     size="sm"
-                    onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                    disabled={currentPage === totalPages || isLoading}
                 >
                     <ChevronRight className="h-5 w-5"/>
                 </IconButton>
                 <Button 
                     color="purple"
                     size="sm"
-                    onClick={() => onPageChange(totalPages)}
-                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages || isLoading}
                 >
                  Last
                 </Button>
