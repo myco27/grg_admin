@@ -11,10 +11,12 @@ import {
   TabsHeader,
   Tab,
   Badge,
+  Button,
+  Spinner,
 } from "@material-tailwind/react";
-import ordersData from "../data/orders.json";
 import { Search } from "lucide-react";
 import axiosClient from "../axiosClient";
+import useDebounce from "../components/UseDebounce";
 
 export default function Orders() {
   // DECLARATIONS
@@ -41,6 +43,10 @@ export default function Orders() {
     search: searchParams.get("search") || "",
     date: searchParams.get("date") || null,
   });
+
+  // DEBOUNCING
+  const [searchLoading, setSearchLoading] = useState(false);
+  const debounceSearch = useDebounce({ value: filters.search });
 
   // API CALLS
   const fetchCountOrders = async () => {
@@ -69,7 +75,7 @@ export default function Orders() {
         params: {
           status: status,
           page: page,
-          search: filters.search,
+          search: debounceSearch,
           date: filters.date,
         },
       });
@@ -86,6 +92,7 @@ export default function Orders() {
           itemsPerPage: per_page,
           isLoading: false,
         });
+        setSearchLoading(false);
       }
     } catch (error) {
       navigate("/notfound");
@@ -99,7 +106,7 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders(pagination.page);
-  }, [status, pagination.page, filters.search, filters.date]);
+  }, [status, pagination.page, debounceSearch, filters.date]);
 
   // EVENT LISTENERS
   const handleClickStatus = (status) => {
@@ -132,6 +139,8 @@ export default function Orders() {
     const { value } = event.target;
 
     setFilters({ ...filters, search: value });
+    setSearchLoading(true);
+
     newSearchParams.set("search", value);
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
@@ -234,7 +243,13 @@ export default function Orders() {
                   <div className="w-full sm:w-72">
                     <Input
                       label="Search orders..."
-                      icon={<Search className="h-5 w-5" />}
+                      icon={
+                        searchLoading ? (
+                          <Spinner className="h-5 w-5" />
+                        ) : (
+                          <Search className="h-5 w-5" />
+                        )
+                      }
                       size="md"
                       className="bg-white"
                       value={filters.search}
