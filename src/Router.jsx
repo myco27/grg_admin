@@ -8,6 +8,7 @@ import OrderDetails from "./pages/OrderDetails";
 import Riders from "./pages/Riders";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       {
         path: "orders/:order_id",
         element: <OrderDetails />,
+        errorElement: <NotFound />,
       },
       {
         path: "riders",
@@ -47,11 +49,10 @@ const router = createBrowserRouter([
       // },
     ],
   },
-
-  // {
-  //     path: "*",
-  //     element: <NotFound />,
-  // },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ]);
 
 export default router;

@@ -24,11 +24,8 @@ export default function OrderCard({ order }) {
     navigate(`/orders/${order.order_id}`);
   };
 
-  useEffect(() => {
-    // console.log("ordercard", order);
-  }, []);
-
-  // const displayedProducts = showAllProducts ? order.products : [order.products[0]];
+  // Determine which products to display based on showAllProducts state
+  const displayedProducts = showAllProducts ? order.list : [order.list[0]];
 
   return (
     <Card
@@ -48,8 +45,7 @@ export default function OrderCard({ order }) {
                 {order.order_number}
               </Typography>
               <Typography className="text-gray-600 font-medium">
-                {/* {order.shippingType ?? "N/A"} */}
-                N/A
+                {order.type ?? "N/A"}
               </Typography>
             </div>
           </div>
@@ -74,63 +70,77 @@ export default function OrderCard({ order }) {
         {/* Product Section */}
         <div className="flex-1 flex flex-col gap-4 py-4">
           <Typography className="text-black text-sm">Store Name:</Typography>
-          {/* {displayedProducts.map((product, index) => (
-              <div key={index} className="flex items-start gap-4">
-                <div className="h-16 w-16 rounded-lg bg-gray-100 p-2 flex-shrink-0">
-                  <img
-                    src={product.image || '/rockygo_logo.png'}
-                    alt={product.name}
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      e.target.src = '/rockygo_logo.png';
-                      e.target.onerror = null;
-                    }}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between">
-                    
-                    <div className="min-w-0">
-                        <Typography className="text-gray-900 text-sm font-bold truncate">
-                        {product.name}
-                        </Typography>
-                        <Typography className="text-xs text-gray-600 font-medium">
-                        {product.quantity} x ${product.price.toFixed(2)}
-                        </Typography>
-                    </div>
+          {displayedProducts.map((product, index) => (
+            <div key={index} className="flex items-start gap-4">
+              <div className="h-16 w-16 rounded-lg bg-gray-100 p-2 flex-shrink-0">
+                <img
+                  src={product.image || "/rockygo_logo.png"}
+                  className="h-full w-full object-contain"
+                  onError={(e) => {
+                    e.target.src = "/rockygo_logo.png";
+                    e.target.onerror = null;
+                  }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0">
+                    <Typography className="text-gray-900 text-sm font-bold truncate">
+                      {product.food_name}
+                    </Typography>
+                    <Typography className="text-xs text-gray-600 font-medium">
+                      {product.quantity > 0
+                        ? `${product.quantity} x $${parseFloat(
+                            product.amount
+                          ).toFixed(2)}`
+                        : "Invalid product"}
+                    </Typography>
+                  </div>
 
-                    <div>
-                        <Typography variant="h6" className="text-gray-900 text-sm text-right">
-                            ${(product.quantity * product.price).toFixed(2)}
-                        </Typography>
-                        <Typography variant="paragraph" className="text-right text-xs font-medium">
-                            {order.paymentMethod}
-                        </Typography>
-                    </div>
-
+                  <div>
+                    <Typography
+                      variant="h6"
+                      className="text-gray-900 text-sm text-right"
+                    >
+                      $
+                      {(product.quantity * parseFloat(product.amount)).toFixed(
+                        2
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="paragraph"
+                      className="text-right text-xs font-medium"
+                    >
+                      {order.funding}
+                    </Typography>
                   </div>
                 </div>
               </div>
-            ))} */}
+            </div>
+          ))}
 
-          {/* {order.products.length > 1 && (
-              <div className="w-full flex justify-center mt-[-1rem]">
-                <Button 
-                  variant="text" 
-                  className="show-more-btn text-xs flex flex-row gap-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowAllProducts(!showAllProducts);
-                  }}
-                >
-                  {showAllProducts ? (
-                    <>Show Less <ChevronUp className="h-4 w-4" /></>
-                  ) : (
-                    <>Show More <ChevronDown className="h-4 w-4" /></>
-                  )}
-                </Button>
-              </div>
-            )} */}
+          {order.list.length > 1 && (
+            <div className="w-full flex justify-center mt-[-1rem]">
+              <Button
+                variant="text"
+                className="show-more-btn text-xs flex flex-row gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAllProducts(!showAllProducts);
+                }}
+              >
+                {showAllProducts ? (
+                  <>
+                    Show Less <ChevronUp className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    Show More <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Footer Section */}
@@ -151,7 +161,6 @@ export default function OrderCard({ order }) {
               Rider:
             </Typography>
             <Typography className="text-gray-900 text-md font-bold truncate">
-              {/* {order.riderData[0].name ?? "N/A"} */}
               N/A
             </Typography>
           </div>
@@ -162,7 +171,6 @@ export default function OrderCard({ order }) {
               Customer
             </Typography>
             <Typography className="text-gray-900 text-md font-bold truncate">
-              {/* {order.customerData[0].name ?? "N/A"} */}
               N/A
             </Typography>
           </div>

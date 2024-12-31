@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import OrderCard from "../components/OrdersPage/OrderCard";
 import Pagination from "../components/OrdersPage/Pagination";
 import Loading from "../components/layout/Loading";
-import Notfound from "./NotFound";
 import DatePicker from "../components/OrdersPage/DatePicker";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -18,6 +17,7 @@ import { Search } from "lucide-react";
 import axiosClient from "../axiosClient";
 
 export default function Orders() {
+  // DECLARATIONS
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const newSearchParams = new URLSearchParams(searchParams);
@@ -26,15 +26,23 @@ export default function Orders() {
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  // New variables for Pagination
-  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [links, setLinks] = useState([]);
-  const [itemsPerPage, setItemsPerPage] = useState(0);
+  // PAGINATION
+  const [pagination, setPagination] = useState({
+    page: parseInt(searchParams.get("page")) || 1,
+    totalPages: 1,
+    totalItems: 0,
+    links: [],
+    itemsPerPage: 0,
+    isLoading: false,
+  });
 
-  const [isLoading, setIsLoading] = useState(false);
+  // FILTERS
+  const [filters, setFilters] = useState({
+    search: searchParams.get("search") || "",
+    date: searchParams.get("date") || null,
+  });
 
+  // API CALLS
   const fetchCountOrders = async () => {
     try {
       const response = await axiosClient.get("/admin/count/orders");
@@ -51,7 +59,7 @@ export default function Orders() {
         setCountOrders(ordersArray);
       }
     } catch (error) {
-      console.error(error);
+      navigate("/notfound");
     }
   };
 
@@ -61,38 +69,43 @@ export default function Orders() {
         params: {
           status: status,
           page: page,
+          search: filters.search,
+          date: filters.date,
         },
       });
-
-      // console.log(response.data.data);
 
       if (response.status === 200) {
         const { data, current_page, last_page, total, links, per_page } =
           response.data.data;
         setOrders(data);
-        setPage(current_page);
-        setTotalPages(last_page);
-        setTotalItems(total);
-        setLinks(links);
-        setItemsPerPage(per_page);
-        setIsLoading(false);
+        setPagination({
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links: links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        });
       }
     } catch (error) {
-      console.error(error);
-      setIsLoading(false);
+      navigate("/notfound");
+      setPagination({ ...pagination, isLoading: false });
     }
   };
 
   useEffect(() => {
     fetchCountOrders();
-    fetchOrders(page);
-  }, [status, page]);
+  }, []);
+
+  useEffect(() => {
+    fetchOrders(pagination.page);
+  }, [status, pagination.page, filters.search, filters.date]);
 
   // EVENT LISTENERS
   const handleClickStatus = (status) => {
     const updatedStatus = status === "all" ? "" : status;
     setStatus(updatedStatus);
-    setPage(1);
+    setPagination({ ...pagination, page: 1 });
 
     if (updatedStatus) {
       newSearchParams.set("status", updatedStatus);
@@ -105,24 +118,46 @@ export default function Orders() {
   };
 
   const handlePageChange = async (newPage) => {
-    setIsLoading(true);
-    setPage(newPage);
+    setPagination({
+      ...pagination,
+      page: newPage,
+      isLoading: true,
+    });
+
     newSearchParams.set("page", newPage);
     navigate(`?${newSearchParams.toString()}`, { replace: true });
-  
-    try {
-      await fetchOrders(newPage);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+  };
+
+  const handleSearchInput = (event) => {
+    const { value } = event.target;
+
+    setFilters({ ...filters, search: value });
+    newSearchParams.set("search", value);
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
+  };
+
+  const handleDateChange = (date) => {
+    if (date === null || date === undefined) {
+      setFilters({ ...filters, date: "" });
+      newSearchParams.delete("date");
+      navigate(`?${newSearchParams.toString()}`, { replace: true });
+      return;
     }
+
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+    const formattedDate = localDate.toISOString().split("T")[0];
+
+    setFilters({ ...filters, date: formattedDate });
+    newSearchParams.set("date", formattedDate);
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
   return (
     <Fragment>
       <div className="flex flex-col min-h-screen bg-gray-100">
-        {isLoading ? (
+        {pagination.isLoading ? (
           <Loading />
         ) : (
           <main className="flex-1 px-3 md:px-8 py-4">
@@ -196,30 +231,24 @@ export default function Orders() {
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                   {/* SEARCH FILTER */}
-                  {/* <div className="w-full sm:w-72">
-                  <Input
-                    label="Search orders..."
-                    icon={<Search className="h-5 w-5" />}
-                    size="md"
-                    className="bg-white"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
-                </div> */}
+                  <div className="w-full sm:w-72">
+                    <Input
+                      label="Search orders..."
+                      icon={<Search className="h-5 w-5" />}
+                      size="md"
+                      className="bg-white"
+                      value={filters.search}
+                      onChange={(e) => handleSearchInput(e)}
+                    />
+                  </div>
 
                   {/* DATE FILTER */}
-                  {/* <DatePicker
-                  selected={selectedDate}
-                  onChange={(date) => {
-                    setSelectedDate(date);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="Filter by date"
-                  isClearable
-                /> */}
+                  <DatePicker
+                    selected={filters.date}
+                    onChange={(e) => handleDateChange(e)}
+                    placeholder="Filter by date"
+                    isClearable
+                  />
                 </div>
               </div>
             </div>
@@ -234,19 +263,22 @@ export default function Orders() {
                 ))
               ) : (
                 <div className="w-full md:col-span-2 lg:col-span-3">
-                  <Notfound/>
+                  <Typography className="text-center text-gray-500">
+                    No orders found
+                  </Typography>
                 </div>
               )}
             </div>
 
             {/* Pagination */}
             <Pagination
-              currentPage={page}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              totalPages={totalPages}
+              currentPage={pagination.page}
+              totalItems={pagination.totalItems}
+              itemsPerPage={pagination.itemsPerPage}
+              totalPages={pagination.totalPages}
               onPageChange={(newPage) => handlePageChange(newPage)}
-              links={links}
+              isLoading={pagination.isLoading}
+              links={pagination.links}
             />
           </main>
         )}
