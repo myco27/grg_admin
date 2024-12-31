@@ -43,9 +43,11 @@ function Signup() {
       }
     } catch (error) {
       if (error.response.data.errors) {
-        Object.values(error.response.data.errors).flat().forEach((errorMessage) => {
-          showAlert(`${errorMessage}`, "error");
-        });
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => {
+            showAlert(`${errorMessage}`, "error");
+          });
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
@@ -94,6 +96,7 @@ function Signup() {
               Password
             </Typography>
             <Input
+              autoComplete="off"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type="password"
@@ -104,6 +107,7 @@ function Signup() {
               Confirm Password
             </Typography>
             <Input
+              autoComplete="off"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               type="password"
