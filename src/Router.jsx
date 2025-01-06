@@ -28,6 +28,10 @@ const router = createBrowserRouter([
         path: "riders",
         element: <Riders />,
       },
+      {
+        path: "riders/:riderId", // Add this route
+        element: <Riders />,
+      },
     ],
   },
 
