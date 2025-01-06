@@ -71,10 +71,10 @@ export default function Orders() {
   };
 
   const fetchOrders = useCallback(
-    async (page = 1) => {
+    async () => {
       // Create cache key
-      const cacheKey = `${status}-${page}-${debounceSearch}-${filters.date}`;
-      console.log(cacheKey);
+      const cacheKey = `${status}-${pagination.page}-${debounceSearch}-${filters.date}`;
+
       // Check cache
       if (cache[cacheKey]) {
         setOrders(cache[cacheKey].data);
@@ -88,7 +88,7 @@ export default function Orders() {
         const response = await axiosClient.get("/admin/orders", {
           params: {
             status: status,
-            page: page,
+            page: pagination.page,
             search: debounceSearch,
             date: filters.date,
           },
