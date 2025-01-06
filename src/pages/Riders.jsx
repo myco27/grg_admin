@@ -1,107 +1,109 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Typography, Input } from "@material-tailwind/react";
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
+import { Typography, Input, Button, Spinner } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
-import RiderDetails from '../components/RidersPage/RiderDetailsCard';
+import RiderDetails from '../components/RidersPage/RiderDetailsCard'; // Import RiderDetails component
 import MapCard from '../components/RidersPage/MapCard';
-import ordersData from '../data/orders.json';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, ChevronUp, ChevronDown } from "lucide-react";
+import axiosClient from '../axiosClient';
 
 export default function Riders() {
-  const { riderName } = useParams(); 
+  const { riderId } = useParams(); // Changed from riderName to riderId
   const navigate = useNavigate();
   const [selectedRider, setSelectedRider] = useState(null);
   const [riders, setRiders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRiders, setFilteredRiders] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [cache, setCache] = useState({});
+  // const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null); // Add error state
+
+  const fetchRiders = useCallback(
+    async () => {
+      // Create cache key
+      const cacheKey = 'riders';
+  
+      // Check cache
+      if (cache[cacheKey]) {
+        setRiders(cache[cacheKey].data);
+        // setLoading(false);
+        return;
+      }
+  
+      try {
+        // setLoading(true);
+        const response = await axiosClient.get('/admin/riders');
+        
+        if (response.status === 200) {
+          const ridersData = response.data.data;
+  
+          // Update state
+          setRiders(ridersData);
+          // setLoading(false);
+  
+          // Cache the data
+          setCache((prevCache) => ({
+            ...prevCache,
+            [cacheKey]: { data: ridersData },
+          }));
+        }
+      } catch (error) {
+        setError('Failed to fetch riders');
+        // setLoading(false);
+      }
+    },
+    [cache], 
+  );
 
   useEffect(() => {
-    const uniqueRiders = ordersData.orders.reduce((acc, order) => {
-      const rider = order.riderData[0];
-      if (rider && !acc.find(r => r.name === rider.name)) {
-        acc.push(rider);
-      }
-      return acc;
-    }, []);
-    setRiders(uniqueRiders);
-  
+    fetchRiders();
+  }, [fetchRiders]);
+
+  useEffect(() => {
     const urlSearchQuery = searchParams.get('search') || '';
     setSearchQuery(urlSearchQuery);
-  
-    const filtered = uniqueRiders.filter(rider => {
-      const riderNameMatch = rider.name.toLowerCase().includes(urlSearchQuery.toLowerCase());
-      const orderMatch = ordersData.orders.some(order =>
-        order.riderData[0]?.name === rider.name &&
-        (order.id.toString().includes(urlSearchQuery) ||
-          order.status.toLowerCase().includes(urlSearchQuery.toLowerCase()))
-      );
-      return riderNameMatch || orderMatch;
-    });
-    setFilteredRiders(filtered);
-  
-    if (riderName) {
-      const foundRider = uniqueRiders.find(rider => rider.name === riderName);
-      setSelectedRider(foundRider || (uniqueRiders.length > 0 ? uniqueRiders[0] : null));
-    } else if (uniqueRiders.length > 0) {
-      setSelectedRider(uniqueRiders[0]);
-    }
-  }, [riderName, searchParams]);
 
-  useEffect(() => {
+    // Filter riders based on search query
     const filtered = riders.filter(rider => {
-      const riderNameMatch = rider.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const orderMatch = ordersData.orders.some(order =>
-        order.riderData[0]?.name === rider.name &&
-        (order.id.toString().includes(searchQuery) ||
-          order.status.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-      return riderNameMatch || orderMatch;
+      const riderFullName = `${rider.first_name} ${rider.last_name}` || ''; // Combine first and last name for search
+      return riderFullName.toLowerCase().includes(urlSearchQuery.toLowerCase());
     });
     setFilteredRiders(filtered);
-    if (selectedRider && !filtered.find(rider => rider.name === selectedRider.name)) {
-      setSelectedRider(null);
-    }
-  }, [searchQuery, riders, selectedRider]);
 
-  const ordersForSelectedRider = ordersData.orders.filter(order =>
-    selectedRider && order.riderData[0]?.name === selectedRider.name
-  );
+    // Set the selected rider based on the URL or default to the first rider
+    if (riderId) {
+      const foundRider = riders.find(rider => rider.id === parseInt(riderId)); // Match rider by ID
+      setSelectedRider(foundRider || (riders.length > 0 ? riders[0] : null));
+    } else if (riders.length > 0) {
+      setSelectedRider(riders[0]);
+    }
+  }, [riderId, searchParams, riders]);
 
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    navigate(`/riders/${rider.name}?search=${searchQuery}`); 
+    navigate(`/riders/${rider.id}?search=${searchQuery}`); // Updated to use rider ID
   };
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    setSearchParams({ search: query }); 
+    setSearchParams({ search: query });
   };
-
-  const [showMore, setShowMore] = useState(
-    ordersData.orders.reduce((acc, order) => {
-      acc[order.id] = false;
-      return acc;
-    }, {})
-  );
-
-  const handleShowMore = (orderId) => {
-    setShowMore(prevState => ({ ...prevState, [orderId]: !prevState[orderId] }));
-  }
 
   return (
     <Fragment>
       <div className='bg-gray-100 w-full'>
         <div className="mx-auto p-4">
           <div className="flex flex-col lg:flex-row gap-4">
+
             {/* Left side - Rider List */}
             <div className="h-[89dvh] overflow-y-auto lg:w-[340px] bg-white rounded-lg border border-gray-300 py-4">
               <Typography variant="h5" className="font-semibold text-black ml-4">All Riders</Typography>
               <div className="w-full p-2 mb-2">
                 <Input
-                  label="Search orders..."
+                  label="Search riders..."
                   icon={<Search className="h-5 w-5" />}
                   size="md"
                   className="bg-white"
@@ -109,91 +111,36 @@ export default function Riders() {
                   onChange={handleSearchChange}
                 />
               </div>
-              {filteredRiders.map((rider) => {
-                const order = ordersData.orders.find(order => order.riderData[0]?.name === rider.name);
-                return (
-                  <div
-                    key={rider.name}
-                    onClick={() => handleRiderSelect(rider)}
-                    className={`transition-colors duration-300 ${selectedRider?.name === rider.name ? "border border-blue-500" : ""}`}
-                  >
-                    <RiderCard rider={rider} order={order} />
-                  </div>
-                )
-              })}
-              {filteredRiders.length === 0 && (
+              { filteredRiders.length === 0 ? (
                 <div className="text-center py-8">
                   <Typography color="gray" className="font-medium">
                     No riders available.
                   </Typography>
                 </div>
+              ) : (
+                filteredRiders.map((rider) => (
+                  <div
+                    key={rider.id}
+                    onClick={() => handleRiderSelect(rider)}
+                    className={`transition-colors duration-300 ${selectedRider?.id === rider.id ? "border border-blue-500" : ""}`}
+                  >
+                    <RiderCard rider={rider} />
+                  </div>
+                ))
               )}
             </div>
 
-            {/* Right side - Order Details */}
+            {/* Right side - Rider Details */}
             <div className="w-full">
               {selectedRider ? (
                 <div className="h-[89dvh] overflow-y-auto bg-white rounded-lg border border-gray-300 p-4">
-                  {ordersForSelectedRider.length > 0 ? (
-                    <>
-                      <Typography variant='h5' className='text-black mb-2'>Rider Details</Typography>
-                      <RiderDetails className="mb-4" order={ordersForSelectedRider[0]} />
-                      <div className="h-px bg-gray-300 mb-6 mt-8" />
-                      {ordersForSelectedRider.map(order => (
-                        <div key={order.id}>
-                          <Typography variant='h5' className='text-black mb-2'>Order Details: {order.index}</Typography>
-                          {order.status !== "Completed" ? (
-                            <div>
-                              <DetailsCard order={order} />
-                              <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
-                              <MapCard order={order} />
-                            </div>
-                          ) : (
-                            <div>
-                              {showMore[order.id] ? (
-                                <>
-                                  <DetailsCard order={order}/>
-                                  <Typography variant='h5' className='text-black mb-2'>Map Overview</Typography>
-                                  <MapCard order={order} />
-                                  <div className='flex justify-center'>
-                                    <Button
-                                    className='text-black flex flex-row gap-2'
-                                    onClick={() => handleShowMore(order.id)}
-                                    variant='text'
-                                    >
-                                      Show Less <ChevronUp className='h-4 w-4 text-black' />
-                                    </Button>
-                                  </div>
-                                </>
-                              ) : (
-                                <div className='flex justify-center'>
-                                  <Button
-                                  className='text-black flex flex-row gap-2'
-                                  onClick={() => handleShowMore(order.id)}
-                                  variant='text'
-                                  >
-                                    Show More <ChevronDown className='h-4 w-4 text-black' />
-                                  </Button>
-                                </div>
-                              )}    
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                      <div className="h-px bg-gray-300 mb-6 mt-8" />
-                    </>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Typography color="gray" className="font-medium">
-                        No orders for this rider.
-                      </Typography>
-                    </div>
-                  )}
+                  <Typography variant="h5" className="text-black mb-4">Rider Details</Typography>
+                  <RiderDetails rider={selectedRider} />
                 </div>
               ) : (
                 <div className="text-center py-8">
                   <Typography color="gray" className="font-medium">
-                    Select a rider to view details
+                    Select a rider to view details.
                   </Typography>
                 </div>
               )}
