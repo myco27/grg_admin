@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useCallback } from "react";
 import OrderCard from "../components/OrdersPage/OrderCard";
 import Pagination from "../components/OrdersPage/Pagination";
 import Loading from "../components/layout/Loading";
@@ -26,6 +26,8 @@ export default function Orders() {
   const [status, setStatus] = useState(searchParams.get("status") ?? "");
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
+
+  const [cache, setCache] = useState({}); // Add cache state
 
   // PAGINATION
   const [pagination, setPagination] = useState({
@@ -68,37 +70,62 @@ export default function Orders() {
     }
   };
 
-  const fetchOrders = async (page = 1) => {
-    try {
-      setSearchLoading(true);
-      const response = await axiosClient.get("/admin/orders", {
-        params: {
-          status: status,
-          page: page,
-          search: debounceSearch,
-          date: filters.date,
-        },
-      });
-
-      if (response.status === 200) {
-        const { data, current_page, last_page, total, links, per_page } =
-          response.data.data;
-        setOrders(data);
-        setPagination({
-          page: current_page,
-          totalPages: last_page,
-          totalItems: total,
-          links: links,
-          itemsPerPage: per_page,
-          isLoading: false,
-        });
+  const fetchOrders = useCallback(
+    async (page = 1) => {
+      // Create cache key
+      const cacheKey = `${status}-${page}-${debounceSearch}-${filters.date}`;
+      console.log(cacheKey);
+      // Check cache
+      if (cache[cacheKey]) {
+        setOrders(cache[cacheKey].data);
+        setPagination(cache[cacheKey].pagination);
         setSearchLoading(false);
+        return;
       }
-    } catch (error) {
-      navigate("/notfound");
-      setPagination({ ...pagination, isLoading: false });
-    }
-  };
+  
+      try {
+        setSearchLoading(true);
+        const response = await axiosClient.get("/admin/orders", {
+          params: {
+            status: status,
+            page: page,
+            search: debounceSearch,
+            date: filters.date,
+          },
+        });
+  
+        if (response.status === 200) {
+          const { data, current_page, last_page, total, links, per_page } =
+            response.data.data;
+  
+          // Define newPagination
+          const newPagination = {
+            page: current_page,
+            totalPages: last_page,
+            totalItems: total,
+            links: links,
+            itemsPerPage: per_page,
+            isLoading: false,
+          };
+  
+          // Update state
+          setOrders(data);
+          setPagination(newPagination);
+          setSearchLoading(false);
+  
+          // Cache the data
+          setCache((prevCache) => ({
+            ...prevCache,
+            [cacheKey]: { data, pagination: newPagination },
+          }));
+        }
+      } catch (error) {
+        navigate("/notfound");
+        setPagination({ ...pagination, isLoading: false });
+      }
+    },
+    [status, debounceSearch, filters.date, cache, pagination, navigate] // Add dependencies
+  );
 
   useEffect(() => {
     fetchCountOrders();
