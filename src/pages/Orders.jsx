@@ -70,6 +70,7 @@ export default function Orders() {
 
   const fetchOrders = async (page = 1) => {
     try {
+      setSearchLoading(true);
       const response = await axiosClient.get("/admin/orders", {
         params: {
           status: status,
@@ -139,7 +140,6 @@ export default function Orders() {
 
     setFilters({ ...filters, search: value });
     // setPagination({ ...pagination, page: 1, isLoading: true });
-    setSearchLoading(true);
 
     newSearchParams.set("search", value);
     navigate(`?${newSearchParams.toString()}`, { replace: true });
