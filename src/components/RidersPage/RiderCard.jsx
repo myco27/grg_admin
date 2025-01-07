@@ -17,11 +17,11 @@ function RiderCard({ rider }) {
         <div className='w-full mr-[-1rem] mt-1'>
           <div className='flex flex-row justify-between'>
             <Typography color="black" className="font-semibold text-sm">
-              {rider.first_name} {rider.last_name} {/* Use first and last name */}
+              {rider.first_name || "None"} {rider.last_name || "None"} {/* Use first and last name */}
             </Typography>
           </div>
           <Typography color="gray" className="font-normal text-xs">
-            License #: {rider.license_number} {/* Use license_number */}
+            License #: {rider.license_number || "None"} {/* Use license_number */}
           </Typography>
         </div>
       </CardBody>

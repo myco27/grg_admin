@@ -25,7 +25,7 @@ export default function DetailsCard({ order }) {
                 </div>
                 <div className="mt-1">
                   <Typography color="black" className='font-bold text-md'>
-                    {/* {order.user_details.first_name} {order.user_details.last_name} */} firstName lastName
+                    {order.user_details.first_name || "None"} {order.user_details.last_name || "None"}
                   </Typography>
                   <Typography color="gray" className="font-medium text-md">
                     Customer
@@ -35,7 +35,7 @@ export default function DetailsCard({ order }) {
 
               <div className="text-left mt-1">
                 <Typography color="blue-gray" className='font-bold text-md'>
-                  #{order.order_id}
+                  #{order.order_id || "None"}
                 </Typography>
                 <Typography color="gray" className="font-medium text-md">
                   Order Number
@@ -68,7 +68,7 @@ export default function DetailsCard({ order }) {
                       Total Price
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      $ {totalPrice}
+                      $ {totalPrice || "None"}
                     </Typography>
                   </div>
                 </div>
@@ -80,7 +80,7 @@ export default function DetailsCard({ order }) {
                       Store
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {/* {order.setup.store_name} */} Store Name
+                      {order.setup.store_name || "None"}
                     </Typography>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export default function DetailsCard({ order }) {
                       Order Date
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.date_created}
+                      {order.date_created || "None"}
                     </Typography>
                   </div>
                 </div>
@@ -104,7 +104,7 @@ export default function DetailsCard({ order }) {
                       Shipping Type
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.type}
+                      {order.type || "None"}
                     </Typography>
                   </div>
                 </div>

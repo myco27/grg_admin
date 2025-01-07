@@ -23,7 +23,7 @@ export default function RiderDetailsCard({ rider }) {
                   Rider
                 </Typography>
                 <Typography color="blue-gray" className="font-semibold text-md">
-                    {rider.first_name} {rider.last_name}
+                    {rider.first_name || "None"} {rider.last_name || "None"}
                 </Typography>
               </div>
             </div>
@@ -35,7 +35,7 @@ export default function RiderDetailsCard({ rider }) {
                 Email
               </Typography>
               <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.email}
+                {rider.email || "None"}
               </Typography>
             </div>
 
@@ -46,7 +46,7 @@ export default function RiderDetailsCard({ rider }) {
                 Phone #
               </Typography>
               <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.mobile_number}
+                {rider.mobile_number || "None"}
               </Typography>
             </div>
 
