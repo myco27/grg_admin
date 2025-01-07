@@ -21,9 +21,10 @@ function Login() {
       });
       
       if (response.status == 200) {
-        setUser(response.data.user.first_name);
+        setUser(response.data.user);
         setToken(response.data.token);
 
+        localStorage.setItem('USER', JSON.stringify(response.data.user));
         showAlert("Login successful!", "success");
       }
     } catch (error) {
