@@ -2,9 +2,8 @@ import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { Typography, Input, Button, Spinner, IconButton } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
-import Pagination from '../components/RidersPage/Pagination';
+import Pagination from '../components/RidersPage/RiderPagination';
 import RiderDetails from '../components/RidersPage/RiderDetailsCard';
-import MapCard from '../components/RidersPage/MapCard';
 import Loading from "../components/layout/Loading";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, ChevronUp, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
@@ -27,7 +26,7 @@ export default function Riders() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [ridersPerPage] = useState(8); // Number of riders per page
+  const [ridersPerPage] = useState(9); // Number of riders per page
 
   // Debouncing
   const debouncedSearchQuery = useDebounce({ value: searchQuery });
@@ -80,17 +79,15 @@ export default function Riders() {
 
   useEffect(() => {
     fetchRiders();
-    fetchRiderOrder();
-    
+
     if (selectedRider) {
       fetchRiderOrder(selectedRider.id);
     }
-
-  }, [fetchRiders, debouncedSearchQuery]);
+  }, [fetchRiders, selectedRider]);
 
   useEffect(() => {
     const filtered = riders.filter(rider => {
-      const riderFullName = `${rider.first_name} ${rider.last_name}` || '';
+      const riderFullName = `${rider.first_name} ${rider.last_name}`;
       return riderFullName.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
     });
     setFilteredRiders(filtered);
@@ -184,9 +181,21 @@ export default function Riders() {
                 </div>
               ) : (
                 <div className="">
-                  <Typography variant="h5" className="text-black mb-4">Rider Details</Typography>
+                  <Typography variant="h5" className="text-black mb-4">Details</Typography>
                   {selectedRider ? (
-                    <RiderDetails rider={selectedRider} />
+                    <div>
+                      <RiderDetails rider={selectedRider} />
+                      <Typography variant="h5" className="text-black mb-4 mt-8">Orders</Typography>
+                      {riderOrders.length > 0 ? (
+                        riderOrders.map((order) => (
+                          <DetailsCard key={order.order_id} order={order} />
+                        ))
+                      ) : (
+                        <Typography color="gray" className="font-medium text-center">
+                          No orders found for this rider.
+                        </Typography>
+                      )}
+                    </div>
                   ) : (
                     <div className="text-center py-8">
                       <Typography color="gray" className="font-medium">
