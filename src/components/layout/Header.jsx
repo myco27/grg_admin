@@ -18,13 +18,14 @@ import { useStateContext } from "../../contexts/contextProvider";
 export default function Header() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const { setUser, setToken } = useStateContext();
+  const { user, setUser, setToken } = useStateContext();
 
   const handleLogout = async () => {
     try {
       const response = await axiosClient.post("/admin/logout");
       if (response.status === 204) {
         localStorage.removeItem("ACCESS_TOKEN");
+        localStorage.removeItem("USER"); 
 
         setUser(null);
         setToken(null);
@@ -56,11 +57,11 @@ export default function Header() {
               className="flex items-center gap-2 p-2 normal-case"
             >
               <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">JM</span>
+                <span className="text-blue-600 font-bold text-lg">{user.first_name[0]}{user.last_name[0]}</span>
               </div>
               <div className="hidden sm:flex flex-col items-start">
                 <Typography color="white" className="font-medium">
-                  John Michael
+                  {user.first_name} {user.last_name}
                 </Typography>
                 <Typography className="text-gray-300 mt-[-6px]">
                   Admin
