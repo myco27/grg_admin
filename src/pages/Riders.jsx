@@ -3,6 +3,7 @@ import { Typography, Input, Button, Spinner, IconButton } from "@material-tailwi
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
 import Pagination from '../components/RidersPage/RiderPagination';
+import OrdersPagination from '../components/RidersPage/OrdersPagination'; // Import the new component
 import RiderDetails from '../components/RidersPage/RiderDetailsCard';
 import Loading from "../components/layout/Loading";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -24,9 +25,13 @@ export default function Riders() {
   const [searchLoading, setSearchLoading] = useState(true);
   const [riderOrders, setRiderOrders] = useState([]);
 
-  // Pagination state
+  // Pagination state for riders
   const [currentPage, setCurrentPage] = useState(1);
-  const [ridersPerPage] = useState(9); // Number of riders per page
+  const [ridersPerPage] = useState(9);
+
+  // Pagination state for orders
+  const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
+  const [ordersPerPage] = useState(3); // Number of orders per page
 
   // Debouncing
   const debouncedSearchQuery = useDebounce({ value: searchQuery });
@@ -112,12 +117,19 @@ export default function Riders() {
     setCurrentPage(1); // Reset to the first page when searching
   };
 
-  // Pagination logic
+  // Pagination logic for riders
   const indexOfLastRider = currentPage * ridersPerPage;
   const indexOfFirstRider = indexOfLastRider - ridersPerPage;
   const currentRiders = filteredRiders.slice(indexOfFirstRider, indexOfLastRider);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginateRiders = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Pagination logic for orders
+  const indexOfLastOrder = currentOrdersPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = riderOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+
+  const paginateOrders = (pageNumber) => setCurrentOrdersPage(pageNumber);
 
   return (
     <Fragment>
@@ -162,10 +174,10 @@ export default function Riders() {
                 ))
               )}
 
-              {/* Pagination Controls */}
+              {/* Pagination Controls for Riders */}
               <Pagination
                 currentPage={currentPage}
-                paginate={paginate}
+                paginate={paginateRiders}
                 indexOfLastRider={indexOfLastRider}
                 filteredRiders={filteredRiders}
                 ridersPerPage={ridersPerPage}
@@ -186,8 +198,8 @@ export default function Riders() {
                     <div>
                       <RiderDetails rider={selectedRider} />
                       <Typography variant="h5" className="text-black mb-4 mt-8">Orders</Typography>
-                      {riderOrders.length > 0 ? (
-                        riderOrders.map((order) => (
+                      {currentOrders.length > 0 ? (
+                        currentOrders.map((order) => (
                           <DetailsCard key={order.order_id} order={order} />
                         ))
                       ) : (
@@ -195,6 +207,19 @@ export default function Riders() {
                           No orders found for this rider.
                         </Typography>
                       )}
+
+                      {/* Pagination Controls for Orders */}
+                      {currentOrders.length > 0 ? (
+                        <OrdersPagination
+                        currentPage={currentOrdersPage}
+                        paginate={paginateOrders}
+                        indexOfLastOrder={indexOfLastOrder}
+                        filteredOrders={riderOrders}
+                        ordersPerPage={ordersPerPage}
+                        />
+                      ) : (
+                        ""
+                      )};
                     </div>
                   ) : (
                     <div className="text-center py-8">
