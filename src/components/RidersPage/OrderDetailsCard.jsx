@@ -9,22 +9,23 @@ export default function DetailsCard({ order }) {
 
   if (!order) return null;
 
-  const totalPrice = order.products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+  const totalPrice = order.order_amount;
 
   return (
     <Card className="mb-3 shadow-none border border-gray-300">
       <CardBody className='px-6 py-4'>
         <div className="flex flex-col lg:flex-row justify-between">
           <div className="flex-1">
-
             <div className="flex flex-col sm:flex-row justify-start gap-4 md:gap-10">
               <div className="flex gap-4">
                 <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-xl">{getRiderInitials(order.customerName)}</span>
+                  <span className="text-blue-600 font-semibold text-xl">
+                    {/* {getRiderInitials(order.user_details.first_name + " " + order.user_details.last_name)} */} UU
+                  </span>
                 </div>
                 <div className="mt-1">
                   <Typography color="black" className='font-bold text-md'>
-                    {order.customerName}
+                    {/* {order.user_details.first_name} {order.user_details.last_name} */} firstName lastName
                   </Typography>
                   <Typography color="gray" className="font-medium text-md">
                     Customer
@@ -34,7 +35,7 @@ export default function DetailsCard({ order }) {
 
               <div className="text-left mt-1">
                 <Typography color="blue-gray" className='font-bold text-md'>
-                  #{order.id}
+                  #{order.order_id}
                 </Typography>
                 <Typography color="gray" className="font-medium text-md">
                   Order Number
@@ -43,19 +44,18 @@ export default function DetailsCard({ order }) {
 
               <div className='flex items-center justify-end ml-auto'>
                 <Chip
-                  value={order.status}
+                  value={order.order_status}
                   className={`text-xs px-3 py-1 text-center rounded-full ${
-                    order.status === "Cancelled" ? "bg-red-100 text-red-600" :
-                    order.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-                    order.status === "Delivered" ? "bg-green-100 text-green-600" :
-                    order.status === "Processing" ? "bg-blue-100 text-blue-600" :
-                    order.status === "Shipped" ? "bg-purple-100 text-purple-600" :
-                    order.status === "Completed" ? "bg-purple-100 text-purple-600" :
+                    order.order_status === "cancelled" ? "bg-red-100 text-red-600" :
+                    order.order_status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                    order.order_status === "delivered" ? "bg-green-100 text-green-600" :
+                    order.order_status === "processing" ? "bg-blue-100 text-blue-600" :
+                    order.order_status === "shipped" ? "bg-purple-100 text-purple-600" :
+                    order.order_status === "completed" ? "bg-purple-100 text-purple-600" :
                     "bg-gray-100 text-gray-900"
-                }`}
+                  }`}
                 />
               </div>
-              
             </div>
 
             <div className="mt-4">
@@ -68,7 +68,7 @@ export default function DetailsCard({ order }) {
                       Total Price
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      $ {totalPrice.toFixed(2)}
+                      $ {totalPrice}
                     </Typography>
                   </div>
                 </div>
@@ -80,7 +80,7 @@ export default function DetailsCard({ order }) {
                       Store
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      Store Name
+                      {/* {order.setup.store_name} */} Store Name
                     </Typography>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export default function DetailsCard({ order }) {
                       Order Date
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.orderDate}
+                      {order.date_created}
                     </Typography>
                   </div>
                 </div>
@@ -104,20 +104,13 @@ export default function DetailsCard({ order }) {
                       Shipping Type
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.shippingType}
+                      {order.type}
                     </Typography>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* <div className="w-full lg:w-auto flex justify-center">
-            <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-              <QrCode className="w-20 h-20 text-gray-500" />
-            </div>
-          </div> */}
-
         </div>
       </CardBody>
     </Card>
