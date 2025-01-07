@@ -23,6 +23,7 @@ export default function Riders() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchLoading, setSearchLoading] = useState(true);
+  const [riderOrders, setRiderOrders] = useState([]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +44,7 @@ export default function Riders() {
     try {
       const response = await axiosClient.get('/admin/riders');
       setSearchLoading(true);
-
+      
       if (response.status === 200) {
         const ridersData = response.data.data;
         setRiders(ridersData);
@@ -63,18 +64,28 @@ export default function Riders() {
 
   const fetchRiderOrder = async (riderId) => {
     try {
-      const response = await axiosClient.get(`/admin/riders/order`,
-        { params: { id: 15 } }
-      );
-      console.log(response);
+      const response = await axiosClient.get('/admin/riders/order', {
+        params: { id: riderId },
+      });
+  
+      if (response.status === 200) {
+        const orders = response.data.data;
+        setRiderOrders(orders);
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Failed to fetch rider orders:', error);
+      setError('Failed to fetch rider orders');
     }
-  }
+  };
 
   useEffect(() => {
     fetchRiders();
     fetchRiderOrder();
+    
+    if (selectedRider) {
+      fetchRiderOrder(selectedRider.id);
+    }
+
   }, [fetchRiders, debouncedSearchQuery]);
 
   useEffect(() => {
