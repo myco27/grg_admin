@@ -12,7 +12,7 @@ function NotFound() {
   };
 
   return (
-    <div className="flex flex-col mx-auto items-center justify-center h-screen min-w-screen mt-[-12vh]">
+    <div className="flex flex-col mx-auto items-center justify-center h-screen min-w-screen bg-gray-100">
       <ExclamationTriangleIcon className="h-20 w-20 text-red-500 mb-4" />
       <Typography variant="h1" color="red" className="mb-4">
         Error 404
