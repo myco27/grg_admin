@@ -6,7 +6,7 @@ export default function RiderDetailsCard({ rider }) {
 
   return (
     <div>
-      <Card className="w-full mx-auto mb-3 shadow-none border border-gray-300">
+      <Card className="w-full mx-auto mb-3 shadow-none border border-gray-300 break-all">
         <CardBody className="px-6 py-4">
           <div className="flex flex-col xl:flex-row items-start xl:items-center gap-10">
             {/* Rider Avatar and Name */}
@@ -42,7 +42,7 @@ export default function RiderDetailsCard({ rider }) {
             {/* Rider Phone Number */}
             <div>
               <Typography color="gray" className="flex items-center text-md font-medium">
-                <Phone className="w-5 h-5" />
+                <Phone className="w-5 h-5 mr-1" />
                 Phone #
               </Typography>
               <Typography color="blue-gray" className="font-semibold text-md">
