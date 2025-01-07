@@ -57,7 +57,7 @@ export default function RiderDetailsCard({ rider }) {
                 License #
               </Typography>
               <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.license_number}
+                {rider.license_number || "None"}
               </Typography>
             </div>
 
