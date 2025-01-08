@@ -33,9 +33,9 @@ export default function Riders() {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [ridersPerPage] = useState(9); // Riders per page
   const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
   const [ordersPerPage] = useState(3); // Orders per page
+  const [lastPage, setLastPage] = useState(1);
 
   // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
@@ -62,6 +62,7 @@ export default function Riders() {
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
       setTotalRiders(cache[cacheKey].total); // Ensure totalRiders is updated from cache
+      setLastPage(cache[cacheKey].lastPage);
       setIsLoading(false);
       setSearchLoading(false);
       return;
@@ -73,19 +74,19 @@ export default function Riders() {
         params: { 
           search: debouncedRiderSearchQuery,
           page: currentPage,
-          page_size: ridersPerPage,
         },
       });
 
       if (response.status === 200) {
         const ridersData = response.data.data;
-        setRiders(ridersData.data); // Update this line to match the server response structure
-        setTotalRiders(ridersData.total); // Update total number of riders
+        setRiders(ridersData.data);
+        setTotalRiders(ridersData.total);
+        setLastPage(ridersData.last_page);
         setIsLoading(false);
 
         setCache((prevCache) => ({
           ...prevCache,
-          [cacheKey]: { data: ridersData.data, total: ridersData.total }, // Ensure total is stored in cache
+          [cacheKey]: { data: ridersData.data, total: ridersData.total, lastPage: ridersData.last_page }, // Ensure total is stored in cache
         }));
       }
     } catch (error) {
@@ -94,7 +95,7 @@ export default function Riders() {
     } finally {
       setSearchLoading(false);
     }
-  }, [debouncedRiderSearchQuery, currentPage, ridersPerPage, cache]);
+  }, [debouncedRiderSearchQuery, currentPage, cache]);
 
   // Fetch rider orders from API
   const fetchRiderOrder = async (riderId) => {
@@ -205,7 +206,7 @@ export default function Riders() {
                 currentPage={currentPage}
                 paginate={paginateRiders}
                 totalRiders={totalRiders}
-                ridersPerPage={ridersPerPage}
+                lastPage={lastPage}
               />
             </div>
 
