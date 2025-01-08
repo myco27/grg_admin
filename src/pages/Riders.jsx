@@ -26,13 +26,13 @@ export default function Riders() {
   const [filteredOrders, setFilteredOrders] = useState([]); // Reintroduce filteredOrders state
 
   // Search query states
-  const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('search') || '');
+  const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('riderSearch') || '');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const debouncedRiderSearchQuery = useDebounce({ value: riderSearchQuery });
   const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery }); // Add debounced order search query
 
   // Pagination states
-  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
+  const [currentRiderPage, setCurrentRiderPage] = useState(parseInt(searchParams.get('riderPage')) || 1);
   const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
   const [ordersPerPage] = useState(3); // Orders per page
   const [lastPage, setLastPage] = useState(1);
@@ -46,7 +46,7 @@ export default function Riders() {
   const [cache, setCache] = useState({});
 
   // Pagination logic for riders
-  const paginateRiders = (pageNumber) => setCurrentPage(pageNumber);
+  const paginateRiders = (pageNumber) => setCurrentRiderPage(pageNumber);
   const [totalRiders, setTotalRiders] = useState(0);
 
   // Pagination logic for orders
@@ -57,7 +57,7 @@ export default function Riders() {
 
   // Fetch riders from API with search query
   const fetchRiders = useCallback(async () => {
-    const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentPage}`;
+    const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
 
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
@@ -73,7 +73,7 @@ export default function Riders() {
       const response = await axiosClient.get('/admin/riders', {
         params: { 
           search: debouncedRiderSearchQuery,
-          page: currentPage,
+          page: currentRiderPage,
         },
       });
 
@@ -95,7 +95,7 @@ export default function Riders() {
     } finally {
       setSearchLoading(false);
     }
-  }, [debouncedRiderSearchQuery, currentPage, cache]);
+  }, [debouncedRiderSearchQuery, currentRiderPage, cache]);
 
   // Fetch rider orders from API
   const fetchRiderOrder = async (riderId) => {
@@ -127,6 +127,13 @@ export default function Riders() {
         fetchRiderOrder(rider.id);
       }
     }
+
+    // const params = new URLSearchParams(searchParams);
+    // if (!params.has('riderSearch')) {
+    //   params.set('riderSearch', riderSearchQuery);
+    //   setSearchParams(params);
+    // }
+
   }, [fetchRiders, riderIdFromParams, riders]);
 
   // Filter orders based on search query
@@ -138,25 +145,25 @@ export default function Riders() {
     setCurrentOrdersPage(1); // Reset to the first page when filtering
   }, [debouncedOrderSearchQuery, riderOrders]);
 
-  // Update Params based on currentPage
+  // Update Params based on currentRiderPage
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
-    params.set('page', currentPage);
+    params.set('riderPage', currentRiderPage);
     setSearchParams(params);
-  }, [currentPage, searchParams, setSearchParams]);
+  }, [currentRiderPage, searchParams, setSearchParams]);
 
   // Handle rider selection
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    navigate(`/riders/${rider.id}?search=${riderSearchQuery}`);
+    navigate(`/riders/${rider.id}?riderSearch=${riderSearchQuery}&riderPage=${currentRiderPage}`);
   };
 
   // Handle search input for riders
   const handleSearchRider = (e) => {
     const query = e.target.value;
     setRiderSearchQuery(query);
-    setSearchParams({ search: query, page: 1 });
-    setCurrentPage(1); // Reset to the first page when searching
+    setSearchParams({ riderSearch: query, riderPage: 1 });
+    setCurrentRiderPage(1); // Reset to the first page when searching
   };
 
   // Handle search input for orders
@@ -210,7 +217,7 @@ export default function Riders() {
 
               {/* Pagination Controls for Riders */}
               <Pagination
-                currentPage={currentPage}
+                currentPage={currentRiderPage}
                 paginate={paginateRiders}
                 totalRiders={totalRiders}
                 lastPage={lastPage}
