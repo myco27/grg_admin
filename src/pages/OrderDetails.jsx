@@ -7,7 +7,7 @@ import DetailsCard from "../components/OrderDetailsPage/DetailsCard";
 import TabsCard from "../components/OrderDetailsPage/TabsCard";
 import PaymentCard from "../components/OrderDetailsPage/PaymentCard";
 
-const Dashboard = () => {
+const OrderDetails = () => {
   const { orderId } = useParams();
   const order = orders.find( order => order.id === orderId) || orders[0];
 
@@ -64,4 +64,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default OrderDetails;
