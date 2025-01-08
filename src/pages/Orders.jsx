@@ -18,18 +18,19 @@ import axiosClient from "../axiosClient";
 import useDebounce from "../components/UseDebounce";
 
 export default function Orders() {
-  // DECLARATIONS
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const newSearchParams = new URLSearchParams(searchParams);
 
+  // State for orders and their counts
   const [status, setStatus] = useState(searchParams.get("status") ?? "");
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
 
-  const [cache, setCache] = useState({}); // Add cache state
+  // Cache for API responses
+  const [cache, setCache] = useState({});
 
-  // PAGINATION
+  // Pagination parameters
   const [pagination, setPagination] = useState({
     page: parseInt(searchParams.get("page")) || 1,
     totalPages: 1,
@@ -39,17 +40,17 @@ export default function Orders() {
     isLoading: false,
   });
 
-  // FILTERS
+  // Filters for search and date
   const [filters, setFilters] = useState({
     search: searchParams.get("search") || "",
     date: searchParams.get("date") || null,
   });
 
-  // DEBOUNCING
+  // Debouncing search input
   const [searchLoading, setSearchLoading] = useState(false);
   const debounceSearch = useDebounce({ value: filters.search });
 
-  // API CALLS
+  // Fetch count of orders by status
   const fetchCountOrders = async () => {
     try {
       const response = await axiosClient.get("/admin/count/orders");
@@ -70,72 +71,72 @@ export default function Orders() {
     }
   };
 
-  const fetchOrders = useCallback(
-    async () => {
-      // Create cache key
-      const cacheKey = `${status}-${pagination.page}-${debounceSearch}-${filters.date}`;
+  // Fetch orders with filters and pagination
+  const fetchOrders = useCallback(async () => {
+    // Create cache key
+    const cacheKey = `${status}-${pagination.page}-${debounceSearch}-${filters.date}`;
 
-      // Check cache
-      if (cache[cacheKey]) {
-        setOrders(cache[cacheKey].data);
-        setPagination(cache[cacheKey].pagination);
+    // Check cache
+    if (cache[cacheKey]) {
+      setOrders(cache[cacheKey].data);
+      setPagination(cache[cacheKey].pagination);
+      setSearchLoading(false);
+      return;
+    }
+
+    try {
+      setSearchLoading(true);
+      const response = await axiosClient.get("/admin/orders", {
+        params: {
+          status: status,
+          page: pagination.page,
+          search: debounceSearch,
+          date: filters.date,
+        },
+      });
+
+      if (response.status === 200) {
+        const { data, current_page, last_page, total, links, per_page } =
+          response.data.data;
+
+        // Define newPagination
+        const newPagination = {
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links: links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        };
+
+        // Update state
+        setOrders(data);
+        setPagination(newPagination);
         setSearchLoading(false);
-        return;
-      }
-  
-      try {
-        setSearchLoading(true);
-        const response = await axiosClient.get("/admin/orders", {
-          params: {
-            status: status,
-            page: pagination.page,
-            search: debounceSearch,
-            date: filters.date,
-          },
-        });
-  
-        if (response.status === 200) {
-          const { data, current_page, last_page, total, links, per_page } =
-            response.data.data;
-  
-          // Define newPagination
-          const newPagination = {
-            page: current_page,
-            totalPages: last_page,
-            totalItems: total,
-            links: links,
-            itemsPerPage: per_page,
-            isLoading: false,
-          };
-  
-          // Update state
-          setOrders(data);
-          setPagination(newPagination);
-          setSearchLoading(false);
-  
-          // Cache the data
-          setCache((prevCache) => ({
-            ...prevCache,
-            [cacheKey]: { data, pagination: newPagination },
-          }));
-        }
-      } catch (error) {
-        navigate("/notfound");
-        setPagination({ ...pagination, isLoading: false });
-      }
-    },
-    [status, debounceSearch, filters.date, cache, pagination, navigate] // Add dependencies
-  );
 
+        // Cache the data
+        setCache((prevCache) => ({
+          ...prevCache,
+          [cacheKey]: { data, pagination: newPagination },
+        }));
+      }
+    } catch (error) {
+      navigate("/notfound");
+      setPagination({ ...pagination, isLoading: false });
+    }
+  }, [status, debounceSearch, filters.date, cache, pagination, navigate]);
+
+  // Fetch count of orders on component mount
   useEffect(() => {
     fetchCountOrders();
   }, []);
 
+  // Fetch orders when status, page, search, or date changes
   useEffect(() => {
     fetchOrders(pagination.page);
   }, [status, pagination.page, debounceSearch, filters.date]);
 
-  // EVENT LISTENERS
+  // Handle status tab click
   const handleClickStatus = (status) => {
     const updatedStatus = status === "all" ? "" : status;
     setStatus(updatedStatus);
@@ -151,6 +152,7 @@ export default function Orders() {
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
+  // Handle pagination page change
   const handlePageChange = async (newPage) => {
     setPagination({
       ...pagination,
@@ -162,16 +164,16 @@ export default function Orders() {
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
+  // Handle search input change
   const handleSearchInput = (event) => {
     const { value } = event.target;
 
     setFilters({ ...filters, search: value });
-    // setPagination({ ...pagination, page: 1, isLoading: true });
-
     newSearchParams.set("search", value);
     navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
+  // Handle date filter change
   const handleDateChange = (date) => {
     if (date === null || date === undefined) {
       setFilters({ ...filters, date: "" });
@@ -200,8 +202,8 @@ export default function Orders() {
               Transaction
             </Typography>
 
-            <div className=" relative flex flex-col md:flex-row items-center justify-between gap-4">
-              {/* ORDERS STATUS */}
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
+              {/* ORDERS STATUS TABS */}
               <Tabs
                 value={status || "all"}
                 className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-x-auto xl:overflow-visible"
@@ -262,6 +264,7 @@ export default function Orders() {
                 </div>
               </Tabs>
 
+              {/* SEARCH AND DATE FILTERS */}
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 {/* SEARCH FILTER */}
                 <div className="w-full sm:w-72">
@@ -312,6 +315,7 @@ export default function Orders() {
               )}
             </div>
           )}
+
           {/* Pagination */}
           <Pagination
             currentPage={pagination.page}
