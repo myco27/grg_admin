@@ -165,7 +165,7 @@ export default function Riders() {
             {/* Left side - Rider List */}
             <div className="h-auto lg:h-[89dvh] lg:w-[340px] bg-white rounded-lg overflow-y-auto border border-gray-300 py-4">
               <Typography variant="h5" className="font-semibold text-black ml-4">All Riders</Typography>
-              <div className="w-full p-2 mb-2">
+              <div className="w-full px-2 py-1 mb-2">
                 {/* Search input for Riders */}
                 <Input
                   label="Search riders..."
