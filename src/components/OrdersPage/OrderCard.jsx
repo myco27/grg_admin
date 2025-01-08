@@ -45,7 +45,7 @@ export default function OrderCard({ order }) {
                 {order.order_number}
               </Typography>
               <Typography className="text-gray-600 font-medium">
-                {order.type?.[0].toUpperCase() + order.type.slice(1) ?? "N/A"}
+                {order.type?.[0].toUpperCase() + order.type.slice(1)}
               </Typography>
             </div>
           </div>
