@@ -22,10 +22,14 @@ export default function Riders() {
   const [riderOrders, setRiderOrders] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null);
 
+  // State for filtered orders
+  const [filteredOrders, setFilteredOrders] = useState([]); // Reintroduce filteredOrders state
+
   // Search query states
   const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('search') || '');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const debouncedRiderSearchQuery = useDebounce({ value: riderSearchQuery });
+  const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery }); // Add debounced order search query
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,13 +52,13 @@ export default function Riders() {
   // Pagination logic for orders
   const indexOfLastOrder = currentOrdersPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = riderOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder); // Use filteredOrders for pagination
   const paginateOrders = (pageNumber) => setCurrentOrdersPage(pageNumber);
 
   // Fetch riders from API with search query
   const fetchRiders = useCallback(async () => {
     const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentPage}`;
-  
+
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
       setTotalRiders(cache[cacheKey].total); // Ensure totalRiders is updated from cache
@@ -62,7 +66,7 @@ export default function Riders() {
       setSearchLoading(false);
       return;
     }
-  
+
     try {
       setSearchLoading(true);
       const response = await axiosClient.get('/admin/riders', {
@@ -72,13 +76,13 @@ export default function Riders() {
           page_size: ridersPerPage,
         },
       });
-  
+
       if (response.status === 200) {
         const ridersData = response.data.data;
         setRiders(ridersData.data); // Update this line to match the server response structure
         setTotalRiders(ridersData.total); // Update total number of riders
         setIsLoading(false);
-  
+
         setCache((prevCache) => ({
           ...prevCache,
           [cacheKey]: { data: ridersData.data, total: ridersData.total }, // Ensure total is stored in cache
@@ -102,6 +106,7 @@ export default function Riders() {
       if (response.status === 200) {
         const orders = response.data.data;
         setRiderOrders(orders);
+        setFilteredOrders(orders); // Initialize filteredOrders with fetched orders
       }
     } catch (error) {
       console.error('Failed to fetch rider orders:', error);
@@ -112,7 +117,7 @@ export default function Riders() {
   // Fetch riders and orders when component mounts or selected rider changes
   useEffect(() => {
     fetchRiders();
-  
+
     // Restore selected rider from URL params
     if (riderIdFromParams) {
       const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
@@ -122,6 +127,15 @@ export default function Riders() {
       }
     }
   }, [fetchRiders, riderIdFromParams, riders]);
+
+  // Filter orders based on search query
+  useEffect(() => {
+    const filtered = riderOrders.filter(order => {
+      return order.order_id.toString().includes(debouncedOrderSearchQuery.toLowerCase());
+    });
+    setFilteredOrders(filtered);
+    setCurrentOrdersPage(1); // Reset to the first page when filtering
+  }, [debouncedOrderSearchQuery, riderOrders]);
 
   // Handle rider selection
   const handleRiderSelect = (rider) => {
@@ -141,7 +155,6 @@ export default function Riders() {
   const handleSearchOrder = (e) => {
     const query = e.target.value;
     setOrderSearchQuery(query);
-    setCurrentOrdersPage(1); // Reset to the first page when searching
   };
 
   return (
@@ -247,7 +260,7 @@ export default function Riders() {
                           currentPage={currentOrdersPage}
                           paginate={paginateOrders}
                           indexOfLastOrder={indexOfLastOrder}
-                          filteredOrders={riderOrders} // Use riderOrders instead of filteredOrders
+                          filteredOrders={filteredOrders} // Use filteredOrders for pagination
                           ordersPerPage={ordersPerPage}
                         />
                       )}
