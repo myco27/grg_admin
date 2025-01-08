@@ -2,13 +2,12 @@ import React from 'react';
 import { Button, IconButton } from "@material-tailwind/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function Pagination({ currentPage, paginate, totalRiders, ridersPerPage }) {
+export default function RiderPagination({ currentPage, paginate, totalRiders, lastPage }) {
   const isFirstPage = currentPage === 1;
-  const isLastPage = currentPage * ridersPerPage >= totalRiders;
-  const lastPage = Math.ceil(totalRiders / ridersPerPage);
+  const isLastPage = currentPage === lastPage; // Use lastPage directly
 
   return (
-    <div className="flex justify-center mt-2 gap-1">
+    <div className="flex justify-center mt-2 gap-1 mb-[-4px]">
       {/* First Page Button */}
       <Button
         color="purple"
