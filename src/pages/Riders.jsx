@@ -128,12 +128,6 @@ export default function Riders() {
       }
     }
 
-    // const params = new URLSearchParams(searchParams);
-    // if (!params.has('riderSearch')) {
-    //   params.set('riderSearch', riderSearchQuery);
-    //   setSearchParams(params);
-    // }
-
   }, [fetchRiders, riderIdFromParams, riders]);
 
   // Filter orders based on search query
