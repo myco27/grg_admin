@@ -32,7 +32,7 @@ export default function Riders() {
   const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery }); // Add debounced order search query
 
   // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
   const [ordersPerPage] = useState(3); // Orders per page
   const [lastPage, setLastPage] = useState(1);
@@ -138,6 +138,13 @@ export default function Riders() {
     setCurrentOrdersPage(1); // Reset to the first page when filtering
   }, [debouncedOrderSearchQuery, riderOrders]);
 
+  // Update Params based on currentPage
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', currentPage);
+    setSearchParams(params);
+  }, [currentPage, searchParams, setSearchParams]);
+
   // Handle rider selection
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
@@ -148,7 +155,7 @@ export default function Riders() {
   const handleSearchRider = (e) => {
     const query = e.target.value;
     setRiderSearchQuery(query);
-    setSearchParams({ search: query }); // Update URL search params
+    setSearchParams({ search: query, page: 1 });
     setCurrentPage(1); // Reset to the first page when searching
   };
 
