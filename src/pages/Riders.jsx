@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment, useCallback } from 'react';
-import { Typography, Input, Button, Spinner, IconButton } from "@material-tailwind/react";
+import { Typography, Input, Spinner } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
 import DetailsCard from '../components/RidersPage/OrderDetailsCard';
 import Pagination from '../components/RidersPage/RiderPagination';
@@ -7,13 +7,13 @@ import OrdersPagination from '../components/RidersPage/OrdersPagination';
 import RiderDetails from '../components/RidersPage/RiderDetailsCard';
 import Loading from "../components/layout/Loading";
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ChevronUp, ChevronDown, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search } from "lucide-react";
 import useDebounce from "../components/UseDebounce";
 import axiosClient from '../axiosClient';
 
 export default function Riders() {
   // Router and navigation hooks
-  const { riderId } = useParams();
+  const { riderId: riderIdFromParams } = useParams(); // Get riderId from URL params
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -22,13 +22,10 @@ export default function Riders() {
   const [riderOrders, setRiderOrders] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null);
 
-  // State for filtered data
-  const [filteredRiders, setFilteredRiders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
-
   // Search query states
-  const [riderSearchQuery, setRiderSearchQuery] = useState('');
+  const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('search') || '');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const debouncedRiderSearchQuery = useDebounce({ value: riderSearchQuery });
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,58 +36,61 @@ export default function Riders() {
   // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchLoading, setSearchLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // Cache for API responses
   const [cache, setCache] = useState({});
 
-  // Debounced search queries
-  const debouncedRiderSearchQuery = useDebounce({ value: riderSearchQuery });
-  const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery });
-
   // Pagination logic for riders
-  const indexOfLastRider = currentPage * ridersPerPage;
-  const indexOfFirstRider = indexOfLastRider - ridersPerPage;
-  const currentRiders = filteredRiders.slice(indexOfFirstRider, indexOfLastRider);
   const paginateRiders = (pageNumber) => setCurrentPage(pageNumber);
+  const [totalRiders, setTotalRiders] = useState(0);
 
   // Pagination logic for orders
   const indexOfLastOrder = currentOrdersPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const currentOrders = riderOrders.slice(indexOfFirstOrder, indexOfLastOrder);
   const paginateOrders = (pageNumber) => setCurrentOrdersPage(pageNumber);
 
-  // Fetch riders from API
+  // Fetch riders from API with search query
   const fetchRiders = useCallback(async () => {
-    const cacheKey = 'riders';
-
+    const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentPage}`;
+  
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
+      setTotalRiders(cache[cacheKey].total); // Ensure totalRiders is updated from cache
       setIsLoading(false);
       setSearchLoading(false);
       return;
     }
-
+  
     try {
-      const response = await axiosClient.get('/admin/riders');
       setSearchLoading(true);
-
+      const response = await axiosClient.get('/admin/riders', {
+        params: { 
+          search: debouncedRiderSearchQuery,
+          page: currentPage,
+          page_size: ridersPerPage,
+        },
+      });
+  
       if (response.status === 200) {
         const ridersData = response.data.data;
-        setRiders(ridersData);
+        setRiders(ridersData.data); // Update this line to match the server response structure
+        setTotalRiders(ridersData.total); // Update total number of riders
         setIsLoading(false);
-
+  
         setCache((prevCache) => ({
           ...prevCache,
-          [cacheKey]: { data: ridersData },
+          [cacheKey]: { data: ridersData.data, total: ridersData.total }, // Ensure total is stored in cache
         }));
       }
     } catch (error) {
       setError('Failed to fetch riders');
       setIsLoading(false);
+    } finally {
       setSearchLoading(false);
     }
-  }, [cache]);
+  }, [debouncedRiderSearchQuery, currentPage, ridersPerPage, cache]);
 
   // Fetch rider orders from API
   const fetchRiderOrder = async (riderId) => {
@@ -112,35 +112,16 @@ export default function Riders() {
   // Fetch riders and orders when component mounts or selected rider changes
   useEffect(() => {
     fetchRiders();
-
-    if (selectedRider) {
-      fetchRiderOrder(selectedRider.id);
+  
+    // Restore selected rider from URL params
+    if (riderIdFromParams) {
+      const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
+      if (rider) {
+        setSelectedRider(rider);
+        fetchRiderOrder(rider.id);
+      }
     }
-  }, [fetchRiders, selectedRider]);
-
-  // Filter riders based on search query
-  useEffect(() => {
-    const filtered = riders.filter(rider => {
-      const riderFullName = `${rider.first_name} ${rider.last_name}`;
-      return riderFullName.toLowerCase().includes(debouncedRiderSearchQuery.toLowerCase());
-    });
-    setFilteredRiders(filtered);
-
-    if (riderId) {
-      const foundRider = riders.find(rider => rider.id === parseInt(riderId));
-      setSelectedRider(foundRider || (riders.length > 0 ? riders[0] : null));
-    } else if (riders.length > 0) {
-      setSelectedRider(riders[0]);
-    }
-  }, [riderId, debouncedRiderSearchQuery, riders]);
-
-  // Filter orders based on search query
-  useEffect(() => {
-    const filtered = riderOrders.filter(order => {
-      return order.order_id.toString().includes(debouncedOrderSearchQuery.toLowerCase());
-    });
-    setFilteredOrders(filtered);
-  }, [debouncedOrderSearchQuery, riderOrders]);
+  }, [fetchRiders, riderIdFromParams, riders]);
 
   // Handle rider selection
   const handleRiderSelect = (rider) => {
@@ -152,7 +133,7 @@ export default function Riders() {
   const handleSearchRider = (e) => {
     const query = e.target.value;
     setRiderSearchQuery(query);
-    setSearchParams({ search: query });
+    setSearchParams({ search: query }); // Update URL search params
     setCurrentPage(1); // Reset to the first page when searching
   };
 
@@ -168,9 +149,8 @@ export default function Riders() {
       <div className='bg-gray-100 w-full'>
         <div className="mx-auto">
           <div className="flex flex-col lg:flex-row gap-4">
-
             {/* Left side - Rider List */}
-            <div className="h-auto lg:h-[89dvh] lg:w-[340px] bg-white rounded-lg border border-gray-300 py-4">
+            <div className="h-auto lg:h-[89dvh] lg:w-[340px] bg-white rounded-lg overflow-y-auto border border-gray-300 py-4">
               <Typography variant="h5" className="font-semibold text-black ml-4">All Riders</Typography>
               <div className="w-full p-2 mb-2">
                 {/* Search input for Riders */}
@@ -189,14 +169,14 @@ export default function Riders() {
                   onChange={handleSearchRider}
                 />
               </div>
-              {currentRiders.length === 0 ? (
+              {riders.length === 0 ? (
                 <div className="text-center py-8">
                   <Typography color="gray" className="font-medium">
                     No riders available.
                   </Typography>
                 </div>
               ) : (
-                currentRiders.map((rider) => (
+                riders.map((rider) => (
                   <div
                     key={rider.id}
                     onClick={() => handleRiderSelect(rider)}
@@ -211,8 +191,7 @@ export default function Riders() {
               <Pagination
                 currentPage={currentPage}
                 paginate={paginateRiders}
-                indexOfLastRider={indexOfLastRider}
-                filteredRiders={filteredRiders}
+                totalRiders={totalRiders}
                 ridersPerPage={ridersPerPage}
               />
             </div>
@@ -254,7 +233,7 @@ export default function Riders() {
 
                       {currentOrders.length > 0 ? (
                         currentOrders.map((order) => (
-                          <DetailsCard key={order.order_id} order={order} /> // Show orders map if there are orders
+                          <DetailsCard key={order.order_id} order={order} />
                         ))
                       ) : (
                         <Typography color="gray" className="font-medium text-center mt-4">
@@ -268,7 +247,7 @@ export default function Riders() {
                           currentPage={currentOrdersPage}
                           paginate={paginateOrders}
                           indexOfLastOrder={indexOfLastOrder}
-                          filteredOrders={filteredOrders}
+                          filteredOrders={riderOrders} // Use riderOrders instead of filteredOrders
                           ordersPerPage={ordersPerPage}
                         />
                       )}
