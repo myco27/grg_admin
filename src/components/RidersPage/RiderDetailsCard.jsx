@@ -1,76 +1,77 @@
 import React from 'react';
 import { Card, CardBody, Typography, Rating } from '@material-tailwind/react';
-import { UserCircle, Info, Mail, Phone, Bike } from 'lucide-react';
+import { UserCircle, Info, Mail, Phone } from 'lucide-react';
 
 export default function RiderDetailsCard({ rider }) {
+  const InfoBlock = ({ icon: Icon, label, value }) => (
+    <div className="flex-1 min-w-[200px] p-4 bg-gray-100 rounded-lg transition-all hover:bg-gray-100">
+      <Typography color="gray" className="flex items-center gap-2 text-sm font-medium mb-2">
+        <Icon className="w-5 h-5" />
+        {label}
+      </Typography>
+      <Typography color="blue-gray" className="font-semibold text-md break-words">
+        {value || "None"}
+      </Typography>
+    </div>
+  );
 
   return (
-    <div>
-      <Card className="w-full mx-auto mb-3 shadow-none border border-gray-300 break-all">
-        <CardBody className="px-6 py-4">
-          <div className="flex flex-col xl:flex-row items-start xl:items-center gap-10">
-            {/* Rider Avatar and Name */}
+    <Card className="w-full mx-auto mb-3 shadow-none border border-gray-300 break-all">
+      <CardBody className="p-6">
+        <div className="flex flex-col gap-4">
+          {/* Header with Avatar and Rating */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-semibold text-xl">
-                   {rider.first_name[0]}
-                   {rider.last_name[0]}
+                <span className="text-blue-500 font-bold text-xl">
+                  {rider.first_name?.[0]}
+                  {rider.last_name?.[0]}
                 </span>
               </div>
               <div>
-                <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
-                  <UserCircle className="w-5 h-5" />
-                  Rider
+                <Typography color="gray" className="flex items-center gap-1 text-sm font-medium">
+                  <UserCircle className="w-4 h-4" />
+                  Rider Profile
                 </Typography>
-                <Typography color="blue-gray" className="font-semibold text-md">
-                    {rider.first_name || "None"} {rider.last_name || "None"}
+                <Typography variant="h6" color="blue-gray" className="font-bold">
+                  {rider.first_name || "None"} {rider.last_name || "None"}
                 </Typography>
               </div>
             </div>
-
-            {/* Rider Email */}
-            <div>
-              <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
-                <Mail className="w-5 h-5" />
-                Email
+            
+            <div className="flex flex-col items-start sm:items-end">
+              <Typography color="gray" className="text-sm font-medium mb-1">
+                Rating
               </Typography>
-              <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.email || "None"}
-              </Typography>
-            </div>
-
-            {/* Rider Phone Number */}
-            <div>
-              <Typography color="gray" className="flex items-center text-md font-medium">
-                <Phone className="w-5 h-5 mr-1" />
-                Phone #
-              </Typography>
-              <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.mobile_number || "None"}
-              </Typography>
-            </div>
-
-            {/* License Plate */}
-            <div>
-              <Typography color="gray" className="flex items-center gap-1 text-md font-medium">
-                <Info className="w-5 h-5" />
-                License #
-              </Typography>
-              <Typography color="blue-gray" className="font-semibold text-md">
-                {rider.license_number || "None"}
-              </Typography>
-            </div>
-
-            {/* Rider Rating */}
-            <div className="ml-auto text-right">
-              <Typography color="gray" className="text-md font-medium">
-                Rating:
-              </Typography>
-              <Rating value={5} readonly />
+              <Rating 
+                value={5} 
+                readonly 
+                className="flex gap-1"
+                ratedColor="amber"
+              />
             </div>
           </div>
-        </CardBody>
-      </Card>
-    </div>
+
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InfoBlock
+              icon={Mail}
+              label="Email Address"
+              value={rider.email}
+            />
+            <InfoBlock
+              icon={Phone}
+              label="Phone Number"
+              value={rider.mobile_number}
+            />
+            <InfoBlock
+              icon={Info}
+              label="License Number"
+              value={rider.license_number}
+            />
+          </div>
+        </div>
+      </CardBody>
+    </Card>
   );
 }
