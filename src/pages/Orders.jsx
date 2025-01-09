@@ -140,15 +140,15 @@ export default function Orders() {
   useEffect(() => {
     const defaultParams = {
       status: "all",
-      page: "1",
+      page: "1", 
       search: "",
-      date: "",
+      date: ""
     };
   
-    const newSearchParams = new URLSearchParams(searchParams);
-  
-    // Check for unexpected parameters
     const validParams = ["status", "page", "search", "date"];
+    const validStatuses = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
+    
+    // Check for unexpected parameters first
     const hasInvalidParams = Array.from(searchParams.keys()).some(
       (key) => !validParams.includes(key)
     );
@@ -158,7 +158,35 @@ export default function Orders() {
       return;
     }
   
-    // Set default values for missing parameters
+    // Validate existing parameters before setting defaults
+    const currentPage = searchParams.get("page");
+    const currentStatus = searchParams.get("status");
+    const currentDate = searchParams.get("date");
+  
+    // Validate page if it exists
+    if (currentPage) {
+      const page = parseInt(currentPage);
+      if (isNaN(page) || page < 1) {
+        navigate("/notfound");
+        return;
+      }
+    }
+  
+    // Validate status if it exists
+    if (currentStatus && !validStatuses.includes(currentStatus)) {
+      navigate("/notfound");
+      return;
+    }
+  
+    // Validate date if it exists
+    if (currentDate && !/^\d{4}-\d{2}-\d{2}$/.test(currentDate)) {
+      navigate("/notfound");
+      return;
+    }
+  
+    // Only set defaults if all existing parameters are valid
+    const newSearchParams = new URLSearchParams(searchParams);
+    
     if (!searchParams.get("status")) newSearchParams.set("status", defaultParams.status);
     if (!searchParams.get("page")) newSearchParams.set("page", defaultParams.page);
     if (!searchParams.get("search")) newSearchParams.set("search", defaultParams.search);
@@ -172,28 +200,6 @@ export default function Orders() {
       !searchParams.get("date")
     ) {
       navigate(`?${newSearchParams.toString()}`, { replace: true });
-      return; // Exit early to avoid validation until the next render
-    }
-  
-    // Validate page number
-    const page = parseInt(newSearchParams.get("page"));
-    if (isNaN(page) || page < 1) {
-      navigate("/notfound");
-      return;
-    }
-  
-    // Validate status parameter
-    const validStatuses = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
-    const statusParam = newSearchParams.get("status");
-    if (!validStatuses.includes(statusParam)) {
-      navigate("/notfound");
-      return;
-    }
-  
-    // Validate date parameter (optional, if needed)
-    const dateParam = newSearchParams.get("date");
-    if (dateParam && !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
-      navigate("/notfound");
       return;
     }
   }, [searchParams, navigate]);
