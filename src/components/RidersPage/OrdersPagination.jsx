@@ -2,21 +2,17 @@ import React from 'react';
 import { Button, IconButton, Typography } from "@material-tailwind/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function OrdersPagination({ currentPage, paginate, indexOfLastOrder, filteredOrders, ordersPerPage }) {
-  const pageNumbers = [];
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
+export default function OrdersPagination({ currentPage, paginate, lastPage, totalOrders, ordersPerPage }) {
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
 
   const renderPageNumbers = () => {
     const maxPagesToShow = 5; // Number of page numbers to show around the current page
     const pages = [];
 
-    if (totalPages <= maxPagesToShow) {
+    if (lastPage <= maxPagesToShow) {
       // Show all pages if there are fewer than maxPagesToShow
-      return pageNumbers.map(number => (
+      return Array.from({ length: lastPage }, (_, i) => i + 1).map(number => (
         <IconButton
           key={number}
           size="sm"
@@ -31,7 +27,7 @@ export default function OrdersPagination({ currentPage, paginate, indexOfLastOrd
 
     // Calculate the range of page numbers to show
     let start = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let end = Math.min(totalPages, start + maxPagesToShow - 1);
+    let end = Math.min(lastPage, start + maxPagesToShow - 1);
 
     if (end - start < maxPagesToShow - 1) {
       start = Math.max(1, end - maxPagesToShow + 1);
@@ -75,8 +71,8 @@ export default function OrdersPagination({ currentPage, paginate, indexOfLastOrd
     }
 
     // Add the last page and ellipsis if needed
-    if (end < totalPages) {
-      if (end < totalPages - 1) {
+    if (end < lastPage) {
+      if (end < lastPage - 1) {
         pages.push(
           <span key="end-ellipsis" className="px-2 py-1 text-black">
             ...
@@ -85,13 +81,13 @@ export default function OrdersPagination({ currentPage, paginate, indexOfLastOrd
       }
       pages.push(
         <IconButton
-          key={totalPages}
+          key={lastPage}
           size="sm"
-          variant={currentPage === totalPages ? "filled" : "text"}
-          onClick={() => paginate(totalPages)}
-          className={currentPage === totalPages ? "bg-purple-500 text-white" : ""}
+          variant={currentPage === lastPage ? "filled" : "text"}
+          onClick={() => paginate(lastPage)}
+          className={currentPage === lastPage ? "bg-purple-500 text-white" : ""}
         >
-          {totalPages}
+          {lastPage}
         </IconButton>
       );
     }
@@ -100,10 +96,10 @@ export default function OrdersPagination({ currentPage, paginate, indexOfLastOrd
   };
 
   return (
-    <div className="mt-8 flex flex-col md:flex-row items-center justify-between">
+    <div className="mt-8 flex flex-col md:flex-row items-right justify-between">
       {/* Showing items text */}
       <Typography variant="small" color="blue-gray" className="font-normal mb-4">
-        Showing {indexOfLastOrder - ordersPerPage + 1}-{Math.min(indexOfLastOrder, filteredOrders.length)} of {filteredOrders.length} items
+        Showing {indexOfFirstOrder + 1}-{Math.min(indexOfLastOrder, totalOrders)} of {totalOrders} items
       </Typography>
 
       {/* Pagination controls */}
@@ -129,10 +125,10 @@ export default function OrdersPagination({ currentPage, paginate, indexOfLastOrd
           variant="text"
           size="sm"
           onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === lastPage}
           className="flex items-center gap-2"
         >
-         <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" />
         </IconButton>
       </div>
     </div>
