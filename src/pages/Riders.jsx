@@ -30,11 +30,11 @@ export default function Riders() {
 
   // Pagination states
   const [currentRiderPage, setCurrentRiderPage] = useState(parseInt(searchParams.get('riderPage')) || 1);
-  const [lastRiderPage, setLastRiderPage] = useState(1);
+  const [lastRiderPage, setLastRiderPage] = useState(null);
 
   // Order Pagination states
   const [currentOrdersPage, setCurrentOrdersPage] = useState(parseInt(searchParams.get('orderPage')) || 1);
-  const [lastOrderPage, setLastOrderPage] = useState(1);
+  const [lastOrderPage, setLastOrderPage] = useState(null);
   const [ordersPerPage, setOrdersPerPage] = useState(0);
   const [totalOrders, setTotalOrders] = useState(0);
 
@@ -158,26 +158,101 @@ export default function Riders() {
     }
   }, [debouncedOrderSearchQuery, currentOrdersPage, selectedRider]);
 
-  // Update Params based on currentRiderPage and search query
+  // Update Params based on rider and order queries and pages
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     params.set('riderSearch', riderSearchQuery);
     params.set('riderPage', currentRiderPage);
-    setSearchParams(params);
-  }, [currentRiderPage, searchParams, setSearchParams]);
-
-  // Update Params based on orderSearchQuery and currentOrdersPage
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
     params.set('orderSearch', orderSearchQuery);
     params.set('orderPage', currentOrdersPage);
     setSearchParams(params);
-  }, [orderSearchQuery, currentOrdersPage, searchParams, setSearchParams]);
+  }, [riderSearchQuery, currentRiderPage, orderSearchQuery, currentOrdersPage, searchParams, setSearchParams]);
+
+  // Validate rider ID from URL params  
+  useEffect(() => {
+    if (riderIdFromParams) {
+      const isValidId = /^\d+$/.test(riderIdFromParams); // Check if ID is a valid number
+      
+      if (!isValidId) {
+        navigate('/notfound');
+        return;
+      }
+  
+      // Check if the selected rider is in the current list of riders
+      const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
+      if (!rider) {
+        // If the rider is not found set selected rider to null
+        setSelectedRider(null);
+        return;
+      }
+  
+      // If the rider is found, set it as the selected rider
+      setSelectedRider(rider);
+      fetchRiderOrder(rider.id, currentOrdersPage, debouncedOrderSearchQuery);
+    }
+  }, [riderIdFromParams, riders, navigate, fetchRiderOrder, currentOrdersPage, debouncedOrderSearchQuery]);
+
+  // Validate pagination from URL params
+  useEffect(() => {
+    const riderPage = parseInt(searchParams.get('riderPage'));
+    const orderPage = parseInt(searchParams.get('orderPage'));
+  
+    // Early return if lastRiderPage or lastOrderPage is not yet available
+    if (lastRiderPage === null || lastOrderPage === null) {
+      return;
+    }
+  
+    // Validate if riderPage or orderPage is invalid (NaN or less than 1)
+    if (
+      (riderPage && (isNaN(riderPage) || riderPage < 1)) ||
+      (orderPage && (isNaN(orderPage) || orderPage < 1))
+    ) {
+      navigate('/notfound');
+      return;
+    }
+  
+    // Validate against last page numbers
+    if (
+      (riderPage && riderPage > lastRiderPage) ||
+      (orderPage && orderPage > lastOrderPage)
+    ) {
+      navigate('/notfound');
+      return;
+    }
+  }, [searchParams, lastRiderPage, lastOrderPage, navigate]);
+
+  // Validate URL query parameters
+  useEffect(() => {
+    const validParams = ['riderSearch', 'riderPage', 'orderPage', 'orderSearch'];
+    const currentParams = Array.from(searchParams.keys());
+    
+    // Check for invalid parameter names
+    const hasInvalidParams = currentParams.some(param => !validParams.includes(param));
+    
+    // Validate numeric parameters
+    const riderPage = parseInt(searchParams.get('riderPage'));
+    const orderPage = parseInt(searchParams.get('orderPage'));
+    
+    const isInvalidNumber = (num) => isNaN(num) || num < 1;
+    const hasInvalidPages = 
+      (searchParams.has('riderPage') && isInvalidNumber(riderPage)) ||
+      (searchParams.has('orderPage') && isInvalidNumber(orderPage));
+
+    if (hasInvalidParams || hasInvalidPages) {
+      navigate('/notfound');
+      return;
+    }
+  }, [searchParams, navigate]);
 
   // Handle rider selection
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    navigate(`/riders/${rider.id}?riderSearch=${riderSearchQuery}&riderPage=${currentRiderPage}&orderSearch=${orderSearchQuery}&orderPage=${currentOrdersPage}`);
+    const params = new URLSearchParams();
+    params.set('riderSearch', riderSearchQuery);
+    params.set('riderPage', currentRiderPage);
+    params.set('orderSearch', orderSearchQuery);
+    params.set('orderPage', currentOrdersPage);
+    navigate(`/riders/${rider.id}?${params.toString()}`);
   };
 
   // Handle search input for riders
