@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function RiderPagination({ currentPage, paginate, totalRiders, lastPage }) {
   const isFirstPage = currentPage === 1;
-  const isLastPage = currentPage === lastPage; // Use lastPage directly
+  const isLastPage = currentPage === lastPage;
 
   return (
     <div className="flex justify-center mt-2 gap-1 mb-[-4px]">

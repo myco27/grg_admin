@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { Typography, Input, Spinner } from "@material-tailwind/react";
 import RiderCard from '../components/RidersPage/RiderCard';
-import DetailsCard from '../components/RidersPage/OrderDetailsCard';
-import Pagination from '../components/RidersPage/RiderPagination';
+import OrderDetailsCard from '../components/RidersPage/OrderDetailsCard';
+import RiderPagination from '../components/RidersPage/RiderPagination';
 import OrdersPagination from '../components/RidersPage/OrdersPagination';
 import RiderDetails from '../components/RidersPage/RiderDetailsCard';
 import Loading from "../components/layout/Loading";
@@ -22,20 +22,21 @@ export default function Riders() {
   const [riderOrders, setRiderOrders] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null);
 
-  // State for filtered orders
-  const [filteredOrders, setFilteredOrders] = useState([]); // Reintroduce filteredOrders state
-
   // Search query states
   const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('riderSearch') || '');
-  const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [orderSearchQuery, setOrderSearchQuery] = useState(searchParams.get('orderSearch') || '');
   const debouncedRiderSearchQuery = useDebounce({ value: riderSearchQuery });
-  const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery }); // Add debounced order search query
+  const debouncedOrderSearchQuery = useDebounce({ value: orderSearchQuery });
 
   // Pagination states
   const [currentRiderPage, setCurrentRiderPage] = useState(parseInt(searchParams.get('riderPage')) || 1);
-  const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
-  const [ordersPerPage] = useState(3); // Orders per page
-  const [lastPage, setLastPage] = useState(1);
+  const [lastRiderPage, setLastRiderPage] = useState(1);
+
+  // Order Pagination states
+  const [currentOrdersPage, setCurrentOrdersPage] = useState(parseInt(searchParams.get('orderPage')) || 1);
+  const [lastOrderPage, setLastOrderPage] = useState(1);
+  const [ordersPerPage, setOrdersPerPage] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
 
   // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
@@ -50,19 +51,16 @@ export default function Riders() {
   const [totalRiders, setTotalRiders] = useState(0);
 
   // Pagination logic for orders
-  const indexOfLastOrder = currentOrdersPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder); // Use filteredOrders for pagination
   const paginateOrders = (pageNumber) => setCurrentOrdersPage(pageNumber);
 
-  // Fetch riders from API with search query
+  // Fetch riders from API with search query and pagination
   const fetchRiders = useCallback(async () => {
     const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
 
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
-      setTotalRiders(cache[cacheKey].total); // Ensure totalRiders is updated from cache
-      setLastPage(cache[cacheKey].lastPage);
+      setTotalRiders(cache[cacheKey].total);
+      setLastRiderPage(cache[cacheKey].lastRiderPage);
       setIsLoading(false);
       setSearchLoading(false);
       return;
@@ -81,12 +79,12 @@ export default function Riders() {
         const ridersData = response.data.data;
         setRiders(ridersData.data);
         setTotalRiders(ridersData.total);
-        setLastPage(ridersData.last_page);
+        setLastRiderPage(ridersData.last_page);
         setIsLoading(false);
 
         setCache((prevCache) => ({
           ...prevCache,
-          [cacheKey]: { data: ridersData.data, total: ridersData.total, lastPage: ridersData.last_page }, // Ensure total is stored in cache
+          [cacheKey]: { data: ridersData.data, total: ridersData.total, lastRiderPage: ridersData.last_page },
         }));
       }
     } catch (error) {
@@ -97,23 +95,46 @@ export default function Riders() {
     }
   }, [debouncedRiderSearchQuery, currentRiderPage, cache]);
 
-  // Fetch rider orders from API
-  const fetchRiderOrder = async (riderId) => {
+  // Fetch rider orders from API with search and pagination
+  const fetchRiderOrder = useCallback(async (riderId, page = currentOrdersPage, search = orderSearchQuery) => {
+    const cacheKey = `rider-orders-${riderId}-${page}-${search}`;
+
+    if (cache[cacheKey]) {
+      setRiderOrders(cache[cacheKey].data);
+      setLastOrderPage(cache[cacheKey].lastOrderPage);
+      return;
+    }
+
     try {
+      setSearchLoading(true);
       const response = await axiosClient.get('/admin/riders/order', {
-        params: { id: riderId },
+        params: { 
+          id: riderId,
+          page: currentOrdersPage,
+          search: search,
+        },
       });
 
       if (response.status === 200) {
         const orders = response.data.data;
         setRiderOrders(orders);
-        setFilteredOrders(orders); // Initialize filteredOrders with fetched orders
+        setLastOrderPage(orders.last_page);
+        setOrdersPerPage(orders.per_page);
+        setTotalOrders(orders.total);
+
+        // Update the cache with the new data
+        setCache((prevCache) => ({
+          ...prevCache,
+          [cacheKey]: { data: orders, lastOrderPage: orders.last_page },
+        }));
+
       }
     } catch (error) {
       console.error('Failed to fetch rider orders:', error);
       setError('Failed to fetch rider orders');
     }
-  };
+
+  },[cache]);
 
   // Fetch riders and orders when component mounts or selected rider changes
   useEffect(() => {
@@ -124,32 +145,39 @@ export default function Riders() {
       const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
       if (rider) {
         setSelectedRider(rider);
-        fetchRiderOrder(rider.id);
+        fetchRiderOrder(rider.id, currentOrdersPage, debouncedOrderSearchQuery);
       }
     }
 
   }, [fetchRiders, riderIdFromParams, riders]);
 
-  // Filter orders based on search query
+  // Fetch orders when order search query or page changes
   useEffect(() => {
-    const filtered = riderOrders.filter(order => {
-      return order.order_id.toString().includes(debouncedOrderSearchQuery.toLowerCase());
-    });
-    setFilteredOrders(filtered);
-    setCurrentOrdersPage(1); // Reset to the first page when filtering
-  }, [debouncedOrderSearchQuery, riderOrders]);
+    if (selectedRider) {
+      fetchRiderOrder(selectedRider.id, currentOrdersPage, debouncedOrderSearchQuery);
+    }
+  }, [debouncedOrderSearchQuery, currentOrdersPage, selectedRider]);
 
-  // Update Params based on currentRiderPage
+  // Update Params based on currentRiderPage and search query
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
+    params.set('riderSearch', riderSearchQuery);
     params.set('riderPage', currentRiderPage);
     setSearchParams(params);
   }, [currentRiderPage, searchParams, setSearchParams]);
 
+  // Update Params based on orderSearchQuery and currentOrdersPage
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set('orderSearch', orderSearchQuery);
+    params.set('orderPage', currentOrdersPage);
+    setSearchParams(params);
+  }, [orderSearchQuery, currentOrdersPage, searchParams, setSearchParams]);
+
   // Handle rider selection
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    navigate(`/riders/${rider.id}?riderSearch=${riderSearchQuery}&riderPage=${currentRiderPage}`);
+    navigate(`/riders/${rider.id}?riderSearch=${riderSearchQuery}&riderPage=${currentRiderPage}&orderSearch=${orderSearchQuery}&orderPage=${currentOrdersPage}`);
   };
 
   // Handle search input for riders
@@ -157,13 +185,14 @@ export default function Riders() {
     const query = e.target.value;
     setRiderSearchQuery(query);
     setSearchParams({ riderSearch: query, riderPage: 1 });
-    setCurrentRiderPage(1); // Reset to the first page when searching
+    setCurrentRiderPage(1);
   };
 
   // Handle search input for orders
   const handleSearchOrder = (e) => {
     const query = e.target.value;
     setOrderSearchQuery(query);
+    setCurrentOrdersPage(1);
   };
 
   return (
@@ -210,11 +239,11 @@ export default function Riders() {
               )}
 
               {/* Pagination Controls for Riders */}
-              <Pagination
+              <RiderPagination
                 currentPage={currentRiderPage}
                 paginate={paginateRiders}
                 totalRiders={totalRiders}
-                lastPage={lastPage}
+                lastPage={lastRiderPage}
               />
             </div>
 
@@ -253,9 +282,9 @@ export default function Riders() {
                         </div>
                       </div>
 
-                      {currentOrders.length > 0 ? (
-                        currentOrders.map((order) => (
-                          <DetailsCard key={order.order_id} order={order} />
+                      {riderOrders.data && riderOrders.data.length > 0 ? (
+                        riderOrders.data.map((order) => (
+                          <OrderDetailsCard key={order.order_id} order={order} />
                         ))
                       ) : (
                         <Typography color="gray" className="font-medium text-center mt-4">
@@ -264,12 +293,12 @@ export default function Riders() {
                       )}
 
                       {/* Pagination Controls for Orders */}
-                      {currentOrders.length > 0 && (
+                      {riderOrders.data && riderOrders.data.length > 0 && (
                         <OrdersPagination
                           currentPage={currentOrdersPage}
                           paginate={paginateOrders}
-                          indexOfLastOrder={indexOfLastOrder}
-                          filteredOrders={filteredOrders} // Use filteredOrders for pagination
+                          lastPage={riderOrders.last_page}
+                          totalOrders={totalOrders}
                           ordersPerPage={ordersPerPage}
                         />
                       )}
