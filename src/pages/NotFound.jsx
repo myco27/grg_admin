@@ -1,15 +1,10 @@
 // src/pages/NotFound.jsx
 import React from "react";
 import { Button, Typography } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 function NotFound() {
-  const navigate = useNavigate();
-
-  const goBack = () => {
-    navigate(-1);
-  };
 
   return (
     <div className="flex flex-col mx-auto items-center justify-center h-screen min-w-screen bg-gray-100">
@@ -21,9 +16,12 @@ function NotFound() {
         Oops! The page you're looking for could not be found.
       </Typography>
 
-      <Button variant="filled" color="blue" onClick={goBack}>
-        Go Back
-      </Button>
+      <Link to="/orders">
+        <Button variant="filled" color="blue">
+          Go HOME
+        </Button>
+      </Link>
+
     </div>
   );
 }
