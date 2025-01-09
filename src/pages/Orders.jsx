@@ -23,7 +23,7 @@ export default function Orders() {
   const newSearchParams = new URLSearchParams(searchParams);
 
   // State for orders and their counts
-  const [status, setStatus] = useState(searchParams.get("status") ?? "");
+  const [status, setStatus] = useState(searchParams.get("status") ?? "all");
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -88,7 +88,7 @@ export default function Orders() {
       setSearchLoading(true);
       const response = await axiosClient.get("/admin/orders", {
         params: {
-          status: status,
+          status: status === "all" ? "" : status,
           page: pagination.page,
           search: debounceSearch,
           date: filters.date,
@@ -135,6 +135,68 @@ export default function Orders() {
   useEffect(() => {
     fetchOrders(pagination.page);
   }, [status, pagination.page, debounceSearch, filters.date]);
+
+  // Set default values for URL parameters then validate
+  useEffect(() => {
+    const defaultParams = {
+      status: "all",
+      page: "1",
+      search: "",
+      date: "",
+    };
+  
+    const newSearchParams = new URLSearchParams(searchParams);
+  
+    // Check for unexpected parameters
+    const validParams = ["status", "page", "search", "date"];
+    const hasInvalidParams = Array.from(searchParams.keys()).some(
+      (key) => !validParams.includes(key)
+    );
+  
+    if (hasInvalidParams) {
+      navigate("/notfound");
+      return;
+    }
+  
+    // Set default values for missing parameters
+    if (!searchParams.get("status")) newSearchParams.set("status", defaultParams.status);
+    if (!searchParams.get("page")) newSearchParams.set("page", defaultParams.page);
+    if (!searchParams.get("search")) newSearchParams.set("search", defaultParams.search);
+    if (!searchParams.get("date")) newSearchParams.set("date", defaultParams.date);
+  
+    // Navigate with updated parameters if any defaults were set
+    if (
+      !searchParams.get("status") ||
+      !searchParams.get("page") ||
+      !searchParams.get("search") ||
+      !searchParams.get("date")
+    ) {
+      navigate(`?${newSearchParams.toString()}`, { replace: true });
+      return; // Exit early to avoid validation until the next render
+    }
+  
+    // Validate page number
+    const page = parseInt(newSearchParams.get("page"));
+    if (isNaN(page) || page < 1) {
+      navigate("/notfound");
+      return;
+    }
+  
+    // Validate status parameter
+    const validStatuses = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
+    const statusParam = newSearchParams.get("status");
+    if (!validStatuses.includes(statusParam)) {
+      navigate("/notfound");
+      return;
+    }
+  
+    // Validate date parameter (optional, if needed)
+    const dateParam = newSearchParams.get("date");
+    if (dateParam && !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+      navigate("/notfound");
+      return;
+    }
+  }, [searchParams, navigate]);
 
   // Handle status tab click
   const handleClickStatus = (status) => {
