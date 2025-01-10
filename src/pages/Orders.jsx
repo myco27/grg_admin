@@ -19,11 +19,11 @@ import useDebounce from "../components/UseDebounce";
 
 export default function Orders() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const newSearchParams = new URLSearchParams(searchParams);
 
   // State for orders and their counts
-  const [status, setStatus] = useState(searchParams.get("status") ?? "all");
+  const [status, setStatus] = useState(searchParams.get("status") || "all");
   const [countOrders, setCountOrders] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -31,6 +31,7 @@ export default function Orders() {
   const [cache, setCache] = useState({});
 
   // Pagination parameters
+  const [lastOrderPage, setLastOrderPage] = useState(null);
   const [pagination, setPagination] = useState({
     page: parseInt(searchParams.get("page")) || 1,
     totalPages: 1,
@@ -49,6 +50,8 @@ export default function Orders() {
   // Debouncing search input
   const [searchLoading, setSearchLoading] = useState(false);
   const debounceSearch = useDebounce({ value: filters.search });
+  const [isLastOrderPageLoading, setIsLastOrderPageLoading] = useState(true);
+
 
   // Fetch count of orders by status
   const fetchCountOrders = async () => {
@@ -76,7 +79,7 @@ export default function Orders() {
     // Create cache key
     const cacheKey = `${status}-${pagination.page}-${debounceSearch}-${filters.date}`;
 
-    // Check cache
+    // Check cache based on cache key
     if (cache[cacheKey]) {
       setOrders(cache[cacheKey].data);
       setPagination(cache[cacheKey].pagination);
@@ -86,6 +89,7 @@ export default function Orders() {
 
     try {
       setSearchLoading(true);
+      setIsLastOrderPageLoading(true); // Set loading state for lastOrderPage
       const response = await axiosClient.get("/admin/orders", {
         params: {
           status: status === "all" ? "" : status,
@@ -99,7 +103,6 @@ export default function Orders() {
         const { data, current_page, last_page, total, links, per_page } =
           response.data.data;
 
-        // Define newPagination
         const newPagination = {
           page: current_page,
           totalPages: last_page,
@@ -109,12 +112,12 @@ export default function Orders() {
           isLoading: false,
         };
 
-        // Update state
         setOrders(data);
         setPagination(newPagination);
         setSearchLoading(false);
+        setLastOrderPage(last_page);
+        setIsLastOrderPageLoading(false);
 
-        // Cache the data
         setCache((prevCache) => ({
           ...prevCache,
           [cacheKey]: { data, pagination: newPagination },
@@ -123,6 +126,7 @@ export default function Orders() {
     } catch (error) {
       navigate("/notfound");
       setPagination({ ...pagination, isLoading: false });
+      setIsLastOrderPageLoading(false); // Clear loading state for lastOrderPage
     }
   }, [status, debounceSearch, filters.date, cache, pagination, navigate]);
 
@@ -135,72 +139,59 @@ export default function Orders() {
   useEffect(() => {
     fetchOrders(pagination.page);
   }, [status, pagination.page, debounceSearch, filters.date]);
-
-  // Set default values for URL parameters then validate
-  useEffect(() => {
-    const defaultParams = {
-      status: "all",
-      page: "1", 
-      search: "",
-      date: ""
-    };
   
-    const validParams = ["status", "page", "search", "date"];
-    const validStatuses = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
-    
-    // Check for unexpected parameters first
+  // Set URL search params whenever state changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    // Update URL with current state
+    params.set("status", status);
+    params.set("page", pagination.page.toString());
+    params.set("search", filters.search);
+    params.set("date", filters.date);
+
+    if (filters.date) {
+      params.set("date", filters.date); // Set date if it exists
+    } else {
+      params.set("date", "");
+    }
+
+    setSearchParams(params);
+  }, [status, pagination.page, filters.search, filters.date, searchParams, setSearchParams]);
+
+  // Validate invalid URL parameters and pagination values
+  useEffect(() => {
+    const validParams = ["page", "status", "search", "date"];
     const hasInvalidParams = Array.from(searchParams.keys()).some(
       (key) => !validParams.includes(key)
     );
-  
+
+    // Only navigate to /notfound if there are truly invalid parameters
     if (hasInvalidParams) {
       navigate("/notfound");
-      return;
     }
+
+    if (isLastOrderPageLoading) return;
   
-    // Validate existing parameters before setting defaults
     const currentPage = searchParams.get("page");
-    const currentStatus = searchParams.get("status");
-    const currentDate = searchParams.get("date");
-  
-    // Validate page if it exists
     if (currentPage) {
       const page = parseInt(currentPage);
-      if (isNaN(page) || page < 1) {
+      // Check if the page exceeds the total number of pages
+      if (lastOrderPage > 0 && page > lastOrderPage) {
         navigate("/notfound");
         return;
       }
     }
-  
-    // Validate status if it exists
-    if (currentStatus && !validStatuses.includes(currentStatus)) {
+
+  }, [searchParams, navigate, lastOrderPage, isLastOrderPageLoading]);
+
+  // Validate and handle "status" parameter
+  useEffect(() => {
+    const validStatus = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
+    const currentStatus = searchParams.get("status");
+
+    if (currentStatus && !validStatus.includes(currentStatus)) {
       navigate("/notfound");
-      return;
-    }
-  
-    // Validate date if it exists
-    if (currentDate && !/^\d{4}-\d{2}-\d{2}$/.test(currentDate)) {
-      navigate("/notfound");
-      return;
-    }
-  
-    // Only set defaults if all existing parameters are valid
-    const newSearchParams = new URLSearchParams(searchParams);
-    
-    if (!searchParams.get("status")) newSearchParams.set("status", defaultParams.status);
-    if (!searchParams.get("page")) newSearchParams.set("page", defaultParams.page);
-    if (!searchParams.get("search")) newSearchParams.set("search", defaultParams.search);
-    if (!searchParams.get("date")) newSearchParams.set("date", defaultParams.date);
-  
-    // Navigate with updated parameters if any defaults were set
-    if (
-      !searchParams.get("status") ||
-      !searchParams.get("page") ||
-      !searchParams.get("search") ||
-      !searchParams.get("date")
-    ) {
-      navigate(`?${newSearchParams.toString()}`, { replace: true });
-      return;
     }
   }, [searchParams, navigate]);
 
@@ -263,7 +254,7 @@ export default function Orders() {
   return (
     <Fragment>
       <div className="flex flex-col min-h-screen bg-gray-100">
-        <main className="flex-1 px-3 md:px-8 py-4">
+        <main className="flex-1 px-3 md:px-6">
           {/* Header and Controls */}
           <div className="flex flex-col gap-4 mb-6">
             <Typography variant="h4" className="text-gray-900">
@@ -367,7 +358,7 @@ export default function Orders() {
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <div key={order.order_id} className="w-full">
