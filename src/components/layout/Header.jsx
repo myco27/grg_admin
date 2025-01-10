@@ -77,18 +77,6 @@ export default function Header() {
             <MenuItem className="flex items-center gap-2">
               <Settings className="h-4 w-4" /> Settings
             </MenuItem>
-            <MenuItem>
-              <Input
-                label="Search orders..."
-                icon={<Search className="h-5 w-5" />}
-                className="bg-white"
-                // value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                containerProps={{
-                  onClick: (e) => e.stopPropagation(),
-                }}
-              />
-            </MenuItem>
             <hr className="my-2 border-blue-gray-50" />
             <MenuItem
               className="flex items-center gap-2 text-red-500"
