@@ -136,27 +136,10 @@ export default function Riders() {
 
   },[cache]);
 
-  // Fetch riders and orders when component mounts or selected rider changes
+  // Fetch riders when component mounts or selected rider changes
   useEffect(() => {
-    fetchRiders();
-
-    // Restore selected rider from URL params
-    if (riderIdFromParams) {
-      const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
-      if (rider) {
-        setSelectedRider(rider);
-        fetchRiderOrder(rider.id, currentOrdersPage, debouncedOrderSearchQuery);
-      }
-    }
-
-  }, [fetchRiders, riderIdFromParams, riders]);
-
-  // Fetch orders when order search query or page changes
-  useEffect(() => {
-    if (selectedRider) {
-      fetchRiderOrder(selectedRider.id, currentOrdersPage, debouncedOrderSearchQuery);
-    }
-  }, [debouncedOrderSearchQuery, currentOrdersPage, selectedRider]);
+    fetchRiders()
+  }, [fetchRiders]) 
 
   // Update Params based on rider and order queries and pages
   useEffect(() => {
