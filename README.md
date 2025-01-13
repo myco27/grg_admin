@@ -14,6 +14,12 @@ The backend is powered by **Laravel**, which handles server-side pagination, sea
   - Token-based authorization for protected routes.  
   - Dynamic error message handling for authentication forms (e.g., invalid credentials, email already in use).  
 
+- **User Registration:**
+    - Supports additional fields like first_name and last_name for user profiles.
+    - Validates inputs dynamically (e.g., missing fields, invalid email formats).
+    - Disables form submission until all required fields are filled.
+    - Displays backend-sent error messages for registration issues (e.g., email already in use).
+
 - **Order Management**:  
   - View all orders with detailed information.  
   - Filter orders based on specific criteria (e.g., status, date range).  
