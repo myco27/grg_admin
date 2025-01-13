@@ -143,21 +143,21 @@ export default function Orders() {
   // Set URL search params whenever state changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
-
-    // Update URL with current state
-    params.set("status", status);
-    params.set("page", pagination.page.toString());
-    params.set("search", filters.search);
-    params.set("date", filters.date);
-
-    if (filters.date) {
-      params.set("date", filters.date); // Set date if it exists
-    } else {
-      params.set("date", "");
-    }
-
-    setSearchParams(params);
-  }, [status, pagination.page, filters.search, filters.date, searchParams, setSearchParams]);
+    const currentStatus = params.get("status") || "all";
+    const currentPage = parseInt(params.get("page")) || 1;
+    const currentSearch = params.get("search") || "";
+    const currentDate = params.get("date") || null;
+  
+    setStatus(currentStatus);
+    setFilters({
+      search: currentSearch,
+      date: currentDate,
+    });
+    setPagination(prev => ({
+      ...prev,
+      page: currentPage,
+    }));
+  }, [searchParams]);
 
   // Validate invalid URL parameters and pagination values
   useEffect(() => {
@@ -195,60 +195,81 @@ export default function Orders() {
     }
   }, [searchParams, navigate]);
 
+  // Refresh page when back button is pressed
+  useEffect(() => {
+    const handlePopState = () => {
+      window.location.reload();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   // Handle status tab click
   const handleClickStatus = (status) => {
-    const updatedStatus = status === "all" ? "" : status;
-    setStatus(updatedStatus);
-    setPagination({ ...pagination, page: 1, isLoading: true });
-
-    if (updatedStatus) {
-      newSearchParams.set("status", updatedStatus);
-    } else {
-      newSearchParams.delete("status");
-    }
-
-    newSearchParams.set("page", 1); // Update links page=1 if tabs are changed
-    navigate(`?${newSearchParams.toString()}`, { replace: true });
+    const params = new URLSearchParams(searchParams);
+    params.set("status", status);
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+    
+    setStatus(status);
+    setPagination({ ...pagination, page: 1 });
   };
 
   // Handle pagination page change
-  const handlePageChange = async (newPage) => {
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", newPage.toString());
+    setSearchParams(params, { replace: false });
+  
     setPagination({
       ...pagination,
       page: newPage,
       isLoading: true,
     });
-
-    newSearchParams.set("page", newPage);
-    navigate(`?${newSearchParams.toString()}`, { replace: true });
   };
 
   // Handle search input change
   const handleSearchInput = (event) => {
     const { value } = event.target;
-
+    const params = new URLSearchParams(searchParams);
+    
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+  
     setFilters({ ...filters, search: value });
-    newSearchParams.set("search", value);
-    navigate(`?${newSearchParams.toString()}`, { replace: true });
+    setPagination({ ...pagination, page: 1 });
   };
 
   // Handle date filter change
   const handleDateChange = (date) => {
-    if (date === null || date === undefined) {
-      setFilters({ ...filters, date: "" });
-      newSearchParams.delete("date");
-      navigate(`?${newSearchParams.toString()}`, { replace: true });
-      return;
+    const params = new URLSearchParams(searchParams);
+    
+    if (date) {
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      const formattedDate = localDate.toISOString().split("T")[0];
+      params.set("date", formattedDate);
+    } else {
+      params.delete("date");
     }
-
-    const localDate = new Date(
-      date.getTime() - date.getTimezoneOffset() * 60000
-    );
-    const formattedDate = localDate.toISOString().split("T")[0];
-
-    setFilters({ ...filters, date: formattedDate });
-    newSearchParams.set("date", formattedDate);
-    navigate(`?${newSearchParams.toString()}`, { replace: true });
+    
+    params.set("page", "1");
+    setSearchParams(params, { replace: false });
+  
+    setFilters({ 
+      ...filters, 
+      date: date ? date.toISOString().split("T")[0] : "" 
+    });
+    setPagination({ ...pagination, page: 1 });
   };
 
   return (
