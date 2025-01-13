@@ -275,7 +275,7 @@ export default function Orders() {
   return (
     <Fragment>
       <div className="flex flex-col min-h-screen bg-gray-100">
-        <main className="flex-1 px-3 md:px-6">
+        <main className="flex-1 p-3 md:p-6">
           {/* Header and Controls */}
           <div className="flex flex-col gap-4 mb-6">
             <Typography variant="h4" className="text-gray-900">
