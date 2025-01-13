@@ -56,7 +56,7 @@ export default function Riders() {
   // Fetch riders from API with search query and pagination
   const fetchRiders = useCallback(async () => {
     const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
-
+  
     if (cache[cacheKey]) {
       setRiders(cache[cacheKey].data);
       setTotalRiders(cache[cacheKey].total);
@@ -65,7 +65,7 @@ export default function Riders() {
       setSearchLoading(false);
       return;
     }
-
+  
     try {
       setSearchLoading(true);
       const response = await axiosClient.get('/admin/riders', {
@@ -74,14 +74,14 @@ export default function Riders() {
           page: currentRiderPage,
         },
       });
-
+  
       if (response.status === 200) {
         const ridersData = response.data.data;
         setRiders(ridersData.data);
         setTotalRiders(ridersData.total);
         setLastRiderPage(ridersData.last_page);
         setIsLoading(false);
-
+  
         setCache((prevCache) => ({
           ...prevCache,
           [cacheKey]: { data: ridersData.data, total: ridersData.total, lastRiderPage: ridersData.last_page },
@@ -141,16 +141,6 @@ export default function Riders() {
     fetchRiders()
   }, [fetchRiders]) 
 
-  // Update Params based on rider and order queries and pages
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set('riderSearch', riderSearchQuery);
-    params.set('riderPage', currentRiderPage);
-    params.set('orderSearch', orderSearchQuery);
-    params.set('orderPage', currentOrdersPage);
-    setSearchParams(params);
-  }, [riderSearchQuery, currentRiderPage, orderSearchQuery, currentOrdersPage, searchParams, setSearchParams]);
-
   // Validate rider ID from URL params  
   useEffect(() => {
     if (riderIdFromParams) {
@@ -164,7 +154,7 @@ export default function Riders() {
       // Check if the selected rider is in the current list of riders
       const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
       if (!rider) {
-        // If the rider is not found set selected rider to null
+        // If the rider is not found, set selected rider to null
         setSelectedRider(null);
         return;
       }
@@ -174,6 +164,18 @@ export default function Riders() {
       fetchRiderOrder(rider.id, currentOrdersPage, debouncedOrderSearchQuery);
     }
   }, [riderIdFromParams, riders, navigate, fetchRiderOrder, currentOrdersPage, debouncedOrderSearchQuery]);
+
+  // Add this useEffect to handle changes in the riders list
+  useEffect(() => {
+    if (selectedRider) {
+      // Check if the selected rider is still in the current list of riders
+      const rider = riders.find((rider) => rider.id === selectedRider.id);
+      if (!rider) {
+        // If the rider is not in the list, clear the selection
+        setSelectedRider(null);
+      }
+    }
+  }, [riders, selectedRider]);
 
   // Validate pagination from URL params
   useEffect(() => {
@@ -230,13 +232,14 @@ export default function Riders() {
   // Handle rider selection
   const handleRiderSelect = (rider) => {
     setSelectedRider(rider);
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(searchParams);
     params.set('riderSearch', riderSearchQuery);
     params.set('riderPage', currentRiderPage);
     params.set('orderSearch', orderSearchQuery);
     params.set('orderPage', currentOrdersPage);
     navigate(`/riders/${rider.id}?${params.toString()}`);
   };
+  
 
   // Handle search input for riders
   const handleSearchRider = (e) => {
