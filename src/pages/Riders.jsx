@@ -61,7 +61,7 @@ export default function Riders() {
     params.set('orderPage', pageNumber);
     setSearchParams(params);
   };
-  
+
   // Fetch riders from API with search query and pagination
   const fetchRiders = useCallback(async () => {
     const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
@@ -275,6 +275,7 @@ export default function Riders() {
   const handleSearchOrder = (e) => {
     const query = e.target.value;
     setOrderSearchQuery(query);
+    setSearchParams({ orderSearch: query, orderPage: 1 });
     setCurrentOrdersPage(1);
   };
 
