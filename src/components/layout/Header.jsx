@@ -20,6 +20,16 @@ export default function Header() {
   const { showAlert } = useAlert();
   const { user, setUser, setToken } = useStateContext();
 
+  const handleLogoClick = () => {
+    // Navigate to /orders
+    navigate('/orders');
+
+    // Reload the page after a short delay to ensure navigation happens first
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
+  };
+
   const handleLogout = async () => {
     try {
       const response = await axiosClient.post("/admin/logout");
@@ -44,8 +54,12 @@ export default function Header() {
     <div className="bg-purple-500 border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
       <div className="flex items-center">
         <Sidebar />
-        <Link to="/orders">
-          <img src="/rockygo_logo.png" alt="RockyGo" className="h-7" />
+        <Link to="/orders" onClick={handleLogoClick} >
+          <img 
+            src="/rockygo_logo.png" 
+            alt="RockyGo" 
+            className="h-7" 
+          />
         </Link>
       </div>
 
