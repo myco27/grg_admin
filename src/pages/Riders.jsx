@@ -47,12 +47,21 @@ export default function Riders() {
   const [cache, setCache] = useState({});
 
   // Pagination logic for riders
-  const paginateRiders = (pageNumber) => setCurrentRiderPage(pageNumber);
-  const [totalRiders, setTotalRiders] = useState(0);
+  const paginateRiders = (pageNumber) => {
+    setCurrentRiderPage(pageNumber);
+    const params = new URLSearchParams(searchParams);
+    params.set('riderPage', pageNumber);
+    setSearchParams(params);
+  };  const [totalRiders, setTotalRiders] = useState(0);
 
   // Pagination logic for orders
-  const paginateOrders = (pageNumber) => setCurrentOrdersPage(pageNumber);
-
+  const paginateOrders = (pageNumber) => {
+    setCurrentOrdersPage(pageNumber);
+    const params = new URLSearchParams(searchParams);
+    params.set('orderPage', pageNumber);
+    setSearchParams(params);
+  };
+  
   // Fetch riders from API with search query and pagination
   const fetchRiders = useCallback(async () => {
     const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
@@ -254,7 +263,6 @@ export default function Riders() {
     navigate(`/riders/${rider.id}?${params.toString()}`);
   };
   
-
   // Handle search input for riders
   const handleSearchRider = (e) => {
     const query = e.target.value;
@@ -272,11 +280,11 @@ export default function Riders() {
 
   return (
     <Fragment>
-      <div className='bg-gray-100 w-full'>
+      <div className='bg-gray-100 w-full p-3 md:p-4'>
         <div className="mx-auto">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Left side - Rider List */}
-            <div className="h-auto lg:h-[89dvh] lg:w-[340px] bg-white rounded-lg overflow-y-auto border border-gray-300 py-4">
+            <div className="h-auto lg:w-[340px] bg-white rounded-lg overflow-y-auto border border-gray-300 py-4">
               <Typography variant="h5" className="font-semibold text-black ml-4">All Riders</Typography>
               <div className="w-full px-2 py-1 mb-2">
                 {/* Search input for Riders */}
@@ -323,7 +331,7 @@ export default function Riders() {
             </div>
 
             {/* Right side - Rider Details */}
-            <div className="w-full bg-white h-[89dvh] overflow-y-auto rounded-lg border border-gray-300 p-4">
+            <div className="flex-2 w-full bg-white overflow-y-auto rounded-lg border border-gray-300 p-4">
               {isLoading ? (
                 <div className="flex items-center justify-center overflow-y-hidden">
                   <Loading />
