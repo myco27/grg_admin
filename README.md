@@ -25,10 +25,11 @@ The backend is powered by **Laravel**, which handles server-side pagination, sea
 - **Rider Management**:  
   - View rider profiles and their associated orders.  
   - Search and filter riders dynamically.  
-  - Server-side pagination for riders and rider orders.  
+  - Server-side pagination for riders and rider orders.
+  - Dynamic URL parameter validation and error handling.  
   - Caching for recently accessed data.  
 
-- **Alert Notifications**:  
+- **Alert Messages**:  
   - Display dynamic alert messages sent from the backend (e.g., success, error, warnings).  
   - Toast notifications for user feedback.  
 
@@ -81,6 +82,4 @@ To set up the application locally, follow these steps:
    - Update the API base URL in the frontend configuration if necessary.
 
 6. **Access the application**:  
-   Open a web browser and navigate to `http://localhost:5173`.  
-
----
+   Open a web browser and navigate to `http://localhost:5173`.
