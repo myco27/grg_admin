@@ -165,7 +165,7 @@ export default function Riders() {
     }
   }, [riderIdFromParams, riders, navigate, fetchRiderOrder, currentOrdersPage, debouncedOrderSearchQuery]);
 
-  // Add this useEffect to handle changes in the riders list
+  // Handle changes in the riders list
   useEffect(() => {
     if (selectedRider) {
       // Check if the selected rider is still in the current list of riders
@@ -228,6 +228,20 @@ export default function Riders() {
       return;
     }
   }, [searchParams, navigate]);
+
+  // Refresh page when back button is pressed
+  useEffect(() => {
+    const handlePopState = () => {
+      window.location.reload();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   // Handle rider selection
   const handleRiderSelect = (rider) => {
