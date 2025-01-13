@@ -6,8 +6,6 @@ GRG_ADMIN is a React-based application built with **Vite**, a modern web develop
 
 The backend is powered by **Laravel**, which handles server-side pagination, search queries, and authentication. The frontend communicates with the backend via API requests, ensuring seamless data processing and dynamic error handling.  
 
----
-
 ## Features  
 - **User Authentication**:  
   - Secure login and registration system integrated with Laravel backend.  
@@ -45,8 +43,6 @@ The backend is powered by **Laravel**, which handles server-side pagination, sea
   - Separate components for each feature, ensuring maintainability and scalability.  
   - Refactored code with inline comments for improved readability.  
 
----
-
 ## Technologies Used  
 - **Frontend**:  
   - React: Front-end library for building user interfaces.  
@@ -59,8 +55,6 @@ The backend is powered by **Laravel**, which handles server-side pagination, sea
 - **Backend**:  
   - Laravel: PHP framework for server-side logic, authentication, and API handling.  
   - Server-side pagination and search queries for optimized performance.  
-
----
 
 ## Installation  
 To set up the application locally, follow these steps:  
