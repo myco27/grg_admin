@@ -16,7 +16,7 @@ const DefaultLayout = () => {
       <div className="flex flex-col min-h-screen bg-gray-100">
         <Header />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1">
           <Outlet />
         </main>
 
