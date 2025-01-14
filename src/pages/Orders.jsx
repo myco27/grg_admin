@@ -165,16 +165,23 @@ export default function Orders() {
     const hasInvalidParams = Array.from(searchParams.keys()).some(
       (key) => !validParams.includes(key)
     );
-
+  
     // Only navigate to /notfound if there are truly invalid parameters
     if (hasInvalidParams) {
       navigate("/notfound");
+      return; // Exit early to avoid further processing
     }
-
+  
     if (isLastOrderPageLoading) return;
   
     const currentPage = searchParams.get("page");
     if (currentPage) {
+      // Check if the page parameter contains only digits
+      if (!/^\d+$/.test(currentPage)) {
+        navigate("/notfound");
+        return; // Exit early if the page parameter contains non-digit characters
+      }
+  
       const page = parseInt(currentPage);
       // Check if the page exceeds the total number of pages
       if (lastOrderPage > 0 && page > lastOrderPage) {
@@ -182,7 +189,7 @@ export default function Orders() {
         return;
       }
     }
-
+  
   }, [searchParams, navigate, lastOrderPage, isLastOrderPageLoading]);
 
   // Validate and handle "status" parameter
