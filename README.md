@@ -1,7 +1,7 @@
 ## Overview  
 GRG_ADMIN is a React-based application built with **Vite**, a modern web development build tool. It serves as the administrative interface for **RockyGo**, allowing admins to manage orders, riders, and their associated information. The application features a robust set of functionalities, including user authentication, dynamic filtering, pagination, and dynamic error messages.  
 
-The backend is powered by **Laravel**, which handles server-side pagination, search queries, and authentication. The frontend communicates with the backend via API requests, ensuring seamless data processing and dynamic error handling.  
+The backend is powered by **Laravel**, which handles server-side pagination, search queries, and authentication. The frontend communicates with the backend via API requests.  
 
 ## Features  
 - **User Authentication**:  
@@ -45,7 +45,8 @@ The backend is powered by **Laravel**, which handles server-side pagination, sea
 - **Frontend**:  
   - React: Front-end library for building user interfaces.  
   - Vite: Build tool for fast and efficient development.  
-  - Tailwind CSS: Utility-first CSS framework for styling.  
+  - Tailwind CSS: Utility-first CSS framework for styling. 
+  - Material Tailwind: Open-source UI library that uses Tailwind CSS. 
   - React Router: Library for client-side routing.  
   - Axios: Library for making HTTP requests to the Laravel backend.  
   - Lucide: Icon library for visually appealing icons.  
@@ -62,7 +63,7 @@ To set up the application locally, follow these steps:
    git clone https://github.com/myco27/grg_admin  
    ```  
 
-2. **Navigate to the project directory**:  
+2. **Navigate to the project directory (this varies depending on the root folder)**:  
    ```bash  
    cd grg_admin  
    ```  
@@ -78,8 +79,17 @@ To set up the application locally, follow these steps:
    ```  
 
 5. **Set up the backend**:  
-   - Ensure the Laravel backend is running and accessible.  
-   - Update the API base URL in the frontend configuration if necessary.
+   - Ensure the Laravel backend is running and accessible.
+      ```bash
+      php artisan serve
+      ```
+
+   - Start the Apache and MySQL processes via XAMPP.
+   
+   - Update the API baseURL by setting configuring the `.env` file.
+      ```bash
+      VITE_BASE_URL=https://api.example.com
+      ```
 
 6. **Access the application**:  
    Open a web browser and navigate to `http://localhost:5173`.
