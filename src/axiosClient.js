@@ -1,10 +1,11 @@
 import axios from "axios";
-const baseURL = import.meta.env.BASE_URL;
+
+// baseURL from .env
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 
 const axiosClient = axios.create({
-  // baseURL: baseURL,
-  baseURL: "http://localhost/grg_v2/api",
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
