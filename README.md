@@ -73,12 +73,7 @@ To set up the application locally, follow these steps:
    npm install  
    ```  
 
-4. **Start the development server**:  
-   ```bash  
-   npm run dev  
-   ```  
-
-5. **Set up the backend**:  
+4. **Set up the backend**:  
    - Ensure the Laravel backend is running and accessible.
       ```bash
       php artisan serve
@@ -89,7 +84,12 @@ To set up the application locally, follow these steps:
    - Update the API baseURL by setting configuring the `.env` file.
       ```bash
       VITE_BASE_URL=https://api.example.com
-      ```
+      ```   
+
+5. **Start the development server**:  
+   ```bash  
+   npm run dev  
+   ```  
 
 6. **Access the application**:  
    Open a web browser and navigate to `http://localhost:5173`.
