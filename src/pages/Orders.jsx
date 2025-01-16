@@ -111,7 +111,6 @@ export default function Orders() {
           itemsPerPage: per_page,
           isLoading: false,
         };
-      
         setOrders(data);
         setPagination(newPagination);
         setSearchLoading(false);
