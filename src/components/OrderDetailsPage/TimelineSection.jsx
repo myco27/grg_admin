@@ -11,7 +11,7 @@ import {
   TimelineBody,
   Button,
 } from "@material-tailwind/react";
-import { Home, Bell, Truck, CheckCircle, XCircle, Package, LogOut } from "lucide-react";
+import { Home, Bell, Truck, CheckCircle, XCircle, Package} from "lucide-react";
 
 const TimelineSection = ({ order }) => {
 
@@ -26,25 +26,25 @@ const TimelineSection = ({ order }) => {
         icon: <Bell className="h-4 w-4" />,
         title: "Order Confirmed",
         description: "Your order has been confirmed and is being prepared.",
-        active: ["Processing", "Delivered", "Completed"].includes(order.status)
+        active: ["processing", "delivered", "completed", "intransit"].includes(order.order_status)
       },
       {
         icon: <Truck className="h-4 w-4" />,
         title: "Out for Delivery",
-        description: `${order.riderName} is delivering your order.`,
-        active: ["Out for Delivery", "Delivered"].includes(order.status)
+        description: `${order.user_details.first_name} ${order.user_details.last_name} is delivering your order.`,
+        active: ["intransit", "delivered", "completed"].includes(order.order_status)
       },
       {
         icon: <Package className="h-4 w-4" />,
         title: "Order Delivered",
-        description: `${order.riderName} has delivered your order.`,
-        active: ["Out for Delivery", "Delivered",].includes(order.status)
+        description: `${order.user_details.first_name} ${order.user_details.last_name} has delivered your order.`,
+        active: ["delivered", "completed"].includes(order.order_status)
       },
       {
-        icon: order.status === "Cancelled" ? <XCircle className="h-4 w-4"/> : <CheckCircle className="h-4 w-4"/>,
-        title: order.status === "Cancelled" ? "Order Cancelled" : "Order Completed",
-        description: order.status === "Cancelled" ? "Order is cancelled" : "Order is Completed",
-        active: ["Cancelled", "Completed", "Delivered"].includes(order.status)
+        icon: order.order_status === "Cancelled" ? <XCircle className="h-4 w-4"/> : <CheckCircle className="h-4 w-4"/>,
+        title: order.order_status === "Cancelled" ? "Order Cancelled" : "Order Completed",
+        description: order.order_status === "Cancelled" ? "Order is cancelled" : "Order is Completed",
+        active: ["Cancelled", "completed", "delivered"].includes(order.order_status)
       },
     ];
 
@@ -64,7 +64,7 @@ const TimelineSection = ({ order }) => {
                     <TimelineItem key={index} className={index === 0 ? "pt-4" : ""}>
                       {index !== timelineItems.length - 1 && <TimelineConnector />}
                       <TimelineHeader>
-                        <TimelineIcon className={`p-2 ${timelineItem.active ? (order.status === "Cancelled" ? "bg-red-500" : "bg-green-500 text-white") : "bg-gray-300 text-gray-600"}`}>
+                        <TimelineIcon className={`p-2 ${timelineItem.active ? (order.order_status === "Cancelled" ? "bg-red-500" : "bg-green-500 text-white") : "bg-gray-300 text-gray-600"}`}>
                           {timelineItem.icon}
                         </TimelineIcon>
                         <Typography variant="h6" color={timelineItem.active ? "black" : "gray"}>
