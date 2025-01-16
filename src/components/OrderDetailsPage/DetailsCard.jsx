@@ -1,16 +1,13 @@
 import React from 'react';
 import { Card, CardBody, Typography, Rating } from '@material-tailwind/react';
-import { UserCircle, CalendarDays, MapPin, Store } from 'lucide-react';
+import { UserCircle, CalendarDays, MapPin, Store, Bike } from 'lucide-react';
 
 export default function DetailsCard({ order }) {
-  const getRiderInitials = (name) => {
-    return name.split(' ').map(word => word[0]).join('');
-  };
 
   if (!order) return null;
 
   return (
-    <Card>
+    <Card className='shadow-md'>
       <CardBody className='px-6 py-4'>
         <div className="flex flex-col lg:flex-row justify-between gap-8">
           <div className="flex-1">
@@ -18,14 +15,17 @@ export default function DetailsCard({ order }) {
 
               <div className="flex flex-row items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-xl">{getRiderInitials(order.riderName)}</span>
+                  <span className="text-blue-600 font-semibold text-xl">
+                    {order.user_details.first_name?.[0]}
+                    {order.user_details.last_name?.[0]}
+                  </span>
                 </div>
                 <div>
                   <Typography color="black" className='font-bold text-md'>
-                    {order.riderName}
+                    {order.user_details.first_name} {order.user_details.last_name}
                   </Typography>
-                  <Typography color="gray" className="font-medium text-md">
-                    Delivery Rider
+                  <Typography color="gray" className="font-medium text-md flex flex-row">
+                    <Bike className='h-5 w-5 mr-1'/> Delivery Rider
                   </Typography>
                 </div>
               </div>
@@ -39,7 +39,7 @@ export default function DetailsCard({ order }) {
 
               <div className="md:text-right mt-1 md:ml-auto">
                 <Typography color="blue-gray" className='font-bold text-md'>
-                  #{order.id}
+                  #{order.order_number || 'N/A'}
                 </Typography>
                 <Typography color="gray" className="font-medium text-md">
                   Order Number
@@ -53,11 +53,11 @@ export default function DetailsCard({ order }) {
                 <div className="flex items-start gap-2">
                   <UserCircle className="w-9 h-9 text-blue-500 mt-1" />
                   <div>
-                    <Typography color="gray" className="font-medium mb-[-4px text-md">
+                    <Typography color="gray" className="font-medium mb-[-4px] text-md">
                       Customer Name
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.customerName}
+                      N/A
                     </Typography>
                   </div>
                 </div>
@@ -69,7 +69,7 @@ export default function DetailsCard({ order }) {
                       Store
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      Store Name
+                      {order.setup.store_name}
                     </Typography>
                   </div>
                 </div>
@@ -81,7 +81,7 @@ export default function DetailsCard({ order }) {
                       Order Date
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      {order.orderDate}
+                      {order.date_created || 'N/A'}
                     </Typography>
                   </div>
                 </div>
@@ -92,8 +92,8 @@ export default function DetailsCard({ order }) {
                     <Typography color="gray" className="font-medium mb-[-4px] text-md">
                       Shipping Type
                     </Typography>
-                    <Typography color="black" className="font-bold text-md">
-                      {order.shippingType}
+                    <Typography color="black" className="font-bold text-md uppercase">
+                      {order.type || 'N/A'}
                     </Typography>
                   </div>
                 </div>
