@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardBody, Typography, Rating } from '@material-tailwind/react';
 import { UserCircle, Info, Mail, Phone } from 'lucide-react';
 
-export default function RiderDetailsCard({ rider }) {
+export default function RiderDetailsCard({ rider, averageRating }) {
   const InfoBlock = ({ icon: Icon, label, value }) => (
     <div className="flex-1 min-w-[200px] p-4 bg-gray-100 rounded-lg transition-all hover:bg-gray-100">
       <Typography color="gray" className="flex items-center gap-2 text-sm font-medium mb-2">
@@ -31,7 +31,7 @@ export default function RiderDetailsCard({ rider }) {
               <div>
                 <Typography color="gray" className="flex items-center gap-1 text-sm font-medium">
                   <UserCircle className="w-4 h-4" />
-                  Rider Profile
+                  Rider Profile {rider.averageRating}
                 </Typography>
                 <Typography variant="h6" color="blue-gray" className="font-bold">
                   {rider.first_name || "None"} {rider.last_name || "None"}
@@ -44,7 +44,7 @@ export default function RiderDetailsCard({ rider }) {
                 Rating
               </Typography>
               <Rating 
-                value={5} 
+                value={averageRating} 
                 readonly 
                 className="flex gap-1"
                 ratedColor="amber"
