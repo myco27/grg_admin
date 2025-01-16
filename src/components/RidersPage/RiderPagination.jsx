@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, IconButton } from "@material-tailwind/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function RiderPagination({ currentPage, paginate, totalRiders, lastPage }) {
+export default function RiderPagination({ currentPage, paginate, lastPage }) {
   const isFirstPage = currentPage === 1;
   const isLastPage = currentPage === lastPage;
 
