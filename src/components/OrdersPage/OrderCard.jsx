@@ -37,10 +37,6 @@ export default function OrderCard({ order }) {
         {/* Header Section */}
         <div className="flex items-center justify-between border-b border-gray-200 pb-2">
           <div className="flex items-center">
-            {/* <Checkbox
-              color="green"
-              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
-            /> */}
             <div className="flex items-center gap-2">
               <Typography className="text-gray-900 font-semibold text-md">
                 {order.order_number}
@@ -168,7 +164,7 @@ export default function OrderCard({ order }) {
               Rider:
             </Typography>
             <Typography className="text-gray-900 text-md font-bold truncate">
-              N/A
+              {order.user_details.first_name} {order.user_details.last_name} 
             </Typography>
           </div>
 
