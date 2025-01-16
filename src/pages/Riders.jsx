@@ -43,6 +43,9 @@ export default function Riders() {
   const [error, setError] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
 
+  // Rating
+  const [averageRating, setAverageRating] = useState(null);
+
   // Cache for API responses
   const [cache, setCache] = useState({});
 
@@ -130,6 +133,7 @@ export default function Riders() {
         setLastOrderPage(orders.last_page);
         setOrdersPerPage(orders.per_page);
         setTotalOrders(orders.total);
+        setAverageRating(response.data.averageRating);
 
         // Update the cache with the new data
         setCache((prevCache) => ({
@@ -164,7 +168,7 @@ export default function Riders() {
       const rider = riders.find((rider) => rider.id === parseInt(riderIdFromParams));
       if (!rider) {
         // If the rider is not found, set selected rider to null
-        setSelectedRider(null);
+        // setSelectedRider(null); Commented since it causes selected rider to reset after changing currentRiderPage
         return;
       }
   
@@ -173,18 +177,6 @@ export default function Riders() {
       fetchRiderOrder(rider.id, currentOrdersPage, debouncedOrderSearchQuery);
     }
   }, [riderIdFromParams, riders, navigate, fetchRiderOrder, currentOrdersPage, debouncedOrderSearchQuery]);
-
-  // Handle changes in the riders list
-  useEffect(() => {
-    if (selectedRider) {
-      // Check if the selected rider is still in the current list of riders
-      const rider = riders.find((rider) => rider.id === selectedRider.id);
-      if (!rider) {
-        // If the rider is not in the list, clear the selection
-        setSelectedRider(null);
-      }
-    }
-  }, [riders, selectedRider]);
 
   // Validate pagination from URL params
   useEffect(() => {
@@ -342,7 +334,7 @@ export default function Riders() {
                   <Typography variant="h5" className="text-black mb-4">Details</Typography>
                   {selectedRider ? (
                     <div>
-                      <RiderDetails rider={selectedRider} />
+                      <RiderDetails key={averageRating} rider={selectedRider} averageRating={averageRating} />
                       <div className="flex flex-col md:flex-row items-center justify-between">
                         <Typography variant="h5" className="text-black mb-2 md:mb-4 mt-8">
                           Orders
