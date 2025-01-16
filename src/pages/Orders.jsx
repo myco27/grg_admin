@@ -111,7 +111,7 @@ export default function Orders() {
           itemsPerPage: per_page,
           isLoading: false,
         };
-
+      
         setOrders(data);
         setPagination(newPagination);
         setSearchLoading(false);
@@ -281,7 +281,7 @@ export default function Orders() {
 
   return (
     <Fragment>
-      <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex flex-col min-h-screen">
         <main className="flex-1 p-3 md:p-6">
           {/* Header and Controls */}
           <div className="flex flex-col gap-4 mb-6">
