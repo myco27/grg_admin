@@ -35,7 +35,7 @@ export default function DetailsCard({ order }) {
 
               <div className="text-left mt-1">
                 <Typography color="blue-gray" className='font-bold text-md'>
-                  #{order.order_id || "None"}
+                  #{order.order_number || "None"}
                 </Typography>
                 <Typography color="gray" className="font-medium text-md">
                   Order Number
@@ -68,7 +68,7 @@ export default function DetailsCard({ order }) {
                       Total Price
                     </Typography>
                     <Typography color="black" className="font-bold text-md">
-                      $ {totalPrice || "None"}
+                      RM {totalPrice || "None"}
                     </Typography>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function DetailsCard({ order }) {
                     <Typography color="gray" className="font-medium mb-[-4px] text-md">
                       Shipping Type
                     </Typography>
-                    <Typography color="black" className="font-bold text-md">
+                    <Typography color="black" className="font-bold text-md capitalize">
                       {order.type || "None"}
                     </Typography>
                   </div>
