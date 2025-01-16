@@ -4,6 +4,7 @@ import {
   Typography,
   Chip,
   Checkbox,
+  Tooltip,
   Button,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
@@ -44,8 +45,8 @@ export default function OrderCard({ order }) {
               <Typography className="text-gray-900 font-semibold text-md">
                 {order.order_number}
               </Typography>
-              <Typography className="text-gray-600 font-medium">
-                {order.type?.[0].toUpperCase() + order.type.slice(1)}
+              <Typography className="text-gray-600 font-medium capitalize">
+                {order.type}
               </Typography>
             </div>
           </div>
@@ -69,7 +70,7 @@ export default function OrderCard({ order }) {
 
         {/* Product Section */}
         <div className="flex-1 flex flex-col gap-4 py-4">
-          <Typography className="text-black text-sm">Store Name:</Typography>
+          <Typography className="text-black text-sm">{order.setup.store_name}</Typography>
           {displayedProducts.map((product, index) => (
             <div key={index} className="flex items-start gap-4">
               <div className="h-16 w-16 rounded-lg bg-gray-100 p-2 flex-shrink-0">
@@ -84,17 +85,23 @@ export default function OrderCard({ order }) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex flex-col">
                     <Typography className="text-gray-900 text-sm font-bold truncate">
                       {product.food_name}
                     </Typography>
-                    <Typography className="text-xs text-gray-600 font-medium">
-                      {product.quantity > 0
-                        ? `${product.quantity} x $${parseFloat(
-                            product.amount
-                          ).toFixed(2)}`
-                        : "Invalid product"}
-                    </Typography>
+                    <div className="flex gap-x-1">
+                      <Tooltip content="Quantity">
+                        <Typography className="text-xs text-gray-600 font-medium">
+                          {product.quantity}
+                        </Typography>
+                      </Tooltip>
+                      <Typography className="text-xs text-gray-600 font-medium">X</Typography>
+                      <Tooltip content="Price">
+                        <Typography className="text-xs text-gray-600 font-medium">
+                          {product.amount}
+                        </Typography>
+                      </Tooltip>
+                    </div>
                   </div>
 
                   <div>
@@ -102,14 +109,14 @@ export default function OrderCard({ order }) {
                       variant="h6"
                       className="text-gray-900 text-sm text-right"
                     >
-                      $
+                      RM&nbsp;
                       {(product.quantity * parseFloat(product.amount)).toFixed(
                         2
                       )}
                     </Typography>
                     <Typography
                       variant="paragraph"
-                      className="text-right text-xs font-medium"
+                      className="text-right text-xs font-medium uppercase"
                     >
                       {order.funding}
                     </Typography>
