@@ -16,6 +16,7 @@ export default function OrderDetails() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(null);
 
 
   // Scroll at top most after page load
@@ -29,7 +30,6 @@ export default function OrderDetails() {
 
       // Check if order ID in url has letter
       if (/[a-zA-Z]/.test(order_id)) {
-        console.log("Invalid order_id (contains letters), redirecting to /notfound");
         navigate("/notfound");
         return;
       }
@@ -38,7 +38,7 @@ export default function OrderDetails() {
         const response = await axiosClient.get(`/admin/orders/${order_id}`);
         if (response.status === 200) {
           setOrder(response.data.data);
-          console.log(response)
+          setAverageRating(response.data.averageRating);
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
@@ -70,8 +70,8 @@ export default function OrderDetails() {
           <Typography variant="h4" className="text-gray-900 mb-4">
             Order Details
           </Typography>
-
-          <DetailsCard order={order} />
+          
+          <DetailsCard key={averageRating} order={order} averageRating={averageRating} />
 
           <Typography variant="h4" className="text-gray-900 mt-4 mb-4">
               Main Info
