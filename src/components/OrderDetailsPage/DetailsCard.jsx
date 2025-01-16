@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardBody, Typography, Rating } from '@material-tailwind/react';
 import { UserCircle, CalendarDays, MapPin, Store, Bike } from 'lucide-react';
 
-export default function DetailsCard({ order }) {
+export default function DetailsCard({ order, averageRating }) {
 
   if (!order) return null;
 
@@ -31,7 +31,7 @@ export default function DetailsCard({ order }) {
               </div>
 
               <div className='flex flex-col'>
-                <Rating value={5} className='mt-1 ml-[-4px] mt-[0px]' readOnly />
+                <Rating value={averageRating} className='mt-1 ml-[-4px] mt-[0px]' readOnly />
                 <Typography color="gray" className='font-medium text-md'>
                   Rating:
                 </Typography>
