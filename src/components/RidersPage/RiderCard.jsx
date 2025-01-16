@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardBody, Typography, Chip } from "@material-tailwind/react";
 
 function RiderCard({ rider }) {
+
   return (
     <Card className="w-full border-b border-t border-gray-300 rounded-none shadow-none h-[80px] flex justify-center">
       <CardBody className="ml-[-0.5rem] flex gap-2">
