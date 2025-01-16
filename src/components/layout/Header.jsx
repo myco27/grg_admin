@@ -25,9 +25,9 @@ export default function Header() {
     navigate('/orders');
 
     // Reload the page after a short delay to ensure navigation happens first
-    setTimeout(() => {
-      window.location.reload();
-    }, 200);
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 200);
   };
 
   const handleLogout = async () => {
