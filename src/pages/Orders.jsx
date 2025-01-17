@@ -84,6 +84,12 @@ export default function Orders() {
           localStorage.removeItem(key);
         }
       }
+      if (key.startsWith("countOrders")) {
+        const cachedData = getCache(key);
+        if (cachedData && cachedData.expiry && cachedData.expiry < now) {
+          localStorage.removeItem(key);
+        }
+      }
     }
   };
 
@@ -94,12 +100,22 @@ export default function Orders() {
 
   // Fetch count of orders by status
   const fetchCountOrders = async () => {
+    // Create cache key
+    const cacheKey = "countOrders";
+  
+    // Check cache based on cache key
+    const cachedData = getCache(cacheKey);
+    if (cachedData && Date.now() < cachedData.expiry) {
+      setCountOrders(cachedData.data);
+      return;
+    }
+  
     try {
       const response = await axiosClient.get("/admin/count/orders");
-
+  
       if (response.status === 200) {
         const responseData = response.data.data;
-
+  
         const ordersArray = Object.entries(responseData).map(
           ([status, count]) => ({
             status,
@@ -107,6 +123,12 @@ export default function Orders() {
           })
         );
         setCountOrders(ordersArray);
+  
+        // Cache the data with an expiry time (e.g., 5 minutes)
+        setCache(cacheKey, {
+          data: ordersArray,
+          expiry: Date.now() + 300000, // 5 minutes
+        });
       }
     } catch (error) {
       navigate("/notfound");
