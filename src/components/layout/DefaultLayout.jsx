@@ -5,7 +5,7 @@ import Header from "./Header";
 import { useStateContext } from "../../contexts/contextProvider";
 
 const DefaultLayout = () => {
-  const {user, token} = useStateContext();
+  const {token} = useStateContext();
 
   if (!token) {
     return <Navigate to="/admin/login" />;

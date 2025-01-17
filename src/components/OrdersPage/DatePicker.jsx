@@ -3,7 +3,7 @@ import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import { format, isValid } from "date-fns";
 import { X } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export default function DatePicker({
   selected,
@@ -12,7 +12,7 @@ export default function DatePicker({
 }) {
   const inputRef = useRef(null);
   const fpRef = useRef(null);
-  const navigate = useNavigate(); // Use the navigate function
+  const navigate = useNavigate();
 
   // Validate the selected date
   const isValidDate = selected && isValid(new Date(selected));

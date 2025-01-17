@@ -15,7 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function OrderCard({ order }) {
   const navigate = useNavigate();

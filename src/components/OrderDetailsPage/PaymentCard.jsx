@@ -38,18 +38,6 @@ export default function PaymentCard({order}) {
                 </Typography>
               </div>
             </div>
-            
-            {/* <div className="flex flex-col items-start sm:items-end">
-              <Typography color="gray" className="text-sm font-medium mb-1">
-                Rating
-              </Typography>
-              <Rating 
-                value={5} 
-                readonly 
-                className="flex gap-1"
-                ratedColor="amber"
-              />
-            </div> */}
           </div>
 
           {/* Info Grid */}

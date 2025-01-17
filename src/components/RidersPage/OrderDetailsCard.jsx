@@ -3,9 +3,6 @@ import { Card, CardBody, Typography, Chip } from '@material-tailwind/react';
 import { CalendarDays, MapPin, QrCode, Store, Wallet } from 'lucide-react';
 
 export default function DetailsCard({ order }) {
-  const getRiderInitials = (name) => {
-    return name.split(' ').map(word => word[0]).join('');
-  };
 
   if (!order) return null;
 
@@ -18,10 +15,12 @@ export default function DetailsCard({ order }) {
           <div className="flex flex-col lg:flex-row justify-between">
             <div className="flex-1">
               <div className="flex flex-col sm:flex-row justify-start gap-4 md:gap-10">
+
+                {/* Card Header Section */}
                 <div className="flex gap-4">
                   <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
                     <span className="text-blue-600 font-semibold text-xl">
-                      {/* {getRiderInitials(order.user_details.first_name + " " + order.user_details.last_name)} */} UU
+                      {/* {getRiderInitials(order.user_details.first_name + " " + order.user_details.last_name)} */} NA
                     </span>
                   </div>
                   <div className="mt-1">
@@ -59,6 +58,7 @@ export default function DetailsCard({ order }) {
                 </div>
               </div>
 
+              {/* Card Footer Section */}
               <div className="mt-4">
                 <div className="h-px bg-gray-200 mb-3" />
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -1,4 +1,4 @@
-import { React, useState, useEffect, Children } from 'react';
+import { React, useState, useEffect } from 'react';
 import {
   Card,
   Tabs,
@@ -13,9 +13,6 @@ import {
 } from '@material-tailwind/react';
 
 import {
-  Bike,
-  Calendar,
-  UserCircle,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";

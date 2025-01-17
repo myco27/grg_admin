@@ -8,7 +8,7 @@ import {
   MenuItem,
   Button,
 } from "@material-tailwind/react";
-import { Search, ChevronDown, Settings, LogOut, User } from "lucide-react";
+import { ChevronDown, Settings, LogOut, User } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
@@ -19,7 +19,6 @@ export default function Header() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const { user, setUser, setToken } = useStateContext();
-  const {token} = useStateContext();
 
   useEffect(() => {
     if (!user) {
@@ -35,9 +34,6 @@ export default function Header() {
 
   const handleLogoClick = () => {
     navigate('/orders');
-    // setTimeout(() => {
-    //   window.location.reload();
-    // }, 200);
   };
 
   const handleLogout = async () => {
