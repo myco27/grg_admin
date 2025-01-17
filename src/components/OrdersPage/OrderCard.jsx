@@ -49,7 +49,7 @@ export default function OrderCard({ order }) {
           <Chip
             value={order.order_status}
             className={`text-xs px-2 py-1 rounded-full ${
-              order.order_status === "cancelled"
+              order.order_status === "Cancelled"
                 ? "bg-red-100 text-red-600"
                 : order.order_status === "pending"
                 ? "bg-yellow-100 text-yellow-800"
