@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Input,
@@ -19,15 +19,22 @@ export default function Header() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const { user, setUser, setToken } = useStateContext();
+  const {token} = useStateContext();
+
+  useEffect(() => {
+    if (!user) {
+      localStorage.removeItem("ACCESS_TOKEN");
+      localStorage.removeItem("USER");
+
+      setUser(null);
+      setToken(null);
+
+      showAlert("Please log in again.", "info");
+    }
+  }, [user, setUser, setToken, showAlert, navigate]);
 
   const handleLogoClick = () => {
-    // Navigate to /orders
     navigate('/orders');
-
-    // Reload the page after a short delay to ensure navigation happens first
-    // setTimeout(() => {
-    //   window.location.reload();
-    // }, 200);
   };
 
   const handleLogout = async () => {
@@ -71,11 +78,11 @@ export default function Header() {
               className="flex items-center gap-2 p-2 normal-case"
             >
               <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">{user.first_name[0]}{user.last_name[0]}</span>
+                <span className="text-blue-600 font-bold text-lg">  {user?.first_name?.[0]}{user?.last_name?.[0]}</span>
               </div>
               <div className="hidden sm:flex flex-col items-start">
                 <Typography color="white" className="font-medium">
-                  {user.first_name} {user.last_name}
+                  {user?.first_name} {user?.last_name}
                 </Typography>
                 <Typography className="text-gray-300 mt-[-6px]">
                   Admin
