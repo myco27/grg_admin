@@ -35,6 +35,9 @@ export default function Header() {
 
   const handleLogoClick = () => {
     navigate('/orders');
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
   };
 
   const handleLogout = async () => {
