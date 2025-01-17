@@ -22,6 +22,45 @@ export default function Riders() {
   const [riderOrders, setRiderOrders] = useState([]);
   const [selectedRider, setSelectedRider] = useState(null);
 
+  // Helper functions for caching
+  const getCache = (key) => {
+    const cachedData = localStorage.getItem(key);
+    return cachedData ? JSON.parse(cachedData) : null;
+  };
+
+  const setCache = (key, data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+
+  const generateCacheKey = (prefix, ...args) => {
+    return `${prefix}-${args.join('-')}`;
+  };
+
+  // Helper function to clean up expired cache entries
+  const cleanUpExpiredCache = () => {
+    const now = Date.now();
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith("riders-")) {
+        const cachedData = getCache(key);
+        if (cachedData && cachedData.expiry && cachedData.expiry < now) {
+          localStorage.removeItem(key);
+        }
+      }
+      if (key.startsWith("rider-orders")) {
+        const cachedData = getCache(key);
+        if (cachedData && cachedData.expiry && cachedData.expiry < now) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
+  };
+  
+  // Call the cleanup function when the component mounts
+  useEffect(() => {
+    cleanUpExpiredCache();
+  }, []);
+
   // Search query states
   const [riderSearchQuery, setRiderSearchQuery] = useState(searchParams.get('riderSearch') || '');
   const [orderSearchQuery, setOrderSearchQuery] = useState(searchParams.get('orderSearch') || '');
@@ -46,8 +85,6 @@ export default function Riders() {
   // Rating
   const [averageRating, setAverageRating] = useState(null);
 
-  // Cache for API responses
-  const [cache, setCache] = useState({});
 
   // Pagination logic for riders
   const paginateRiders = (pageNumber) => {
@@ -67,17 +104,19 @@ export default function Riders() {
 
   // Fetch riders from API with search query and pagination
   const fetchRiders = useCallback(async () => {
-    const cacheKey = `riders-${debouncedRiderSearchQuery}-${currentRiderPage}`;
-  
-    if (cache[cacheKey]) {
-      setRiders(cache[cacheKey].data);
-      setTotalRiders(cache[cacheKey].total);
-      setLastRiderPage(cache[cacheKey].lastRiderPage);
+    const cacheKey = generateCacheKey('riders', debouncedRiderSearchQuery, currentRiderPage);
+
+    // Check cache
+    const cachedData = getCache(cacheKey);
+    if (cachedData && Date.now() < cachedData.expiry) {
+      setRiders(cachedData.data);
+      setTotalRiders(cachedData.total);
+      setLastRiderPage(cachedData.lastRiderPage);
       setIsLoading(false);
       setSearchLoading(false);
       return;
     }
-  
+
     try {
       setSearchLoading(true);
       const response = await axiosClient.get('/admin/riders', {
@@ -86,18 +125,21 @@ export default function Riders() {
           page: currentRiderPage,
         },
       });
-  
+
       if (response.status === 200) {
         const ridersData = response.data.data;
         setRiders(ridersData.data);
         setTotalRiders(ridersData.total);
         setLastRiderPage(ridersData.last_page);
         setIsLoading(false);
-  
-        setCache((prevCache) => ({
-          ...prevCache,
-          [cacheKey]: { data: ridersData.data, total: ridersData.total, lastRiderPage: ridersData.last_page },
-        }));
+
+        // Cache the data with an expiry time (e.g., 5 minutes)
+        setCache(cacheKey, {
+          data: ridersData.data,
+          total: ridersData.total,
+          lastRiderPage: ridersData.last_page,
+          expiry: Date.now() + 300000, // 5 minutes
+        });
       }
     } catch (error) {
       setError('Failed to fetch riders');
@@ -105,15 +147,21 @@ export default function Riders() {
     } finally {
       setSearchLoading(false);
     }
-  }, [debouncedRiderSearchQuery, currentRiderPage, cache]);
+  }, [debouncedRiderSearchQuery, currentRiderPage]);
+
 
   // Fetch rider orders from API with search and pagination
   const fetchRiderOrder = useCallback(async (riderId, page = currentOrdersPage, search = orderSearchQuery) => {
-    const cacheKey = `rider-orders-${riderId}-${page}-${search}`;
+    const cacheKey = generateCacheKey('rider-orders', riderId, page, search);
 
-    if (cache[cacheKey]) {
-      setRiderOrders(cache[cacheKey].data);
-      setLastOrderPage(cache[cacheKey].lastOrderPage);
+    // Check cache
+    const cachedData = getCache(cacheKey);
+    if (cachedData && Date.now() < cachedData.expiry) {
+      setRiderOrders(cachedData.data);
+      setLastOrderPage(cachedData.lastOrderPage);
+      setOrdersPerPage(cachedData.ordersPerPage);
+      setTotalOrders(cachedData.totalOrders);
+      setAverageRating(cachedData.averageRating);
       return;
     }
 
@@ -135,19 +183,23 @@ export default function Riders() {
         setTotalOrders(orders.total);
         setAverageRating(response.data.averageRating);
 
-        // Update the cache with the new data
-        setCache((prevCache) => ({
-          ...prevCache,
-          [cacheKey]: { data: orders, lastOrderPage: orders.last_page },
-        }));
-
+        // Cache the data with an expiry time (e.g., 5 minutes)
+        setCache(cacheKey, {
+          data: orders,
+          lastOrderPage: orders.last_page,
+          ordersPerPage: orders.per_page,
+          totalOrders: orders.total,
+          averageRating: response.data.averageRating,
+          expiry: Date.now() + 300000, // 5 minutes
+        });
       }
     } catch (error) {
       console.error('Failed to fetch rider orders:', error);
       setError('Failed to fetch rider orders');
+    } finally {
+      setSearchLoading(false);
     }
-
-  },[cache]);
+  }, [currentOrdersPage, orderSearchQuery]);
 
   // Fetch riders when component mounts or selected rider changes
   useEffect(() => {
