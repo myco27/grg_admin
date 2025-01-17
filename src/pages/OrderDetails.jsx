@@ -66,20 +66,20 @@ export default function OrderDetails() {
   return (
     <Fragment>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
-        <main className="px-3 md:px-8 py-6 overflow-x-hidden w-full overflow-y-auto pb-4">
-          <Typography variant="h4" className="text-gray-900 mb-4">
+        <main className="px-3 md:px-8 py-6 overflow-x-hidden w-full overflow-y-auto">
+          <Typography variant="h4" className="text-gray-900 mb-2">
             Order Details
           </Typography>
           
-          <DetailsCard key={averageRating} order={order} averageRating={averageRating} />
+          <DetailsCard key={averageRating} order={order} averageRating={averageRating}/>
 
-          <Typography variant="h4" className="text-gray-900 mt-4 mb-4">
+          <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
               Main Info
           </Typography>
 
           <TabsCard order={order}/>
 
-          <Typography variant="h4" className="text-gray-900 mt-4 mb-4">
+          <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
               Payment Info
           </Typography>
 
