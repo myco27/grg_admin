@@ -56,12 +56,12 @@ function Signup() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card color="white" shadow={false} className="p-8 w-[500px] items-center">
+      <Card color="white" className="p-8 w-[500px] items-center">
         <Typography variant="h4" color="blue-gray" className="font-bold">
           Sign Up
         </Typography>
         <Typography color="gray" className="mt-1 font-normal">
-          Nice to meet you! Enter your details to register.
+          Enter your details to register.
         </Typography>
         <form className="mt-8 mb-2 w-full" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
