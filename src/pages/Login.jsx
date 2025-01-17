@@ -42,8 +42,15 @@ function Login() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-2">
-      <Card className="p-4 md:p-8 w-[500px] items-center shadow-xl rounded-xl bg-white border border-gray-100">
-        <div className="w-full text-center mb-4">
+      <Card className="p-4 md:p-8 w-[500px] items-center border-gray-200 shadow-lg">
+        <div className="w-full text-center mb-4 pt-2">
+          <div className="bg-purple-600 p-3 rounded-lg mb-8">
+            <img 
+                src="/rockygo_logo.png" 
+                alt="RockyGo" 
+                className="h-7 flex mx-auto" 
+            />
+          </div>
           <Typography variant="h3" className="font-bold text-gray-800 mb-2">
             Welcome Back
           </Typography>
@@ -63,7 +70,7 @@ function Login() {
             <Input
               size="lg"
               placeholder="your@email.com"
-              className="!border-gray-200 focus:!border-gray-900"
+              className="!border-gray-400 focus:!border-gray-900"
               labelProps={{
                 className: "hidden",
               }}
@@ -80,7 +87,7 @@ function Login() {
               type="password"
               size="lg"
               placeholder="Enter your password"
-              className="!border-gray-200 focus:!border-gray-900"
+              className="!border-gray-400 focus:!border-gray-900"
               labelProps={{
                 className: "hidden",
               }}
@@ -92,12 +99,12 @@ function Login() {
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-400 transition-colors py-3 text-base font-medium"
+            className="w-full bg-purple-600 hover:bg-purple-400 transition-colors py-3 text-base font-medium !-mb-1"
           >
             Sign In
           </Button>
 
-          <Typography className="text-center text-gray-600">
+          <Typography className="text-center text-gray-600 !mb-1">
             Don't have an account?{" "}
             <Link
               to="/admin/signup"
