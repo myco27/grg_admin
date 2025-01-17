@@ -14,16 +14,16 @@
     "@material-tailwind/react": "^2.1.10",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
+    "css": "^3.0.0",
     "date-fns": "^4.1.0",
     "flatpickr": "^4.6.13",
     "lucide-react": "^0.462.0",
-    "postcss": "^8.4.49",
+    "postcss": "^8.5.1",
     "react": "^18.3.1",
-    "react-datepicker": "^7.5.0",
-    "react-day-picker": "^9.4.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.1",
-    "tailwindcss": "^3.4.15"
+    "tailwind": "^4.0.0",
+    "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
