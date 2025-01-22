@@ -51,7 +51,7 @@ export default function OrderCard({ order }) {
             className={`text-xs px-2 py-1 rounded-full ${
               order.order_status === "Cancelled"
                 ? "bg-red-100 text-red-600"
-                : order.order_status === "pending"
+                : order.order_status === "Pending"
                 ? "bg-yellow-100 text-yellow-800"
                 : order.order_status === "delivered"
                 ? "bg-green-100 text-green-600"

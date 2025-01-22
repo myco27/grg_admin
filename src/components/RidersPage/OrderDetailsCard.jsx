@@ -46,8 +46,8 @@ export default function DetailsCard({ order }) {
                   <Chip
                     value={order.order_status}
                     className={`text-xs px-3 py-1 text-center rounded-full ${
-                      order.order_status === "cancelled" ? "bg-red-100 text-red-600" :
-                      order.order_status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                      order.order_status === "Cancelled" ? "bg-red-100 text-red-600" :
+                      order.order_status === "Pending" ? "bg-yellow-100 text-yellow-800" :
                       order.order_status === "delivered" ? "bg-green-100 text-green-600" :
                       order.order_status === "processing" ? "bg-blue-100 text-blue-600" :
                       order.order_status === "shipped" ? "bg-purple-100 text-purple-600" :
