@@ -1,42 +1,29 @@
 import React from 'react';
-import { Card, CardBody, Typography, Chip } from "@material-tailwind/react";
+import { Card, CardBody, Typography } from "@material-tailwind/react";
 
-function RiderCard({ rider, order }) {
+function RiderCard({ rider }) {
+
   return (
     <Card className="w-full border-b border-t border-gray-300 rounded-none shadow-none h-[80px] flex justify-center">
       <CardBody className="ml-[-0.5rem] flex gap-2">
         <img
-          src={rider.image || '/rockygo_logo.png'}
-          alt={rider.name}
+          src={rider.image || '/rockygo_logo.png'} // Use rider.image or fallback to logo
+          alt={`${rider.first_name} ${rider.last_name}`}
           className="w-12 h-12 rounded-full object-contain bg-gray-100 p-1"
           onError={(e) => {
-            e.target.src = '/rockygo_logo.png';
+            e.target.src = '/rockygo_logo.png'; // Fallback image on error
             e.target.onerror = null;
           }}
         />
-        <div className='w-full mr-[-1rem]'>
-            <div className='flex flex-row justify-between mb-[-2px]'>
-                <Typography color="black" className="font-semibold text-sm">
-                {rider.name}
-                </Typography>
-
-                <Chip
-                value={order.status}
-                className={`text-[10px] px-1 py-1 rounded-full bg-transparent ${
-                    order.status === "Cancelled" ? "text-red-600" :
-                    order.status === "Pending" ? "text-yellow-800" :
-                    order.status === "Delivered" ? "text-green-600" :
-                    order.status === "Processing" ? "text-blue-600" :
-                    order.status === "Shipped" ? "text-purple-600" :
-                    order.status === "Completed" ? "text-purple-600" :
-                    "text-gray-900"
-                }`}
-                />
-            </div>
-            <Typography color="gray" className="font-normal text-xs">
-                Plate #{rider.licensePlate}
+        <div className='w-full mr-[-1rem] mt-1'>
+          <div className='flex flex-row justify-between'>
+            <Typography color="black" className="font-semibold text-sm">
+              {rider.first_name || "None"} {rider.last_name || "None"}
             </Typography>
-
+          </div>
+          <Typography color="gray" className="font-normal text-xs">
+            License #: {rider.license_number || "None"}
+          </Typography>
         </div>
       </CardBody>
     </Card>

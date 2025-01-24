@@ -1,24 +1,35 @@
 import React, { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export default function DatePicker({ 
+export default function DatePicker({
   selected,
   onChange,
   placeholder = "Select date",
 }) {
   const inputRef = useRef(null);
   const fpRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Validate the selected date
+  const isValidDate = selected && isValid(new Date(selected));
 
   useEffect(() => {
+    // If the selected date is invalid, navigate to /notfound
+    if (selected && !isValidDate) {
+      navigate("/notfound");
+      return; // Exit early to prevent further execution
+    }
+
     if (inputRef.current) {
       fpRef.current = flatpickr(inputRef.current, {
-        defaultDate: selected,
+        defaultDate: isValidDate ? new Date(selected) : null, // Only set valid dates
         onChange: ([date]) => {
           onChange(date);
-        }
+        },
       });
     }
 
@@ -27,7 +38,7 @@ export default function DatePicker({
         fpRef.current.destroy();
       }
     };
-  }, [onChange, selected]);
+  }, [onChange, selected, isValidDate, navigate]); // Add navigate to dependencies
 
   const handleClear = (e) => {
     e.stopPropagation();
@@ -42,12 +53,12 @@ export default function DatePicker({
       <div className="relative">
         <input
           ref={inputRef}
-          className="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+          className="peer h-10 w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
           placeholder=" "
-          value={selected ? format(selected, "PPP") : ""}
+          value={isValidDate ? format(new Date(selected), "PPP") : ""} // Only format valid dates
           readOnly
         />
-        {selected && (
+        {isValidDate && (
           <button
             onClick={handleClear}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-blue-gray-50 rounded-full transition-colors"

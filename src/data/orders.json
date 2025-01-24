@@ -98,7 +98,7 @@
     {
       "id": "14100",
       "customerName": "Dianne Russell",
-      "riderName": "Speedy Steve",
+      "riderName": "Flash Freda",
       "orderDate": "2023-09-24",
       "shippingType": "Express Delivery",
       "status": "Processing",
@@ -115,7 +115,7 @@
       ],
       "riderData": [
         {
-          "name": "Speedy Steve",
+          "name": "Flash Freda",
           "motorColor": "Blue",
           "motorBrand": "Yamaha",
           "licensePlate": "678-90",

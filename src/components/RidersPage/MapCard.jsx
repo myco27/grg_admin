@@ -5,6 +5,11 @@ import {
 } from '@material-tailwind/react';
 
 export default function MapCard({ order }) {
+
+  const hasMapData = order.setup.latitude && order.setup.longitude;
+  const mapUrl = `https://maps.google.com/maps?q=${order.setup.latitude},${order.setup.longitude}&z=15&output=embed`;
+
+
   return (
     <Card className='shadow-none border border-gray-300 mb-4'>
       <div className="p-4 flex flex-col items-center md:items-start gap-4">
@@ -54,21 +59,21 @@ export default function MapCard({ order }) {
         </div>
 
         <div className="w-full mb-2 overflow-hidden rounded-lg border border-gray-200">
-          {order.mapSrc ? (
+          {hasMapData ? (
+            // Render the map if latitude and longitude are available
             <iframe
-            src={order.mapSrc}
-            width="100%"
-            height="450"
-            style={{ border: 0 }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title={order.customerData[0].address}
-          />
+              src={mapUrl}
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="map"
+            />
           ) : (
-            <div className='h-[450px] p-4 flex items-center justify-center text-gray-400'>
-              <Typography variant='h3' className='font-semibold'>
-                No Map Data
-              </Typography>
+            // Render "No Map Data" message if latitude or longitude is missing
+            <div className="h-[450px] p-4 flex items-center justify-center text-gray-400">
+              <h3 className="font-semibold text-2xl">No Map Data</h3>
             </div>
           )}
         </div>

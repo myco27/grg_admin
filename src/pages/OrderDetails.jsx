@@ -1,70 +1,97 @@
-import {React, Fragment, useEffect} from "react";
-import { Typography } from "@material-tailwind/react";
-import { orders } from "../data/orders.json";
-import { useParams } from "react-router-dom";
-import TimelineSection from "../components/OrderDetailsPage/TimelineSection";
-import Footer from "../components/Footer";
+import React, { Fragment, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosClient from "../axiosClient";
+import Loading from "../components/layout/Loading";
+import {
+  Typography,
+  Button,
+} from "@material-tailwind/react";
 import DetailsCard from "../components/OrderDetailsPage/DetailsCard";
+import TimelineSection from "../components/OrderDetailsPage/TimelineSection";
 import TabsCard from "../components/OrderDetailsPage/TabsCard";
 import PaymentCard from "../components/OrderDetailsPage/PaymentCard";
 
-const Dashboard = () => {
-  const { orderId } = useParams();
-  const order = orders.find( order => order.id === orderId) || orders[0];
+export default function OrderDetails() {
+  const { order_id } = useParams(); // Get the order ID from the URL
+  const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [averageRating, setAverageRating] = useState(null);
 
+
+  // Scroll at top most after page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Fetch order details from the backend
+  useEffect(() => {
+    const fetchOrderDetails = async () => {
+
+      // Check if order ID in url has letter
+      if (/[a-zA-Z]/.test(order_id)) {
+        navigate("/notfound");
+        return;
+      }
+
+      try {
+        const response = await axiosClient.get(`/admin/orders/${order_id}`);
+        if (response.status === 200) {
+          setOrder(response.data.data);
+          setAverageRating(response.data.averageRating);
+        }
+      } catch (error) {
+        console.error("Error fetching order details:", error);
+        navigate("/notfound"); // Redirect to not found page if there's an error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrderDetails();
+  }, [order_id, navigate]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!order) {
+    return (
+      <Typography className="text-center text-gray-500">
+        Order not found.
+      </Typography>
+    );
+  }
+
   return (
     <Fragment>
-      
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+        <main className="px-3 md:px-8 py-6 overflow-x-hidden w-full overflow-y-auto">
+          <Typography variant="h4" className="text-gray-900 mb-2">
+            Order Details
+          </Typography>
+          
+          <DetailsCard key={averageRating} order={order} averageRating={averageRating}/>
 
-        {/* Main Content */}
-        <main className="px-3 md:px-8 py-4 overflow-x-hidden w-full overflow-y-auto pb-4">
-
-          {/* Order Details Card */}
-          <div className="w-full mx-auto">
-
-            <Typography variant="h4" className="text-gray-900 mb-2">
-              Order Details
-            </Typography>
-            
-            <DetailsCard order={order} />
-
-            {/* Tabs Section */}
-            <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
+          <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
               Main Info
-            </Typography>
+          </Typography>
 
-            <TabsCard order={order}/>
+          <TabsCard order={order}/>
 
-          </div>
+          <Typography variant="h4" className="text-gray-900 mt-4 mb-2">
+              Payment Info
+          </Typography>
 
-          {/* Recent Payment Section */}
-          <div className="w-full mx-auto">
-
-            <Typography variant="h4" className="text-gray-900 mb-2 mt-4">
-              Payment Information
-            </Typography>
-
-            <PaymentCard order={order}/>
-
-          </div>
+          <PaymentCard order={order}/>
 
         </main>
 
         <div className="px-3 py-4 md:px-8 lg:px-0 lg:py-0">
-         <TimelineSection order={order}/>
+          <TimelineSection order={order}/>
         </div>
 
       </div>
-
-      <Footer/>
-
     </Fragment>
   );
-};
-
-export default Dashboard;
+}
