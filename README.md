@@ -1,6 +1,3 @@
-![image](https://github.com/user-attachments/assets/a979d079-d96a-4ac4-8b98-d94e4bd13abe)
-
-
 ## Overview
 
 GRG_ADMIN is a React-based application built with **Vite**, a modern web development build tool. It serves as the administrative interface for **RockyGo**, allowing admins to manage orders, riders, and their associated information. The application features a robust set of functionalities, including user authentication, dynamic filtering, pagination, and dynamic error messages.  
