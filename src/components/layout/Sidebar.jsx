@@ -44,14 +44,14 @@ const Sidebar = () => {
     },
     {
       icon: <Map className="h-5 w-5" />,
-      title: "Map",
-      path: "/map" // Add path for navigation
+      title: "User Management",
+      path: "/user-management" // Add path for navigation
     },
-    {
-      icon: <CircleUserRound className="h-5 w-5" />,
-      title: "Profile",
-      path: "/profile" // Add path for navigation
-    },
+    // {
+    //   icon: <CircleUserRound className="h-5 w-5" />,
+    //   title: "Profile",
+    //   path: "/profile" // Add path for navigation
+    // },
     {
       icon: <Settings className="h-5 w-5" />,
       title: "Settings",

@@ -4,7 +4,7 @@ import { useStateContext } from "../../contexts/contextProvider";
 
 const GuestLayout = () => {
   const { token } = useStateContext();
-
+  
   if (token) {
     return <Navigate to="/orders" />;
   }

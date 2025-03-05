@@ -9,6 +9,7 @@ import Riders from "./pages/Riders";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import UserManagement from "./pages/userManagement/UserManagementPage";
 
 import { useStateContext } from "./contexts/contextProvider";
 
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "riders/:riderId",
         element: <Riders />,
+      },
+      {
+        path: "user-management",
+        element: <UserManagement />,
       },
     ],
   },
