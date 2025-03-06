@@ -102,20 +102,21 @@ export default function Orders() {
   const fetchCountOrders = async () => {
     // Create cache key
     const cacheKey = "countOrders";
-  
+
     // Check cache based on cache key
     const cachedData = getCache(cacheKey);
+
     if (cachedData && Date.now() < cachedData.expiry) {
       setCountOrders(cachedData.data);
       return;
     }
-  
+
     try {
       const response = await axiosClient.get("/admin/count/orders");
-  
+
       if (response.status === 200) {
         const responseData = response.data.data;
-  
+
         const ordersArray = Object.entries(responseData).map(
           ([status, count]) => ({
             status,
@@ -123,7 +124,7 @@ export default function Orders() {
           })
         );
         setCountOrders(ordersArray);
-  
+
         // Cache the data with an expiry time (e.g., 5 minutes)
         setCache(cacheKey, {
           data: ordersArray,
@@ -138,7 +139,12 @@ export default function Orders() {
   // Fetch orders with filters and pagination
   const fetchOrders = useCallback(async () => {
     // Create cache key
-    const cacheKey = generateCacheKey(status, pagination.page, debounceSearch, filters.date);
+    const cacheKey = generateCacheKey(
+      status,
+      pagination.page,
+      debounceSearch,
+      filters.date
+    );
 
     // Check cache based on cache key
     const cachedData = getCache(cacheKey);
@@ -219,7 +225,7 @@ export default function Orders() {
       search: currentSearch,
       date: currentDate,
     });
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       page: currentPage,
     }));
@@ -250,17 +256,23 @@ export default function Orders() {
 
       const page = parseInt(currentPage);
       // Check if the page exceeds the total number of pages
-      if (lastOrderPage > 0 && page > lastOrderPage) {
+      if (page > lastOrderPage) {
         navigate("/notfound");
         return;
       }
     }
-
   }, [searchParams, navigate, lastOrderPage, isLastOrderPageLoading]);
 
   // Validate and handle "status" parameter
   useEffect(() => {
-    const validStatus = ["all", "pending", "processing", "intransit", "cancelled", "completed"];
+    const validStatus = [
+      "all",
+      "pending",
+      "processing",
+      "intransit",
+      "cancelled",
+      "completed",
+    ];
     const currentStatus = searchParams.get("status");
 
     if (currentStatus && !validStatus.includes(currentStatus)) {
@@ -314,7 +326,9 @@ export default function Orders() {
     const params = new URLSearchParams(searchParams);
 
     if (date) {
-      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
       const formattedDate = localDate.toISOString().split("T")[0];
       params.set("date", formattedDate);
     } else {
@@ -326,7 +340,7 @@ export default function Orders() {
 
     setFilters({
       ...filters,
-      date: date ? date.toISOString().split("T")[0] : ""
+      date: date ? date.toISOString().split("T")[0] : "",
     });
     setPagination({ ...pagination, page: 1 });
   };
@@ -438,7 +452,7 @@ export default function Orders() {
           {pagination.isLoading || ordersLoading ? (
             <Loading />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <div key={order.order_id} className="w-full">

@@ -38,7 +38,7 @@ export function AlertProvider({ children }) {
       {children}
       {alert && (
         <div
-          className={`fixed bottom-4 left-4 z-50 text-white p-4 rounded-lg shadow-lg transition-opacity duration-500 ${
+          className={`fixed bottom-4 left-4 z-[99999] text-white p-4 rounded-lg shadow-lg transition-opacity duration-500 ${
             fadeOut ? "opacity-0" : "opacity-100"
           } ${getBackgroundColor(alert.type)}`}
         >
