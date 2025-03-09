@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import UserManagement from "./pages/userManagement/UserManagementPage";
 
 import { useStateContext } from "./contexts/contextProvider";
+import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "user-management",
         element: <UserManagement />,
+      },
+      {
+        path: "roles-and-permissions",
+        element: <RolePermissionTable />,
       },
     ],
   },

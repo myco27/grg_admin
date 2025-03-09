@@ -47,6 +47,11 @@ const Sidebar = () => {
       title: "User Management",
       path: "/user-management" // Add path for navigation
     },
+    {
+      icon: <Map className="h-5 w-5" />,
+      title: "Roles And Permissions",
+      path: "/roles-and-permissions" // Add path for navigation
+    },
     // {
     //   icon: <CircleUserRound className="h-5 w-5" />,
     //   title: "Profile",

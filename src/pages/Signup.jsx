@@ -35,6 +35,7 @@ function Signup() {
         last_name: lastName,
         email: email,
         password: password,
+        password_confirmation: confirmPassword,
       });
 
       if (response.status === 201) {

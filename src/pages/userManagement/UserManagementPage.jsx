@@ -25,6 +25,7 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import AddUserModal from "./AddUserModal";
 import EditUserModal from "./EditUserModal";
+import useAuthUser from "../../contexts/userContext";
 
 const UserManagementPage = () => {
   const navigate = useNavigate();
@@ -45,6 +46,9 @@ const UserManagementPage = () => {
     isLoading: false,
   });
 
+  const { user } = useAuthUser();
+  const canAddAdmin = user?.all_permissions?.includes("create admin") || false;
+
   const fetchUsers = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
@@ -59,6 +63,7 @@ const UserManagementPage = () => {
 
       if (response.status === 200) {
         const responseData = response.data.data;
+
         const { current_page, last_page, total, links, per_page } =
           response.data.data;
 
@@ -157,13 +162,15 @@ const UserManagementPage = () => {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button
-                className="flex items-center gap-3"
-                size="sm"
-                onClick={handleOpen}
-              >
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add admin
-              </Button>
+              {canAddAdmin && (
+                <Button
+                  className="flex items-center gap-3"
+                  size="sm"
+                  onClick={handleOpen}
+                >
+                  <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add admin
+                </Button>
+              )}
             </div>
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row rounded-none">
@@ -262,13 +269,6 @@ const UserManagementPage = () => {
                             >
                               {user.email}
                             </Typography>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                            >
-                              {user.mobile_number}
-                            </Typography>
                           </div>
                         </div>
                       </td>
@@ -320,7 +320,9 @@ const UserManagementPage = () => {
                         <Tooltip content="Edit User">
                           <IconButton
                             variant="text"
-                            onClick={() => handleEditOpen(user.id, user.user_type)}
+                            onClick={() =>
+                              handleEditOpen(user.id, user.user_type)
+                            }
                           >
                             <PencilIcon className="h-4 w-4" />
                           </IconButton>
@@ -348,8 +350,12 @@ const UserManagementPage = () => {
 
       {/* MODALS */}
       <AddUserModal open={open} handleOpen={handleOpen} />
-      <EditUserModal open={editOpen} handleOpen={handleEditOpen} userId={selectedUserId} userType={selectedUser} />
-
+      <EditUserModal
+        open={editOpen}
+        handleOpen={handleEditOpen}
+        userId={selectedUserId}
+        userType={selectedUser}
+      />
     </>
   );
 };
