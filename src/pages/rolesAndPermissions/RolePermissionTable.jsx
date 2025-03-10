@@ -168,6 +168,7 @@ const RolePermissionTable = () => {
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Role
               </Button>
+
               <Button
                 className="flex items-center gap-3"
                 size="sm"
@@ -176,26 +177,26 @@ const RolePermissionTable = () => {
                 <ShieldCheckIcon strokeWidth={2} className="h-4 w-4" /> Add
                 Permission
               </Button>
+
               {/* )} */}
             </div>
           </div>
           <div className="float-end w-full md:w-72">
-              <Input
-                label="Search User"
-                icon={
-                  pagination.isLoading ? (
-                    <Spinner className="h-5 w-5" />
-                  ) : (
-                    <Search className="h-5 w-5" />
-                  )
-                }
-                size="md"
-                className="bg-white"
-                value={searchTerm}
-                onChange={(e) => handleSearchInput(e)}
-              />
-            </div>
-          
+            <Input
+              label="Search User"
+              icon={
+                pagination.isLoading ? (
+                  <Spinner className="h-5 w-5" />
+                ) : (
+                  <Search className="h-5 w-5" />
+                )
+              }
+              size="md"
+              className="bg-white"
+              value={searchTerm}
+              onChange={(e) => handleSearchInput(e)}
+            />
+          </div>
         </CardHeader>
         <CardBody className="p-4 overflow-scroll">
           {pagination.isLoading ? (

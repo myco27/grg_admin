@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
+import { useAlert } from "../../contexts/alertContext";
 
 const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,8 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     role: "",
   });
 
+  const [test, setTest] = useState("");
+
   const [roles, setRoles] = useState([]);
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
@@ -31,6 +34,8 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const { showAlert } = useAlert();
 
   // Reset fields on modal open/close
   useEffect(() => {
@@ -80,8 +85,11 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     try {
       const response = await axios.post("/admin/users/create", formData);
 
-      // fetchUsers();
-      handleOpen();
+      if (response.status === 201) {
+        fetchUsers();
+        handleOpen();
+        showAlert("Admin created successfully!", "success");
+      }
     } catch (error) {
       console.error("Error:", error);
       setError(error.response?.data?.message || "Something went wrong.");
@@ -90,12 +98,30 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     }
   };
 
+  const handleRoleChange = (selectedRole) => {
+    setFormData((prev) => ({ ...prev, role: selectedRole }));
+  };
+
   return (
     <Dialog open={open} handler={handleOpen}>
-      <DialogHeader>Add New User</DialogHeader>
+      <DialogHeader>Add New Admin</DialogHeader>
       <DialogBody>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Role Selection */}
+          <Select
+            required
+            label="Assign Role"
+            // value={formData.role}
+            onChange={handleRoleChange}
+          >
+            {roles.map((role) => (
+              <Option key={role.id} value={role.name}>
+                {role.name}
+              </Option>
+            ))}
+          </Select>
+
           <Input
             label="First Name"
             name="first_name"
@@ -169,19 +195,6 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
               )}
             </button>
           </div>
-
-          {/* Role Selection */}
-          <Select
-            label="Assign Role (Optional)"
-            value={formData.role}
-            onChange={(val) => setFormData({ ...formData, role: val })}
-          >
-            {roles.map((role) => (
-              <Option key={role.id} value={role.name}>
-                {role.name}
-              </Option>
-            ))}
-          </Select>
 
           <div className="flex justify-end gap-2">
             <Button variant="gradient" color="gray" onClick={handleOpen}>

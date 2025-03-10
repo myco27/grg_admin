@@ -23,10 +23,11 @@ import Loading from "../../components/layout/Loading";
 import { Search } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
-import AddUserModal from "./AddUserModal";
-import EditUserModal from "./EditUserModal";
+import AddUserModal from "../userManagement/AddUserModal";
+import EditUserModal from "../userManagement/EditUserModal";
+import useAuthUser from "../../contexts/userContext";
 
-const UserManagementPage = () => {
+const adminManagement = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState("");
@@ -45,11 +46,15 @@ const UserManagementPage = () => {
     isLoading: false,
   });
 
+  const { user } = useAuthUser();
+  const canAddAdmin = user?.all_permissions?.includes("create admin") || false;
+  const canViewTable = user?.all_permissions?.includes("view table") || false;
+
   const fetchUsers = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
 
-      const response = await axiosClient.get("/admin/users/list", {
+      const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
           user_type: status,
           search: debounceSearch,
@@ -112,34 +117,12 @@ const UserManagementPage = () => {
   };
   // EVENT LISTENERS END
 
-  const TABS = [
-    {
-      label: "All",
-      value: "",
-    },
-    {
-      label: "Area Manager",
-      value: "operator",
-    },
-    {
-      label: "Restaurant",
-      value: "restaurant",
-    },
-    {
-      label: "Rider",
-      value: "rider",
-    },
-    {
-      label: "Customer",
-      value: "customer",
-    },
-  ];
-
   const TABLE_HEAD = [
     "User ID",
-    "User Information",
-    "User Type",
-    "Status",
+    "Full Name",
+    "Email",
+    "Roles",
+    "Permissions",
     "Date Created",
     "Action",
   ];
@@ -151,44 +134,24 @@ const UserManagementPage = () => {
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                User list
+                Admin list
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                See information about all Users
+                See information about all Admins
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              {/* <Button
+              <Button
                 className="flex items-center gap-3"
                 size="sm"
                 onClick={handleOpen}
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add admin
-              </Button> */}
+              </Button>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row rounded-none">
-            <Tabs
-              value=""
-              className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-x-auto xl:overflow-visible"
-            >
-              <TabsHeader
-                className="bg-transparent gap-x-4"
-                indicatorProps={{ className: "bg-purple-200 text-purple-900" }}
-              >
-                {TABS.map(({ label, value }) => (
-                  <Tab
-                    className="text-nowrap text-sm font-medium text-gray-800 w-max"
-                    key={value}
-                    value={value}
-                    onClick={() => handleClickStatus(value)}
-                  >
-                    {label}
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
+          <div className="md:flex-row rounded-none">
+            <div className="float-end w-full md:w-72">
               <Input
                 label="Search User"
                 icon={
@@ -233,82 +196,88 @@ const UserManagementPage = () => {
 
               <tbody>
                 {users.map((user) => {
+                  // console.log(
+                  //   "Permissions for user:",
+                  //   user.id,
+                  //   user.all_permissions
+                  // );
                   return (
                     <tr key={user.id}>
                       <td className="p-4">
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {user.id}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          {/* <Avatar src={img} alt={name} size="sm" /> */}
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {user.first_name} {user.last_name}
-                            </Typography>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal opacity-70"
-                            >
-                              {user.email}
-                            </Typography>
-                          </div>
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {user.id}
+                        </Typography>
                       </td>
 
                       <td className="p-4">
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {user.user_type ? user.user_type.toUpperCase() : ""}
-                          </Typography>
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {user.first_name} {user.last_name}
+                        </Typography>
                       </td>
 
                       <td className="p-4">
-                        <div className="w-max">
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value={user.is_active == 1 ? "active" : "inactive"}
-                            color={user.is_active == 1 ? "green" : "blue-gray"}
-                          />
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {user.email}
+                        </Typography>
+                      </td>
+
+                      {/* Role */}
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {user.roles
+                            ? user.roles[0].name.toUpperCase()
+                            : "N/A"}
+                        </Typography>
+                      </td>
+
+                      {/* Permissions */}
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {user.all_permissions &&
+                          user.all_permissions.length > 0
+                            ? user.all_permissions.map((perm, index) => (
+                                <span key={index}>
+                                  {perm}
+                                  {index !== user.all_permissions.length - 1 &&
+                                    ", "}
+                                </span>
+                              ))
+                            : "No Permissions"}
+                        </Typography>
                       </td>
 
                       <td className="p-4">
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {new Date(user.created_at).toLocaleString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                              // hour: "2-digit",
-                              // minute: "2-digit",
-                              // second: "2-digit",
-                              // hour12: true,
-                            })}
-                          </Typography>
-                        </div>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {new Date(user.created_at).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </Typography>
                       </td>
 
                       <td className="p-4">
@@ -360,4 +329,4 @@ const UserManagementPage = () => {
   );
 };
 
-export default UserManagementPage;
+export default adminManagement;

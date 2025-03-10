@@ -6,7 +6,7 @@ const GuestLayout = () => {
   const { token } = useStateContext();
   
   if (token) {
-    return <Navigate to="/orders" />;
+    return <Navigate to="/user-management" />;
   }
 
   return (

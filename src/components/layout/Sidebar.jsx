@@ -9,73 +9,43 @@ import {
   ListItemSuffix,
 } from "@material-tailwind/react";
 import {
-  LayoutDashboard,
-  CircleUserRound,
   Package,
-  Settings,
-  Menu,
-  ShoppingBag,
-  Map,
-  LogOut,
   Bike,
-  BoxIcon
+  Map,
+  Settings,
+  LogOut,
+  Menu,
+  UserRound,
+  ShieldCheck,
+  LockKeyhole,
 } from "lucide-react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
+import useAuthUser from "../../contexts/userContext";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
-  const { user, setUser, setToken } = useStateContext();
+  const { setUser, setToken } = useStateContext();
   const navigate = useNavigate();
 
-  const menuItems = [
-    {
-      icon: <Package className="h-5 w-5" />,
-      title: "Orders",
-      path: "/orders" // Add path for navigation
-    },
-    {
-      icon: <Bike className="h-5 w-5" />,
-      title: "Riders",
-      path: "/riders" // Add path for navigation
-    },
-    {
-      icon: <Map className="h-5 w-5" />,
-      title: "User Management",
-      path: "/user-management" // Add path for navigation
-    },
-    {
-      icon: <Map className="h-5 w-5" />,
-      title: "Roles And Permissions",
-      path: "/roles-and-permissions" // Add path for navigation
-    },
-    // {
-    //   icon: <CircleUserRound className="h-5 w-5" />,
-    //   title: "Profile",
-    //   path: "/profile" // Add path for navigation
-    // },
-    {
-      icon: <Settings className="h-5 w-5" />,
-      title: "Settings",
-      path: "/settings" // Add path for navigation
-    },
-    {
-      icon: <LogOut className="h-5 w-5 text-red-500" />,
-      title: "Log Out",
-      path: "handleLogout",
-      isLogout: true,
-    }
-  ];
+  const { user } = useAuthUser();
+  const canViewUserModule =
+    user?.all_permissions?.includes("view user module") || false;
+  const canViewAdminModule =
+    user?.all_permissions?.includes("view admin module") || false;
+  const canViewRolesAndPermissionsModule =
+    user?.all_permissions?.includes("view roles and permissions module") ||
+    false;
 
   const handleLogout = async () => {
     try {
       const response = await axiosClient.post("/admin/logout");
       if (response.status === 204) {
         localStorage.removeItem("ACCESS_TOKEN");
-        localStorage.removeItem("USER"); 
+        localStorage.removeItem("USER");
 
         setUser(null);
         setToken(null);
@@ -89,16 +59,16 @@ const Sidebar = () => {
   return (
     <>
       <IconButton variant="text" size="lg" onClick={openDrawer}>
-        <Menu className="h-8 w-8 text-white mt-[-4px]"/>
+        <Menu className="h-8 w-8 text-white mt-[-4px]" />
       </IconButton>
       <Drawer open={open} onClose={closeDrawer}>
         <div className="mb-2 flex items-center justify-between p-4">
           <Typography variant="h5" color="blue-gray">
-            Dashboard Menu
+            Backoffice Menu
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={closeDrawer}>
             <svg
-            xmlns="http://www.w3.org/2000/svg"
+              xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -113,28 +83,96 @@ const Sidebar = () => {
             </svg>
           </IconButton>
         </div>
+
+        {/* Hardcoded Menu Items */}
         <List>
-          {menuItems.map((item, index) => (
-            <Link to={item.path} key={index}>
-              <ListItem as={Link} to={item.path} 
-                onClick={() => {
-                  if (item.isLogout) {
-                    handleLogout();
-                  } else {
-                    closeDrawer();
-                  }
-                }}
-              > 
+          {/* Orders */}
+          {/* <Link to="/orders">
+            <ListItem onClick={closeDrawer}>
+              <ListItemPrefix>
+                <Package className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                Orders
+              </Typography>
+            </ListItem>
+          </Link> */}
+          {/* Riders */}
+          {/* <Link to="/riders">
+            <ListItem onClick={closeDrawer}>
+              <ListItemPrefix>
+                <Bike className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                Riders
+              </Typography>
+            </ListItem>
+          </Link> */}
+          {/* User Management */}
+          {canViewUserModule && (
+            <Link to="/user-management">
+              <ListItem onClick={closeDrawer}>
                 <ListItemPrefix>
-                  {item.icon}
+                  <UserRound className="h-5 w-5" />
                 </ListItemPrefix>
-                <Typography color="blue-gray" className={`mr-auto font-normal ${item.isLogout ? "text-red-500" : ""}`} >
-                  {item.title}
+                <Typography color="blue-gray" className="mr-auto font-normal">
+                  User Management
                 </Typography>
-                {item.suffix && <ListItemSuffix>{item.suffix}</ListItemSuffix>}
               </ListItem>
             </Link>
-          ))}
+          )}
+
+          {/* Admin Management */}
+          {canViewAdminModule && (
+            <Link to="/admin-management">
+              <ListItem onClick={closeDrawer}>
+                <ListItemPrefix>
+                  <ShieldCheck className="h-5 w-5" />
+                </ListItemPrefix>
+                <Typography color="blue-gray" className="mr-auto font-normal">
+                  Admin Management
+                </Typography>
+              </ListItem>
+            </Link>
+          )}
+
+          {/* Roles and Permissions */}
+          {canViewRolesAndPermissionsModule && (
+            <Link to="/roles-and-permissions">
+              <ListItem onClick={closeDrawer}>
+                <ListItemPrefix>
+                  <LockKeyhole className="h-5 w-5" />
+                </ListItemPrefix>
+                <Typography color="blue-gray" className="mr-auto font-normal">
+                  Roles And Permissions
+                </Typography>
+              </ListItem>
+            </Link>
+          )}
+
+          {/* Settings */}
+          {/* <Link to="/settings">
+            <ListItem onClick={closeDrawer}>
+              <ListItemPrefix>
+                <Settings className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                Settings
+              </Typography>
+            </ListItem>
+          </Link> */}
+          {/* Logout */}
+          <ListItem onClick={handleLogout}>
+            <ListItemPrefix>
+              <LogOut className="h-5 w-5 text-red-500" />
+            </ListItemPrefix>
+            <Typography
+              color="blue-gray"
+              className="mr-auto font-normal text-red-500"
+            >
+              Log Out
+            </Typography>
+          </ListItem>
         </List>
       </Drawer>
     </>
