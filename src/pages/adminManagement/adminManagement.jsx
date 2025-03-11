@@ -24,10 +24,9 @@ import { Search } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import AddUserModal from "../userManagement/AddUserModal";
-import EditUserModal from "../userManagement/EditUserModal";
-import useAuthUser from "../../contexts/userContext";
+import EditAdminModal from "./EditAdminModal";
 
-const adminManagement = () => {
+const AdminManagement = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState("");
@@ -35,7 +34,6 @@ const adminManagement = () => {
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -45,10 +43,6 @@ const adminManagement = () => {
     itemsPerPage: 0,
     isLoading: false,
   });
-
-  const { user } = useAuthUser();
-  const canAddAdmin = user?.all_permissions?.includes("create admin") || false;
-  const canViewTable = user?.all_permissions?.includes("view table") || false;
 
   const fetchUsers = async () => {
     try {
@@ -110,9 +104,8 @@ const adminManagement = () => {
     setOpen(!open);
   };
 
-  const handleEditOpen = (userId, userType) => {
+  const handleEditOpen = (userId) => {
     setSelectedUserId(userId);
-    setSelectedUser(userType);
     setEditOpen(!editOpen);
   };
   // EVENT LISTENERS END
@@ -198,8 +191,7 @@ const adminManagement = () => {
                 {users.map((user) => {
                   // console.log(
                   //   "Permissions for user:",
-                  //   user.id,
-                  //   user.all_permissions
+                  //   user
                   // );
                   return (
                     <tr key={user.id}>
@@ -284,9 +276,7 @@ const adminManagement = () => {
                         <Tooltip content="Edit User">
                           <IconButton
                             variant="text"
-                            onClick={() =>
-                              handleEditOpen(user.id, user.user_type)
-                            }
+                            onClick={() => handleEditOpen(user.id)}
                           >
                             <PencilIcon className="h-4 w-4" />
                           </IconButton>
@@ -319,14 +309,15 @@ const adminManagement = () => {
         handleOpen={handleOpen}
         fetchUsers={fetchUsers}
       />
-      <EditUserModal
-        open={editOpen}
-        handleOpen={handleEditOpen}
-        userId={selectedUserId}
-        userType={selectedUser}
+
+      <EditAdminModal
+        editOpen={editOpen}
+        editHandleOpen={handleEditOpen}
+        adminId={selectedUserId}
+        fetchUsers={fetchUsers}
       />
     </>
   );
 };
 
-export default adminManagement;
+export default AdminManagement;

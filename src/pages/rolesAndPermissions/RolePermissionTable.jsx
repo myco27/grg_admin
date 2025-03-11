@@ -19,6 +19,7 @@ import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
 import Loading from "../../components/layout/Loading";
 import UseDebounce from "../../components/UseDebounce";
+import useAuthUser from "../../contexts/userContext";
 
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
@@ -45,6 +46,10 @@ const RolePermissionTable = () => {
     itemsPerPage: 0,
     isLoading: false,
   });
+
+  const { user } = useAuthUser();
+  const canAddPermission =
+    user?.all_permissions?.includes("can add permission") || false;
 
   const handleSwitch = (role, permission) => {
     setSelectedRole(role);
@@ -168,15 +173,16 @@ const RolePermissionTable = () => {
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Role
               </Button>
-
-              <Button
-                className="flex items-center gap-3"
-                size="sm"
-                onClick={handleOpenPermissionDialog}
-              >
-                <ShieldCheckIcon strokeWidth={2} className="h-4 w-4" /> Add
-                Permission
-              </Button>
+              {canAddPermission && (
+                <Button
+                  className="flex items-center gap-3"
+                  size="sm"
+                  onClick={handleOpenPermissionDialog}
+                >
+                  <ShieldCheckIcon strokeWidth={2} className="h-4 w-4" /> Add
+                  Permission
+                </Button>
+              )}
 
               {/* )} */}
             </div>

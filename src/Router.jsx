@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./pages/userManagement/UserManagementPage";
-import AdminManagement from "./pages/adminManagement/adminManagement";
+import AdminManagement from "./pages/adminManagement/AdminManagement";
 
 import { useStateContext } from "./contexts/contextProvider";
 import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";

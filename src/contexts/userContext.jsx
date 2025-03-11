@@ -11,6 +11,7 @@ const useAuthUser = () => {
         if (!hasFetched.current) {
           hasFetched.current = true;
           const response = await axiosClient.get("/user");
+          
           setUserPermission(response.data.user || {});
         }
       } catch (error) {
