@@ -23,6 +23,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
 import useAuthUser from "../../contexts/userContext";
+import { useAlert } from "../../contexts/alertContext";
 
 const Sidebar = () => {
   const [open, setOpen] = React.useState(false);
@@ -30,6 +31,8 @@ const Sidebar = () => {
   const closeDrawer = () => setOpen(false);
   const { setUser, setToken } = useStateContext();
   const navigate = useNavigate();
+
+  const { showAlert } = useAlert();
 
   const { user } = useAuthUser();
   const canViewUserModule =
@@ -49,7 +52,8 @@ const Sidebar = () => {
 
         setUser(null);
         setToken(null);
-        navigate("/admin/login");
+        showAlert("Logged out successfully!", "success");
+        // navigate("/admin/login");
       }
     } catch (error) {
       console.error(error);
