@@ -20,7 +20,7 @@ const RootRedirect = () => {
   const { token } = useStateContext(); // Get the token from context
 
   // Redirect to /orders if the user is logged in, otherwise to /admin/login
-  return token ? <Navigate to="/orders" replace /> : <Navigate to="/admin/login" replace />;
+  return token ? <Navigate to="/user-management" replace /> : <Navigate to="/admin/login" replace />;
 };
 
 const router = createBrowserRouter([

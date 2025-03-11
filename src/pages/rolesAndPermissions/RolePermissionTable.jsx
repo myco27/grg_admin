@@ -50,7 +50,6 @@ const RolePermissionTable = () => {
   const { user } = useAuthUser();
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
-
   const handleSwitch = (role, permission) => {
     setSelectedRole(role);
     setSelectedPermission(permission);
@@ -165,7 +164,6 @@ const RolePermissionTable = () => {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              {/* {canAddAdmin && ( */}
               <Button
                 className="flex items-center gap-3"
                 size="sm"
@@ -183,8 +181,6 @@ const RolePermissionTable = () => {
                   Permission
                 </Button>
               )}
-
-              {/* )} */}
             </div>
           </div>
           <div className="float-end w-full md:w-72">
@@ -226,8 +222,13 @@ const RolePermissionTable = () => {
               </thead>
               <tbody>
                 {Array.isArray(roles) && roles.length > 0 ? (
-                  roles.map((role) => {
-                    return (
+                  roles
+                    .filter(
+                      (role) =>
+                        user.roles[0]?.name === "developer" ||
+                        role.name !== "developer"
+                    )
+                    .map((role) => (
                       <tr key={role.id}>
                         <td className="p-4">
                           {role.name.charAt(0).toUpperCase() +
@@ -255,8 +256,7 @@ const RolePermissionTable = () => {
                           </td>
                         )}
                       </tr>
-                    );
-                  })
+                    ))
                 ) : (
                   <tr>
                     <td colSpan="2">No roles available</td>
