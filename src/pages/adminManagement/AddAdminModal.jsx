@@ -10,11 +10,10 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { EyeSlashIcon } from "@heroicons/react/24/outline";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeOff } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 
-const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
+const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -24,8 +23,6 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     role: "",
   });
 
-  const [test, setTest] = useState("");
-
   const [roles, setRoles] = useState([]);
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
@@ -33,11 +30,8 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   const { showAlert } = useAlert();
 
-  // Reset fields on modal open/close
   useEffect(() => {
     if (open) {
       setFormData({
@@ -48,12 +42,11 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
         password_confirmation: "",
         role: "",
       });
-      setError("");
+      setPasswordVisibility({ password: false, confirmPassword: false });
       fetchRoles();
     }
   }, [open]);
 
-  // Fetch available roles from API
   const fetchRoles = async () => {
     try {
       const response = await axios.get("/roles");
@@ -63,7 +56,6 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     }
   };
 
-  // Toggle password visibility
   const toggleVisibility = (field) => {
     setPasswordVisibility((prevState) => ({
       ...prevState,
@@ -71,17 +63,13 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     }));
   };
 
-  // Handle input changes
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError("");
-
     try {
       const response = await axios.post("/admin/users/create", formData);
 
@@ -92,7 +80,6 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
       }
     } catch (error) {
       console.error("Error:", error);
-      setError(error.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -106,7 +93,6 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
     <Dialog open={open} handler={handleOpen}>
       <DialogHeader>Add New Admin</DialogHeader>
       <DialogBody>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Role Selection */}
           <Select
@@ -128,7 +114,7 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
             type="text"
             required
             value={formData.first_name}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
           <Input
             label="Last Name"
@@ -136,7 +122,7 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
             type="text"
             required
             value={formData.last_name}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
           <Input
             label="Email"
@@ -145,56 +131,33 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
             required
             autoComplete="username"
             value={formData.email}
-            onChange={handleChange}
+            onChange={handleInputChange}
           />
 
           {/* Password Field */}
-          <div className="relative">
-            <Input
-              label="Password"
-              name="password"
-              type={passwordVisibility.password ? "text" : "password"}
-              required
-              autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("password")}
-            >
-              {passwordVisibility.password ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="relative">
-            <Input
-              label="Confirm Password"
-              name="password_confirmation"
-              type={passwordVisibility.confirmPassword ? "text" : "password"}
-              required
-              autoComplete="new-password"
-              value={formData.password_confirmation}
-              onChange={handleChange}
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("confirmPassword")}
-            >
-              {passwordVisibility.confirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
+          {["password", "password_confirmation"].map((field, index) => (
+            <div className="relative" key={index}>
+              <Input
+                label={field === "password" ? "Password" : "Confirm Password"}
+                name={field}
+                type={passwordVisibility[field] ? "text" : "password"}
+                autoComplete="new-password"
+                value={formData[field]}
+                onChange={handleInputChange}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                onClick={() => toggleVisibility(field)}
+              >
+                {passwordVisibility[field] ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+          ))}
 
           <div className="flex justify-end gap-2">
             <Button variant="gradient" color="gray" onClick={handleOpen}>
@@ -215,4 +178,4 @@ const AddUserModal = ({ open, handleOpen, fetchUsers }) => {
   );
 };
 
-export default AddUserModal;
+export default AddAdminModal;

@@ -23,7 +23,7 @@ import Loading from "../../components/layout/Loading";
 import { Search } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
-import AddUserModal from "../userManagement/AddUserModal";
+import AddAdminModal from "./AddAdminModal";
 import EditAdminModal from "./EditAdminModal";
 
 const AdminManagement = () => {
@@ -83,10 +83,6 @@ const AdminManagement = () => {
   }, [status, debounceSearch, pagination.page]);
 
   // EVENT LISTENERS START
-  const handleClickStatus = (value) => {
-    setStatus(value);
-  };
-
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
@@ -101,7 +97,7 @@ const AdminManagement = () => {
   };
 
   const handleOpen = () => {
-    setOpen(!open);
+    setOpen(prev => !prev);;
   };
 
   const handleEditOpen = (userId) => {
@@ -180,7 +176,7 @@ const AdminManagement = () => {
                         color="blue-gray"
                         className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                       >
-                        {head}{" "}
+                        {head}
                       </Typography>
                     </th>
                   ))}
@@ -304,7 +300,7 @@ const AdminManagement = () => {
       </Card>
 
       {/* MODALS */}
-      <AddUserModal
+      <AddAdminModal
         open={open}
         handleOpen={handleOpen}
         fetchUsers={fetchUsers}

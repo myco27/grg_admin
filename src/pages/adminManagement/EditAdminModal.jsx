@@ -10,8 +10,7 @@ import {
   Option,
   Select,
 } from "@material-tailwind/react";
-import { EyeSlashIcon } from "@heroicons/react/24/solid";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeOff } from "lucide-react";
 
 const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   const [formData, setFormData] = useState({
@@ -72,6 +71,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   useEffect(() => {
     if (editOpen) {
       fetchAdminDetails();
+      
     }
   }, [editOpen, adminId]);
 
@@ -175,7 +175,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
                   onClick={() => toggleVisibility(field)}
                 >
                   {passwordVisibility[field] ? (
-                    <EyeSlashIcon className="h-5 w-5" />
+                    <EyeOff className="h-5 w-5" />
                   ) : (
                     <EyeIcon className="h-5 w-5" />
                   )}

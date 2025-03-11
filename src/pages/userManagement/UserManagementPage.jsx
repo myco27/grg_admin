@@ -23,7 +23,6 @@ import Loading from "../../components/layout/Loading";
 import { Search } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
-import AddUserModal from "./AddUserModal";
 import EditUserModal from "./EditUserModal";
 
 const UserManagementPage = () => {
@@ -345,11 +344,6 @@ const UserManagementPage = () => {
       </Card>
 
       {/* MODALS */}
-      <AddUserModal
-        open={open}
-        handleOpen={handleOpen}
-        fetchUsers={fetchUsers}
-      />
       <EditUserModal
         open={editOpen}
         handleOpen={handleEditOpen}
