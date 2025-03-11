@@ -79,7 +79,15 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
         showAlert("Admin created successfully!", "success");
       }
     } catch (error) {
-      console.error("Error:", error);
+      if (error.response.data.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => {
+            showAlert(`${errorMessage}`, "error");
+          });
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +111,7 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
           >
             {roles.map((role) => (
               <Option key={role.id} value={role.name}>
-                {role.name}
+                {role.name.toUpperCase()}
               </Option>
             ))}
           </Select>

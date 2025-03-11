@@ -29,7 +29,6 @@ import EditAdminModal from "./EditAdminModal";
 const AdminManagement = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [status, setStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
@@ -50,7 +49,6 @@ const AdminManagement = () => {
 
       const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
-          user_type: status,
           search: debounceSearch,
           page: pagination.page,
         },
@@ -80,7 +78,7 @@ const AdminManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [status, debounceSearch, pagination.page]);
+  }, [debounceSearch, pagination.page]);
 
   // EVENT LISTENERS START
   const handleSearchInput = (event) => {
