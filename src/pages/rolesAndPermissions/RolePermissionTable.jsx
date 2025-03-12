@@ -225,7 +225,7 @@ const RolePermissionTable = () => {
                   roles
                     .filter(
                       (role) =>
-                        user.roles[0]?.name === "developer" ||
+                        user?.roles?.[0]?.name === "developer" ||
                         role.name !== "developer"
                     )
                     .map((role) => (
@@ -242,7 +242,7 @@ const RolePermissionTable = () => {
                               <div className="flex items-center justify-center">
                                 <Switch
                                   onChange={() => handleSwitch(role, perm.name)}
-                                  checked={role.permissions.some(
+                                  checked={role.permissions?.some(
                                     (p) => p.name === perm.name
                                   )}
                                   color="blue"
