@@ -161,6 +161,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               onSubmit={handleSubmit}
               className="flex flex-col justify-between gap-4 min-h-[50vh]"
             >
+            
               {/* Operator Field */}
               {userType === "operator" && (
                 <>
