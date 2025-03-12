@@ -104,7 +104,7 @@ function Login() {
             Sign In
           </Button>
 
-          <Typography className="text-center text-gray-600 !mb-1">
+          {/* <Typography className="text-center text-gray-600 !mb-1">
             Don't have an account?{" "}
             <Link
               to="/admin/signup"
@@ -112,7 +112,7 @@ function Login() {
             >
               Sign up
             </Link>
-          </Typography>
+          </Typography> */}
         </form>
       </Card>
     </div>

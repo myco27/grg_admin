@@ -47,26 +47,26 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const fetchUserDetails = async () => {
     try {
       const response = await axiosClient.get(`/admin/users/${userId}`);
-      
+      console.log(response.data.data.store);
       if (response.status === 200) {
         setFirstName(response.data.data.first_name);
         setLastName(response.data.data.last_name);
         setEmail(response.data.data.email);
         setMobileNumber(response.data.data.mobile_number);
         setLocalSupportNumber(response.data.data.local_support_number);
-        setBusinessLandlineNumber(response.data.data.business_landline_number);
-        setBusinessContactNumber(response.data.data.business_contact_number);
-        
+        setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
+        setBusinessContactNumber(response.data.data.store?.mobile ?? "");
+
         if (response.data.data.address) {
-            setAddress({
-                houseNumber: response.data.data.address.number,
-                building: response.data.data.address.building,
-                street: response.data.data.address.street,
-                district: response.data.data.address.district,
-                zipcode: response.data.data.address.zipcode,
-                city: response.data.data.address.city,
-                state: response.data.data.address.state
-            })
+          setAddress({
+            houseNumber: response.data.data.address.number,
+            building: response.data.data.address.building,
+            street: response.data.data.address.street,
+            district: response.data.data.address.district,
+            zipcode: response.data.data.address.zipcode,
+            city: response.data.data.address.city,
+            state: response.data.data.address.state,
+          });
         }
         setLoading(false);
       }
@@ -87,7 +87,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         business_contact_number: businessContactNumber,
         password: password,
         password_confirmation: confirmPassword,
-        address: address
+        address: address,
       });
 
       if (response.status === 202) {
@@ -142,7 +142,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         zipcode: "",
         city: "",
         state: "",
-      })
+      });
       setPasswordVisibility({ password: false, confirmPassword: false });
     }
   }, [open, userId]);
@@ -386,7 +386,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                           type="text"
                           value={address.houseNumber}
                           onChange={(e) =>
-                            setAddress({ ...address, houseNumber: e.target.value })
+                            setAddress({
+                              ...address,
+                              houseNumber: e.target.value,
+                            })
                           }
                           className=""
                         />
