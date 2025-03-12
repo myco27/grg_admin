@@ -89,6 +89,7 @@ const UserManagementPage = () => {
 
   // EVENT LISTENERS START
   const handleClickStatus = (value) => {
+    setPagination({ ...pagination, page: 1 });
     setStatus(value);
   };
 
