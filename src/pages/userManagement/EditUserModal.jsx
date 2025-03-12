@@ -17,7 +17,7 @@ import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 
-const EditUserModal = ({ open, handleOpen, userId, userType }) => {
+const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -92,6 +92,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType }) => {
 
       if (response.status === 202) {
         showAlert("User updated successfully!", "success");
+        fetchUsers();
         handleOpen();
       }
     } catch (error) {

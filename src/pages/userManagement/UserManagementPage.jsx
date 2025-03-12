@@ -367,6 +367,7 @@ const UserManagementPage = () => {
         handleOpen={handleEditOpen}
         userId={selectedUserId}
         userType={selectedUser}
+        fetchUsers={fetchUsers}
       />
     </>
   );
