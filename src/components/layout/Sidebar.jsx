@@ -166,7 +166,7 @@ const Sidebar = () => {
             </ListItem>
           </Link> */}
           {/* Logout */}
-          <ListItem onClick={handleLogout}>
+          {/* <ListItem onClick={handleLogout}>
             <ListItemPrefix>
               <LogOut className="h-5 w-5 text-red-500" />
             </ListItemPrefix>
@@ -176,7 +176,7 @@ const Sidebar = () => {
             >
               Log Out
             </Typography>
-          </ListItem>
+          </ListItem> */}
         </List>
       </Drawer>
     </>

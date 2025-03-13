@@ -91,13 +91,13 @@ export default function Header() {
             </Button>
           </MenuHandler>
           <MenuList>
-            <MenuItem className="flex items-center gap-2">
+            {/* <MenuItem className="flex items-center gap-2">
               <User className="h-4 w-4" /> Profile
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Settings className="h-4 w-4" /> Settings
             </MenuItem>
-            <hr className="my-2 border-blue-gray-50" />
+            <hr className="my-2 border-blue-gray-50" /> */}
             <MenuItem
               className="flex items-center gap-2 text-red-500"
               onClick={handleLogout}
