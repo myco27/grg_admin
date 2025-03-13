@@ -347,23 +347,23 @@ export default function Orders() {
 
   return (
     <Fragment>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <main className="flex-1 p-3 md:p-6">
           {/* Header and Controls */}
-          <div className="flex flex-col gap-4 mb-6">
-            <Typography variant="h4" className="text-gray-900 -mb-2">
+          <div className="mb-6 flex flex-col gap-4">
+            <Typography variant="h4" className="-mb-2 text-gray-900">
               Transaction
             </Typography>
 
-            <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="relative flex flex-col items-center justify-between gap-4 md:flex-row">
               {/* ORDERS STATUS TABS */}
               <Tabs
                 value={status || "all"}
-                className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-x-auto xl:overflow-visible"
+                className="relative w-full overflow-x-auto rounded-lg border border-gray-400 bg-white px-1 py-0.5 md:w-fit xl:overflow-visible"
               >
                 <div>
                   <TabsHeader
-                    className="bg-transparent gap-x-4"
+                    className="gap-x-4 bg-transparent"
                     indicatorProps={{
                       className: `bg-purple-200 shadow-none ${
                         status === "pending"
@@ -418,7 +418,7 @@ export default function Orders() {
               </Tabs>
 
               {/* SEARCH AND DATE FILTERS */}
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
                 {/* SEARCH FILTER */}
                 <div className="w-full sm:w-72">
                   <Input
@@ -452,7 +452,7 @@ export default function Orders() {
           {pagination.isLoading || ordersLoading ? (
             <Loading />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <div key={order.order_id} className="w-full">

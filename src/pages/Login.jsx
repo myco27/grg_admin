@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, {useState } from "react";
 import { Card, Typography, Input, Button } from "@material-tailwind/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import axiosClient from "../axiosClient";
 import { useStateContext } from "../contexts/contextProvider";
 import { useAlert } from "../contexts/alertContext";
@@ -41,30 +41,30 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-2">
-      <Card className="p-4 md:p-8 w-[500px] items-center border-gray-200 shadow-lg">
-        <div className="w-full text-center mb-4 pt-2">
-          <div className="bg-purple-600 p-3 rounded-lg mb-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-2">
+      <Card className="w-[500px] items-center border-gray-200 p-4 shadow-lg md:p-8">
+        <div className="mb-4 w-full pt-2 text-center">
+          <div className="mb-8 rounded-lg bg-purple-600 p-3">
             <img 
                 src="/rockygo_logo.png" 
                 alt="RockyGo" 
-                className="h-7 flex mx-auto" 
+                className="mx-auto flex h-7" 
             />
           </div>
-          <Typography variant="h3" className="font-bold text-gray-800 mb-2">
+          <Typography variant="h3" className="mb-2 font-bold text-gray-800">
             Welcome Back
           </Typography>
-          <Typography className="text-gray-600 font-normal">
+          <Typography className="font-normal text-gray-600">
             Please enter your credentials to continue
           </Typography>
         </div>
 
         <form
-          className="mt-4 w-full space-y-5 flex flex-col"
+          className="mt-4 flex w-full flex-col space-y-5"
           onSubmit={handleSubmit}
         >
           <div className="space-y-2">
-            <Typography className="text-gray-700 font-medium">
+            <Typography className="font-medium text-gray-700">
               Email Address
             </Typography>
             <Input
@@ -80,7 +80,7 @@ function Login() {
           </div>
 
           <div className="space-y-2">
-            <Typography className="text-gray-700 font-medium">
+            <Typography className="font-medium text-gray-700">
               Password
             </Typography>
             <Input
@@ -99,18 +99,26 @@ function Login() {
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-400 transition-colors py-3 text-base font-medium !-mb-1"
+            className="!-mb-1 w-full bg-purple-600 py-3 text-base font-medium transition-colors hover:bg-purple-400"
           >
             Sign In
           </Button>
 
-          <Typography className="text-center text-gray-600 !mb-1">
+          <Typography className="!mb-1 text-center text-gray-600">
             Don't have an account?{" "}
             <Link
               to="/admin/signup"
               className="font-medium text-blue-500 underline"
             >
               Sign up
+            </Link>
+          </Typography>
+          <Typography color="gray" className="mt-4 text-center font-normal">
+            <Link
+              to="/admin/forgotpassword"
+              className="font-medium text-blue-500 underline"
+            >
+              Forgot Password?
             </Link>
           </Typography>
         </form>

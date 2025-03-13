@@ -1,8 +1,12 @@
 import axios from "axios";
 
 // baseURL from .env
-const baseURL = import.meta.env.VITE_BASE_URL;
+// = import.meta.env.VITE_BASE_URL;
 
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
+
+const baseURL = 'http://127.0.0.1:8000/api';
 
 const axiosClient = axios.create({
   baseURL: baseURL,

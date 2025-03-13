@@ -18,7 +18,9 @@ import {
   Map,
   LogOut,
   Bike,
-  BoxIcon
+  BoxIcon,
+  UserCog
+  
 } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import axiosClient from "../../axiosClient";
@@ -46,6 +48,12 @@ const Sidebar = () => {
       icon: <Map className="h-5 w-5" />,
       title: "User Management",
       path: "/user-management" // Add path for navigation
+    },
+    {
+      
+      icon: <UserCog />,
+      title: "Role Management",
+      path: "/role-management" // Add path for navigation
     },
     // {
     //   icon: <CircleUserRound className="h-5 w-5" />,
@@ -84,7 +92,7 @@ const Sidebar = () => {
   return (
     <>
       <IconButton variant="text" size="lg" onClick={openDrawer}>
-        <Menu className="h-8 w-8 text-white mt-[-4px]"/>
+        <Menu className="mt-[-4px] h-8 w-8 text-white"/>
       </IconButton>
       <Drawer open={open} onClose={closeDrawer}>
         <div className="mb-2 flex items-center justify-between p-4">

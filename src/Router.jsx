@@ -2,7 +2,6 @@ import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import DefaultLayout from "./components/layout/DefaultLayout";
 import GuestLayout from "./components/layout/GuestLayout";
-
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
 import Riders from "./pages/Riders";
@@ -10,8 +9,11 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./pages/userManagement/UserManagementPage";
-
+import RoleManagementPage from "./pages/roleManagement/RoleManagementPage";
 import { useStateContext } from "./contexts/contextProvider";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import EmailCode from "./pages/ForgotPassword/EmailCode";
+import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -51,6 +53,10 @@ const router = createBrowserRouter([
         path: "user-management",
         element: <UserManagement />,
       },
+      {
+        path: "role-management",
+        element: <RoleManagementPage/>,
+      },
     ],
   },
   {
@@ -64,6 +70,18 @@ const router = createBrowserRouter([
       {
         path: "/admin/signup",
         element: <Signup />,
+      },
+      {
+        path: "/admin/forgotpassword",
+        element: <ForgotPassword/>,
+      },
+      {
+        path: "/admin/emailcode",
+        element: <EmailCode/>,
+      },
+      {
+        path: "/admin/resetpassword",
+        element: <ResetPassword/>
       },
     ],
   },

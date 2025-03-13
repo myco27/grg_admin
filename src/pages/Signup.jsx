@@ -10,6 +10,7 @@ import axiosClient from "../axiosClient";
 import { Link, useNavigate } from "react-router-dom";
 import { useAlert } from "../contexts/alertContext";
 
+
 function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -55,15 +56,15 @@ function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card color="white" className="p-8 w-[500px] items-center">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <Card color="white" className="w-[500px] items-center p-8">
         <Typography variant="h4" color="blue-gray" className="font-bold">
           Sign Up
         </Typography>
         <Typography color="gray" className="mt-1 font-normal">
           Enter your details to register.
         </Typography>
-        <form className="mt-8 mb-2 w-full" onSubmit={handleSubmit}>
+        <form className="mb-2 mt-8 w-full" onSubmit={handleSubmit}>
           <div className="mb-1 flex flex-col gap-6">
             <Typography variant="h6" color="blue-gray" className="-mb-3">
               First Name
@@ -140,7 +141,7 @@ function Signup() {
           <Button
             type="submit"
             disabled={!agree}
-            className="w-full bg-purple-500 hover:bg-purple-400 transition-colors py-3 mt-3 text-base font-medium"
+            className="mt-3 w-full bg-purple-500 py-3 text-base font-medium transition-colors hover:bg-purple-400"
           >
             Sign Up
           </Button>
@@ -152,6 +153,7 @@ function Signup() {
             >
               Sign In
             </Link>
+            
           </Typography>
         </form>
       </Card>
