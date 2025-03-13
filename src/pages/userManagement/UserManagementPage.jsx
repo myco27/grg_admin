@@ -41,7 +41,7 @@ const UserManagementPage = () => {
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 0,
+    itemsPerPage: 10,
     isLoading: false,
   });
 
@@ -58,6 +58,7 @@ const UserManagementPage = () => {
           user_type: status,
           search: debounceSearch,
           page: pagination.page,
+          page_size: pagination.itemsPerPage,
         },
       });
 
@@ -85,24 +86,28 @@ const UserManagementPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [status, debounceSearch, pagination.page]);
+  }, [status, debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   // EVENT LISTENERS START
   const handleClickStatus = (value) => {
-    setPagination({ ...pagination, page: 1 });
+    setPagination({ ...pagination, page: 1, itemsPerPage: 10 });
     setStatus(value);
   };
 
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: 10,
+    });
   };
 
   const handlePageChange = (newPage) => {
     setPagination({
       ...pagination,
       page: newPage,
-      isLoading: true,
     });
   };
 
@@ -114,6 +119,14 @@ const UserManagementPage = () => {
     setSelectedUserId(userId);
     setSelectedUser(userType);
     setEditOpen(!editOpen);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(newSize),
+    });
   };
   // EVENT LISTENERS END
 
@@ -356,7 +369,7 @@ const UserManagementPage = () => {
               totalPages={pagination.totalPages}
               onPageChange={(newPage) => handlePageChange(newPage)}
               isLoading={pagination.isLoading}
-              links={pagination.links}
+              onPageSizeChange={handlePageSizeChange}
             />
           </CardFooter>
         </Card>

@@ -1,5 +1,11 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Typography, IconButton, Button } from "@material-tailwind/react";
+import {
+  Typography,
+  IconButton,
+  Button,
+  Select,
+  Option,
+} from "@material-tailwind/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({
@@ -9,11 +15,15 @@ export default function Pagination({
   totalPages,
   onPageChange,
   isLoading,
+  onPageSizeChange,
 }) {
-    
   // DECLARATIONS
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const handlePageSizeChange = (value) => {    
+    onPageSizeChange(value);
+  };
 
   // Generate page numbers to display
   const getPageNumbers = () => {
@@ -53,15 +63,38 @@ export default function Pagination({
     <Fragment>
       {/* Pagination */}
 
-      <div className="mt-8 flex flex-col md:flex-row items-center justify-between">
-        <Typography
-          variant="small"
-          color="blue-gray"
-          className="font-normal mb-4"
-        >
-          Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)}{" "}
-          of {totalItems} items
-        </Typography>
+      <div className="flex flex-col md:flex-row items-center justify-between">
+        <div className="flex gap-x-2 items-center py-2">
+          <Typography variant="small" color="blue-gray" className="font-normal">
+            Showing{" "}
+          </Typography>
+          <Select
+            value={itemsPerPage.toString()}
+            label="Items"
+            className="text-sm min-w-[80px]"
+            containerProps={{ className: "min-w-[80px]" }}
+            menuProps={{ className: "min-w-[80px]" }}
+            onChange={handlePageSizeChange}
+          >
+            {[10, 25, 50, 75, 100].map((size) => (
+              <Option
+                key={size}
+                value={size.toString()}
+                className="text-sm w-full text-center"
+              >
+                {size}
+              </Option>
+            ))}
+          </Select>{" "}
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-normal text-nowrap"
+          >
+            of {totalItems} items
+          </Typography>
+        </div>
+
         <div className="flex flex-wrap justify-center gap-2">
           <Button
             color="purple"
