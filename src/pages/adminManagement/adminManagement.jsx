@@ -45,8 +45,6 @@ const AdminManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      console.log('asdsadsad');
-      
       setPagination({ ...pagination, isLoading: true });
 
       const response = await axiosClient.get("/roles/users-with-roles", {
@@ -81,8 +79,6 @@ const AdminManagement = () => {
   };
 
   useEffect(() => {
-    console.log('asdsadas', pagination);
-    
     fetchUsers();
   }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 

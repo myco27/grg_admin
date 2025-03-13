@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "../../axiosClient";
 import {
   Button,
@@ -19,7 +19,7 @@ import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
 import Loading from "../../components/layout/Loading";
 import UseDebounce from "../../components/UseDebounce";
-import useAuthUser from "../../contexts/userContext";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
@@ -47,7 +47,8 @@ const RolePermissionTable = () => {
     isLoading: false,
   });
 
-  const { user } = useAuthUser();
+  const { user } = useContext(AuthContext);
+ 
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
   const handleSwitch = (role, permission) => {
@@ -139,8 +140,6 @@ const RolePermissionTable = () => {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
-
         showAlert(response.data.message, "success");
         fetchRoles();
       }

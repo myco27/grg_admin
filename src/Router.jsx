@@ -16,13 +16,19 @@ import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 
 import { useStateContext } from "./contexts/contextProvider";
 import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import UnauthorizedPage from "./components/Views/UnauthorizedPage";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
   const { token } = useStateContext(); // Get the token from context
 
   // Redirect to /orders if the user is logged in, otherwise to /admin/login
-  return token ? <Navigate to="/user-management" replace /> : <Navigate to="/admin/login" replace />;
+  return token ? (
+    <Navigate to="/user-management" replace />
+  ) : (
+    <Navigate to="/admin/login" replace />
+  );
 };
 
 const router = createBrowserRouter([
@@ -30,38 +36,59 @@ const router = createBrowserRouter([
     path: "/",
     element: <DefaultLayout />,
     children: [
-      {
-        index: true,
-        element: <RootRedirect />,
-      },
+      { index: true, element: <RootRedirect /> },
       {
         path: "orders",
-        element: <Orders />,
+        element: (
+          <ProtectedRoute requiredPermission="view user module">
+            <Orders />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "orders/:order_id",
-        element: <OrderDetails />,
+        element: (
+          <ProtectedRoute requiredPermission="view user module">
+            <OrderDetails />
+          </ProtectedRoute>
+        ),
         errorElement: <NotFound />,
       },
       {
         path: "riders",
-        element: <Riders />,
-      },
-      {
-        path: "riders/:riderId",
-        element: <Riders />,
+        element: (
+          <ProtectedRoute requiredPermission="view user module">
+            <Riders />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "user-management",
-        element: <UserManagement />,
+        element: (
+          <ProtectedRoute requiredPermission="view user module">
+            <UserManagement />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "admin-management",
-        element: <AdminManagement />,
+        element: (
+          <ProtectedRoute requiredPermission="view admin module">
+            <AdminManagement />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "roles-and-permissions",
-        element: <RolePermissionTable />,
+        element: (
+          <ProtectedRoute requiredPermission="view roles and permissions module">
+            <RolePermissionTable />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "unauthorized",
+        element: <UnauthorizedPage />,
       },
     ],
   },
@@ -69,26 +96,11 @@ const router = createBrowserRouter([
     path: "/",
     element: <GuestLayout />,
     children: [
-      {
-        path: "/admin/login",
-        element: <Login />,
-      },
-      {
-        path: "/admin/signup",
-        element: <Signup />,
-      },
-      {
-        path: "/admin/forgotpassword",
-        element: <ForgotPassword/>,
-      },
-      {
-        path: "/admin/emailcode",
-        element: <EmailCode/>,
-      },
-      {
-        path: "/admin/resetpassword",
-        element: <ResetPassword/>
-      },
+      { path: "/admin/login", element: <Login /> },
+      { path: "/admin/signup", element: <Signup /> },
+      { path: "/admin/forgotpassword", element: <ForgotPassword /> },
+      { path: "/admin/emailcode", element: <EmailCode /> },
+      { path: "/admin/resetpassword", element: <ResetPassword /> },
     ],
   },
   {

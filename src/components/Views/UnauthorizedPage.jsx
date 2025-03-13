@@ -4,7 +4,7 @@ import { Button, Typography } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { NoSymbolIcon } from "@heroicons/react/24/outline";
 
-function NotFound() {
+function UnauthorizedPage() {
 
   return (
     <div className="min-w-screen mx-auto flex h-screen flex-col items-center justify-center bg-gray-100 p-4 md:p-0">
@@ -16,7 +16,7 @@ function NotFound() {
         NO AUTHORIZATION FOUND!
       </Typography>
 
-      <Link to="/orders">
+      <Link to="/user-management">
         <Button variant="filled" color="purple">
           Go HOME
         </Button>
@@ -26,4 +26,4 @@ function NotFound() {
   );
 }
 
-export default NotFound;
+export default UnauthorizedPage;

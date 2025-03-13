@@ -1,4 +1,4 @@
-import React from "react";
+import { useContext, useState } from "react";
 import {
   Drawer,
   Typography,
@@ -6,35 +6,17 @@ import {
   List,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
 } from "@material-tailwind/react";
-import {
-  Package,
-  Bike,
-  Map,
-  Settings,
-  LogOut,
-  Menu,
-  UserRound,
-  ShieldCheck,
-  LockKeyhole,
-} from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import axiosClient from "../../axiosClient";
-import { useStateContext } from "../../contexts/contextProvider";
-import useAuthUser from "../../contexts/userContext";
-import { useAlert } from "../../contexts/alertContext";
+import { Menu, UserRound, ShieldCheck, LockKeyhole } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Sidebar = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
-  const { setUser, setToken } = useStateContext();
-  const navigate = useNavigate();
 
-  const { showAlert } = useAlert();
-
-  const { user } = useAuthUser();
+  const { user } = useContext(AuthContext);
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
   const canViewAdminModule =
@@ -42,23 +24,6 @@ const Sidebar = () => {
   const canViewRolesAndPermissionsModule =
     user?.all_permissions?.includes("view roles and permissions module") ||
     false;
-
-  const handleLogout = async () => {
-    try {
-      const response = await axiosClient.post("/admin/logout");
-      if (response.status === 204) {
-        localStorage.removeItem("ACCESS_TOKEN");
-        localStorage.removeItem("USER");
-
-        setUser(null);
-        setToken(null);
-        showAlert("Logged out successfully!", "success");
-        // navigate("/admin/login");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <>

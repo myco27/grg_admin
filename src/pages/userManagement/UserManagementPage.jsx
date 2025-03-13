@@ -16,7 +16,7 @@ import {
   Tooltip,
   Spinner,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
@@ -24,7 +24,7 @@ import { Search } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import EditUserModal from "./EditUserModal";
-import useAuthUser from "../../contexts/userContext";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const UserManagementPage = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const UserManagementPage = () => {
     isLoading: false,
   });
 
-  const { user } = useAuthUser();
+  const { user } = useContext(AuthContext);
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
 
