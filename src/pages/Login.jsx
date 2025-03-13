@@ -103,16 +103,6 @@ function Login() {
           >
             Sign In
           </Button>
-
-          <Typography className="!mb-1 text-center text-gray-600">
-            Don't have an account?{" "}
-            <Link
-              to="/admin/signup"
-              className="font-medium text-blue-500 underline"
-            >
-              Sign up
-            </Link>
-          </Typography>
           <Typography color="gray" className="mt-4 text-center font-normal">
             <Link
               to="/admin/forgotpassword"
@@ -124,6 +114,7 @@ function Login() {
         </form>
       </Card>
     </div>
+    
   );
 }
 

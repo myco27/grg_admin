@@ -44,7 +44,7 @@ export default function ForgotPassword() {
             <div className="flex min-w-full justify-center rounded bg-purple-600">
               <img className="scale-50" src="/rockygo_logo.png"></img>
             </div>
-            <Typography color="purple" variant="h6" className="font-normal">
+            <Typography color="black" variant="h6" className="font-normal">
               Enter your email and we will send you a<br></br>confirmation
               letter
             </Typography>

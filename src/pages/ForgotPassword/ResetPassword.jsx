@@ -49,7 +49,7 @@ export default function ResetPassword() {
         <div className="flex min-w-full items-center justify-center rounded bg-purple-600">
           <img className="scale-50" src="/rockygo_logo.png"></img>
         </div>
-        <Typography variant="h5" color="purple">
+        <Typography variant="h5" className='font-normal' color="black">
           Reset Password
         </Typography>
         <form

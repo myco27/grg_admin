@@ -63,7 +63,7 @@ export default function EmailCode() {
           <img className="scale-50" src="/rockygo_logo.png" />
         </div>
 
-        <Typography variant="h6" color="purple" className="font-normal">
+        <Typography variant="h6" color="black" className="font-normal">
           Enter the code sent to your email
         </Typography>
 
