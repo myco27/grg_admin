@@ -39,18 +39,21 @@ const AdminManagement = () => {
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 0,
+    itemsPerPage: 10,
     isLoading: false,
   });
 
   const fetchUsers = async () => {
     try {
+      console.log('asdsadsad');
+      
       setPagination({ ...pagination, isLoading: true });
 
       const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
           search: debounceSearch,
           page: pagination.page,
+          page_size: pagination.itemsPerPage,
         },
       });
 
@@ -73,35 +76,53 @@ const AdminManagement = () => {
       }
     } catch (error) {
       // navigate("/notfound");
+    } finally {
     }
   };
 
   useEffect(() => {
+    console.log('asdsadas', pagination);
+    
     fetchUsers();
-  }, [debounceSearch, pagination.page]);
+  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   // EVENT LISTENERS START
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
-  };
-
-  const handlePageChange = (newPage) => {
     setPagination({
       ...pagination,
-      page: newPage,
-      isLoading: true,
+      page: 1,
+      itemsPerPage: 10,
     });
   };
 
   const handleOpen = () => {
-    setOpen(prev => !prev);;
+    setOpen((prev) => !prev);
   };
 
   const handleEditOpen = (userId) => {
     setSelectedUserId(userId);
     setEditOpen(!editOpen);
   };
+
+  const handlePageChange = (newPage) => {
+    setPagination({
+      ...pagination,
+      page: newPage,
+    });
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(newSize),
+    });
+
+    console.log("onchange loading: ", pagination.isLoading);
+  };
+
   // EVENT LISTENERS END
 
   const TABLE_HEAD = [
@@ -292,7 +313,7 @@ const AdminManagement = () => {
             totalPages={pagination.totalPages}
             onPageChange={(newPage) => handlePageChange(newPage)}
             isLoading={pagination.isLoading}
-            links={pagination.links}
+            onPageSizeChange={(newSize) => handlePageSizeChange(newSize)}
           />
         </CardFooter>
       </Card>
