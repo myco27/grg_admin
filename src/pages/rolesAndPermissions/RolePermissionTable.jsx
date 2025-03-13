@@ -47,7 +47,7 @@ const RolePermissionTable = () => {
     isLoading: false,
   });
 
-  const { user } = useContext(AuthContext);
+  const { user, fetchUser } = useContext(AuthContext);
  
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
@@ -130,7 +130,7 @@ const RolePermissionTable = () => {
 
   const confirmTogglePermission = async () => {
     if (!selectedRole || !selectedPermission) return;
-
+  
     try {
       const response = await axios.post(
         `/roles/${selectedRole.id}/toggle-permission`,
@@ -138,9 +138,10 @@ const RolePermissionTable = () => {
           permission: selectedPermission,
         }
       );
-
+  
       if (response.status === 200) {
         showAlert(response.data.message, "success");
+        await fetchUser();
         fetchRoles();
       }
     } catch (error) {
