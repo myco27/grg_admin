@@ -119,8 +119,6 @@ const AdminManagement = () => {
       page: 1,
       itemsPerPage: Number(newSize),
     });
-
-    console.log("onchange loading: ", pagination.isLoading);
   };
 
   // EVENT LISTENERS END

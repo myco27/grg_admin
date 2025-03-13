@@ -71,9 +71,9 @@ export default function Pagination({
           <Select
             value={itemsPerPage.toString()}
             label="Items"
-            className="text-sm min-w-[80px]"
-            containerProps={{ className: "min-w-[80px]" }}
-            menuProps={{ className: "min-w-[80px]" }}
+            className="text-sm min-w-[65px]"
+            containerProps={{ className: "min-w-[65px]" }}
+            menuProps={{ className: "min-w-[65px]" }}
             onChange={handlePageSizeChange}
           >
             {[10, 25, 50, 75, 100].map((size) => (
