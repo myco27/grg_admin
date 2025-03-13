@@ -33,7 +33,7 @@ export default function Header() {
   }, [user, setUser, setToken, showAlert, navigate]);
 
   const handleLogoClick = () => {
-    navigate('/orders');
+    navigate('/user-management');
   };
 
   const handleLogout = async () => {

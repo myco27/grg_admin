@@ -9,18 +9,20 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./pages/userManagement/UserManagementPage";
-import RoleManagementPage from "./pages/roleManagement/RoleManagementPage";
-import { useStateContext } from "./contexts/contextProvider";
+import AdminManagement from "./pages/adminManagement/AdminManagement";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import EmailCode from "./pages/ForgotPassword/EmailCode";
 import ResetPassword from "./pages/ForgotPassword/ResetPassword";
+
+import { useStateContext } from "./contexts/contextProvider";
+import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
   const { token } = useStateContext(); // Get the token from context
 
   // Redirect to /orders if the user is logged in, otherwise to /admin/login
-  return token ? <Navigate to="/orders" replace /> : <Navigate to="/admin/login" replace />;
+  return token ? <Navigate to="/user-management" replace /> : <Navigate to="/admin/login" replace />;
 };
 
 const router = createBrowserRouter([
@@ -54,8 +56,12 @@ const router = createBrowserRouter([
         element: <UserManagement />,
       },
       {
-        path: "role-management",
-        element: <RoleManagementPage/>,
+        path: "admin-management",
+        element: <AdminManagement />,
+      },
+      {
+        path: "roles-and-permissions",
+        element: <RolePermissionTable />,
       },
     ],
   },
