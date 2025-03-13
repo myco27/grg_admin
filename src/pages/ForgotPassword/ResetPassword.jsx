@@ -5,6 +5,7 @@ import { Button, Typography } from "@material-tailwind/react";
 import { Input } from "@material-tailwind/react";
 import { Eye, EyeOff} from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
+import axiosClient from "../../axiosClient"; 
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -13,6 +14,7 @@ export default function ResetPassword() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {showAlert} = useAlert();
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -27,7 +29,7 @@ export default function ResetPassword() {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/reset-password", {
+      await axiosClient.post("/reset-password", {
         email: localStorage.getItem("email"),
         code: localStorage.getItem("confirmation_code"),
         password

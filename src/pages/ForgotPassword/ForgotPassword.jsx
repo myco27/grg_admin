@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { Mail } from "lucide-react";
 import { Input, Button, Typography } from "@material-tailwind/react";
 import { useAlert } from "../../contexts/alertContext";
+import axiosClient from "../../axiosClient"; 
+import Loading from "../../components/layout/Loading";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [buttonState, setButtonState] = useState(false); //Disables button so that no 2xClick
+  const [buttonState, setButtonState] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const disableButton = () => {
@@ -17,18 +19,22 @@ export default function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/api/forgot-password", { email });
+      setLoading(true);
+      await axiosClient.post("/forgot-password", { email });
       showAlert("Code sent to your email", "success")
       localStorage.setItem("email", email)
       navigate("/admin/emailcode");
     } catch (error) {
       console.log(error);
       showAlert("Email was not found.", "error")
+    }finally{
+      setLoading(false);
     }
   };
 
   return (
     <>
+    {loading && <Loading/>}
       <div className="flex min-h-screen items-center justify-center bg-gray-100 p-2 text-center">
         <form
           onSubmit={handleSubmit}
@@ -67,7 +73,6 @@ export default function ForgotPassword() {
                 <Link to="/admin/login">
                   <Button
                     className="min-w-[400px] bg-purple-600 hover:bg-purple-400"
-                    type="submit"
                     variant="filled"
                   >
                     Cancel

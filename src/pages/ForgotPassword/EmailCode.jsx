@@ -1,40 +1,35 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Input, Button, Typography } from "@material-tailwind/react";
 import { Lock } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
+import axiosClient from "../../axiosClient";
 
 export default function EmailCode() {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
   const [seconds, setSeconds] = useState(30);
   const {showAlert} = useAlert();
-  // ✅ Function to resend the code
   const resendCode = async (e) => {
     e.preventDefault();
     handleResubmit(e);
-    setSeconds(30); // Reset the timer
+    setSeconds(30); 
   };
-
-  // ✅ Timer Countdown Logic
+  
   useEffect(() => {
-    // Prevent timer from running if seconds = 0
     if (seconds === 0) return;
 
     const interval = setInterval(() => {
       setSeconds((prevSeconds) => prevSeconds - 1);
     }, 1000);
 
-    // ✅ Clear interval when component unmounts or time reaches 0
     return () => clearInterval(interval);
-  }, [seconds]); // ✅ Do NOT reset the timer
+  }, [seconds]);
 
-  // ✅ Resend Code API
   const handleResubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/api/forgot-password", {
+      await axiosClient.post("/forgot-password", {
         email: localStorage.getItem("email")
       });
       showAlert("Code sent to your email", "success")
@@ -42,14 +37,14 @@ export default function EmailCode() {
     } catch (error) {
       console.log(error);
       showAlert("Code was not sent", "error")
+    }finally{
+
     }
   };
-
-  // ✅ Verify Code API
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/api/verify-code", { code });
+      await axiosClient.post("/verify-code", { code });
       showAlert("Code is Verified!", "success")
       localStorage.setItem("confirmation_code", code);
       navigate("/admin/resetpassword");
