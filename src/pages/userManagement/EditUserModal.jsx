@@ -11,6 +11,10 @@ import {
   Tab,
   TabsBody,
   TabPanel,
+  Avatar,
+  Card,
+  CardBody,
+  Typography,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -44,10 +48,39 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const { showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState("info");
 
+  const [ridersAttachments, setRidersAttachments] = useState({
+    license: null,
+    roadTax: null,
+    certificateOfRegistration: null,
+    vaccinationCard: null,
+  });
+
+  const [imagePreview, setImagePreview] = useState({
+    license: null,
+    roadTax: null,
+    certificateOfRegistration: null,
+    vaccinationCard: null,
+  });
+
+  const handleImageChange = (event, type) => {
+    const file = event.target.files[0];
+    if (file) {
+      setRidersAttachments((prev) => ({
+        ...prev,
+        [type]: file,
+      }));
+
+      setImagePreview((prev) => ({
+        ...prev,
+        [type]: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const fetchUserDetails = async () => {
     try {
       const response = await axiosClient.get(`/admin/users/${userId}`);
-      console.log(response.data.data.store);
+
       if (response.status === 200) {
         setFirstName(response.data.data.first_name);
         setLastName(response.data.data.last_name);
@@ -68,7 +101,19 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             state: response.data.data.address.state,
           });
         }
-        setLoading(false);
+
+        if (response.data.data.rider_attachments) {
+          const attachments = {
+            license: response.data.data.rider_attachments.license,
+            roadTax: response.data.data.rider_attachments.official_receipt,
+            certificateOfRegistration:
+              response.data.data.rider_attachments.certificate_registration,
+            vaccinationCard: response.data.data.rider_attachments.vaccine,
+          };
+
+          setRidersAttachments(attachments);
+          setLoading(false);
+        }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -77,18 +122,34 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   const updateUser = async () => {
     try {
-      const response = await axiosClient.put(`/admin/users/update/${userId}`, {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        mobile_number: mobileNumber,
-        local_support_number: localSupportNumber,
-        business_landline_number: businessLandlineNumber,
-        business_contact_number: businessContactNumber,
-        password: password,
-        password_confirmation: confirmPassword,
-        address: address,
+      const formData = new FormData();
+      formData.append("first_name", firstName);
+      formData.append("last_name", lastName);
+      formData.append("email", email);
+      formData.append("mobile_number", mobileNumber);
+      formData.append("local_support_number", localSupportNumber);
+      formData.append("business_landline_number", businessLandlineNumber);
+      formData.append("business_contact_number", businessContactNumber);
+      if (password) formData.append("password", password);
+      if (confirmPassword)
+        formData.append("password_confirmation", confirmPassword);
+      formData.append("address", address);
+
+      Object.entries(ridersAttachments).forEach(([key, file]) => {
+        if (file instanceof File) {
+          formData.append(key, file);
+        } else {
+          formData.append(key, "");
+        }
       });
+
+      const response = await axiosClient.post(
+        `/admin/users/update/${userId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       if (response.status === 202) {
         showAlert("User updated successfully!", "success");
@@ -96,12 +157,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         handleOpen();
       }
     } catch (error) {
-      if (error.response.data.errors) {
+      if (error.response?.data?.errors) {
         Object.values(error.response.data.errors)
           .flat()
-          .forEach((errorMessage) => {
-            showAlert(`${errorMessage}`, "error");
-          });
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
@@ -122,6 +181,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   useEffect(() => {
     setLoading(true);
+
     if (open && userId) {
       fetchUserDetails();
     } else {
@@ -134,17 +194,24 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       setBusinessContactNumber("");
       setPassword("");
       setConfirmPassword("");
-      setAddress({
-        houseNumber: "",
-        building: "",
-        street: "",
-        district: "",
-        zipcode: "",
-        city: "",
-        state: "",
-      });
       setPasswordVisibility({ password: false, confirmPassword: false });
+
+      setRidersAttachments({
+        license: null,
+        roadTax: null,
+        certificateOfRegistration: null,
+        vaccinationCard: null,
+      });
+
+      setImagePreview({
+        license: null,
+        roadTax: null,
+        certificateOfRegistration: null,
+        vaccinationCard: null,
+      });
     }
+
+    setLoading(false);
   }, [open, userId]);
 
   return (
@@ -239,212 +306,266 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                   </div>
                 </>
               )}
-
-              {/* Rider and Customer Fields */}
-              {(userType === "rider" || userType === "customer") && (
+              {/* Customer Field */}
+              {userType === "customer" && (
                 <>
-                  {/* <Tabs
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    autoComplete="username"
+                  />
+                  <Input
+                    label="First Name"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    label="Last Name"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <Input
+                    label="Mobile Number"
+                    type="text"
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+
+                  {/* Password Field */}
+                  <div className="relative ">
+                    <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      type={passwordVisibility.password ? "text" : "password"}
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("password")}
+                    >
+                      {passwordVisibility.password ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  {/* Confirm Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      label="Confirm Password"
+                      type={
+                        passwordVisibility.confirmPassword ? "text" : "password"
+                      }
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("confirmPassword")}
+                    >
+                      {passwordVisibility.confirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+              {/* Rider Fields */}
+              {userType === "rider" && (
+                <>
+                  <Tabs
                     value={activeTab}
                     className="w-full flex gap-4"
                     orientation="vertical"
-                  > */}
-                  {/* Tab Headers */}
-                  {/* <TabsHeader
+                  >
+                    <TabsHeader
                       className="bg-gray-100 text-nowrap my-4"
                       indicatorProps={{
-                        className: "bg-purple-200 text-purple-900",
+                        className: "bg-purple-500",
                       }}
                     >
                       <Tab
                         value="info"
                         onClick={() => setActiveTab("info")}
                         className={`justify-start ${
-                          activeTab === "info"
-                            ? "text-purple-600"
-                            : "text-gray-700"
+                          activeTab === "info" ? "text-white" : "text-gray-700"
                         }`}
                       >
                         User Information
                       </Tab>
 
                       <Tab
-                        value="address"
-                        onClick={() => setActiveTab("address")}
+                        value="rider_attachments"
+                        onClick={() => setActiveTab("rider_attachments")}
                         className={`justify-start ${
-                          activeTab === "address"
-                            ? "text-purple-600"
+                          activeTab === "rider_attachments"
+                            ? "text-white"
                             : "text-gray-700"
                         }`}
                       >
-                        User Address
+                        Rider Attachments
                       </Tab>
-                    </TabsHeader> */}
+                    </TabsHeader>
 
-                  {/* <TabsBody className="max-h-[50vh]"> */}
-                  {/* User Information Tab */}
-                  {/* <TabPanel
+                    <TabsBody className="max-h-[50vh] overflow-y-auto px-2">
+                      {/* User Information Tab */}
+                      <TabPanel
                         className="flex flex-col gap-4 px-0"
                         value="info"
-                      > */}
-                  {/* {(userType === "rider" || userType === "customer") && ( */}
-                  <>
-                    <Input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      type="email"
-                      autoComplete="username"
-                    />
-                    <Input
-                      label="First Name"
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
-                    <Input
-                      label="Last Name"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
-                    <Input
-                      label="Mobile Number"
-                      type="text"
-                      value={mobileNumber}
-                      onChange={(e) => setMobileNumber(e.target.value)}
-                      autoComplete="tel"
-                    />
-
-                    {/* Password Field */}
-                    <div className="relative ">
-                      <Input
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        label="Password"
-                        type={passwordVisibility.password ? "text" : "password"}
-                        className="pr-10"
-                        autoComplete="new-password"
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                        onClick={() => toggleVisibility("password")}
                       >
-                        {passwordVisibility.password ? (
-                          <EyeSlashIcon className="h-5 w-5" />
-                        ) : (
-                          <EyeIcon className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
+                        <Input
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          label="Email"
+                          type="email"
+                          autoComplete="username"
+                        />
+                        <Input
+                          label="First Name"
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                        />
+                        <Input
+                          label="Last Name"
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                        />
+                        <Input
+                          label="Mobile Number"
+                          type="text"
+                          value={mobileNumber}
+                          onChange={(e) => setMobileNumber(e.target.value)}
+                          autoComplete="tel"
+                        />
 
-                    {/* Confirm Password Field */}
-                    <div className="relative">
-                      <Input
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        label="Confirm Password"
-                        type={
-                          passwordVisibility.confirmPassword
-                            ? "text"
-                            : "password"
-                        }
-                        className="pr-10"
-                        autoComplete="new-password"
-                      />
-                      <button
-                        type="button"
-                        className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                        onClick={() => toggleVisibility("confirmPassword")}
-                      >
-                        {passwordVisibility.confirmPassword ? (
-                          <EyeSlashIcon className="h-5 w-5" />
-                        ) : (
-                          <EyeIcon className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
-                  </>
-                  {/* )} */}
-                  {/* </TabPanel> */}
+                        {/* Password Field */}
+                        <div className="relative ">
+                          <Input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            label="Password"
+                            type={
+                              passwordVisibility.password ? "text" : "password"
+                            }
+                            className="pr-10"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                            onClick={() => toggleVisibility("password")}
+                          >
+                            {passwordVisibility.password ? (
+                              <EyeSlashIcon className="h-5 w-5" />
+                            ) : (
+                              <EyeIcon className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
 
-                  {/* User Address Tab */}
-                  {/* <TabPanel
+                        {/* Confirm Password Field */}
+                        <div className="relative">
+                          <Input
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            label="Confirm Password"
+                            type={
+                              passwordVisibility.confirmPassword
+                                ? "text"
+                                : "password"
+                            }
+                            className="pr-10"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                            onClick={() => toggleVisibility("confirmPassword")}
+                          >
+                            {passwordVisibility.confirmPassword ? (
+                              <EyeSlashIcon className="h-5 w-5" />
+                            ) : (
+                              <EyeIcon className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+                      </TabPanel>
+
+                      {/* Riders Attachments Tab */}
+                      <TabPanel
                         className="flex flex-col gap-4 px-0"
-                        value="address"
+                        value="rider_attachments"
                       >
-                        <Input
-                          label="House Number"
-                          type="text"
-                          value={address.houseNumber}
-                          onChange={(e) =>
-                            setAddress({
-                              ...address,
-                              houseNumber: e.target.value,
-                            })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="Building"
-                          type="text"
-                          value={address.building}
-                          onChange={(e) =>
-                            setAddress({ ...address, building: e.target.value })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="Street"
-                          type="text"
-                          value={address.street}
-                          onChange={(e) =>
-                            setAddress({ ...address, street: e.target.value })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="District"
-                          type="text"
-                          value={address.district}
-                          onChange={(e) =>
-                            setAddress({ ...address, district: e.target.value })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="ZIP Code"
-                          type="text"
-                          value={address.zipcode}
-                          onChange={(e) =>
-                            setAddress({ ...address, zipcode: e.target.value })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="City"
-                          type="text"
-                          value={address.city}
-                          onChange={(e) =>
-                            setAddress({ ...address, city: e.target.value })
-                          }
-                          className=""
-                        />
-                        <Input
-                          label="State"
-                          type="text"
-                          value={address.state}
-                          onChange={(e) =>
-                            setAddress({ ...address, state: e.target.value })
-                          }
-                          className=""
-                        />
-                      </TabPanel> */}
-                  {/* </TabsBody> */}
-                  {/* </Tabs> */}
+                        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                          {Object.entries(ridersAttachments).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex flex-col items-center gap-2"
+                              >
+                                <input
+                                  type="file"
+                                  id={key}
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, key)}
+                                  className="hidden"
+                                />
+
+                                <label htmlFor={key}>
+                                  <Typography className="font-semibold text-sm">
+                                    {key.replace(/([A-Z])/g, " $1").trim()}{" "}
+                                    {/* Format label dynamically */}
+                                  </Typography>
+                                </label>
+
+                                <label htmlFor={key} className="cursor-pointer">
+                                  {imagePreview[key] || value ? (
+                                    <Avatar
+                                      src={
+                                        imagePreview[key] ||
+                                        `${
+                                          import.meta.env.VITE_APP_IMAGE_PATH
+                                        }/applicant/${value}`
+                                      }
+                                      alt={`${key} Preview`}
+                                      className="border border-gray-300 shadow-md w-48 h-48"
+                                      variant="rounded"
+                                    />
+                                  ) : (
+                                    <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg border border-gray-300 shadow-md">
+                                      <span className="text-gray-500 text-sm text-center">
+                                        Upload{" "}
+                                        {key.replace(/([A-Z])/g, " $1").trim()}
+                                      </span>
+                                    </div>
+                                  )}
+                                </label>
+                              </div>
+                            )
+                          )}
+                        </div>
+                        ;
+                      </TabPanel>
+                    </TabsBody>
+                  </Tabs>
                 </>
               )}
-
               {(userType === "central" || userType === "restaurant") && (
                 <>
                   <Input
@@ -480,6 +601,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     onChange={(e) => setBusinessContactNumber(e.target.value)}
                     autoComplete="tel"
                   />
+
                   {/* Password Field */}
                   <div className="relative">
                     <Input
@@ -529,7 +651,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                   </div>
                 </>
               )}
-
               <div className="flex justify-end gap-2">
                 <Button variant="gradient" color="gray" onClick={handleOpen}>
                   <span>Cancel</span>
