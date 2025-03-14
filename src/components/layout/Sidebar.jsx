@@ -7,7 +7,7 @@ import {
   ListItem,
   ListItemPrefix,
 } from "@material-tailwind/react";
-import { Menu, UserRound, ShieldCheck, LockKeyhole } from "lucide-react";
+import { Menu, UserRound, ShieldCheck, LockKeyhole, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -17,6 +17,8 @@ const Sidebar = () => {
   const closeDrawer = () => setOpen(false);
 
   const { user } = useContext(AuthContext);
+  const canViewDashboardModule =
+    user?.all_permissions?.includes("view dashboard module") || false;
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
   const canViewAdminModule =
@@ -77,6 +79,21 @@ const Sidebar = () => {
               </Typography>
             </ListItem>
           </Link> */}
+
+          {/* Dashboard */}
+          {canViewDashboardModule && (
+            <Link to="/dashboard">
+              <ListItem onClick={closeDrawer}>
+                <ListItemPrefix>
+                  <LayoutDashboard className="h-5 w-5" />
+                </ListItemPrefix>
+                <Typography color="blue-gray" className="mr-auto font-normal">
+                  Dashboard
+                </Typography>
+              </ListItem>
+            </Link>
+          )}
+
           {/* User Management */}
           {canViewUserModule && (
             <Link to="/user-management">

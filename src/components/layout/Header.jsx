@@ -60,7 +60,7 @@ export default function Header() {
     <div className="bg-purple-500 border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
       <div className="flex items-center">
         <Sidebar />
-        <Link to="/user-management" >
+        <Link to="/dashboard" >
           <img 
             src="/rockygo_logo.png" 
             alt="RockyGo" 

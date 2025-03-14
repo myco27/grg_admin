@@ -18,6 +18,7 @@ import { useStateContext } from "./contexts/contextProvider";
 import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import UnauthorizedPage from "./components/Views/UnauthorizedPage";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -59,6 +60,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view user module">
             <Riders />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <ProtectedRoute requiredPermission="view dashboard module">
+            <Dashboard />
           </ProtectedRoute>
         ),
       },
