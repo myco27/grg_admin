@@ -48,7 +48,7 @@ const RolePermissionTable = () => {
   });
 
   const { user, fetchUser } = useContext(AuthContext);
- 
+
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
   const handleSwitch = (role, permission) => {
@@ -82,9 +82,9 @@ const RolePermissionTable = () => {
     setPagination({
       ...pagination,
       itemsPerPage: value,
-      page: 1
-    })
-  }
+      page: 1,
+    });
+  };
 
   const handleSearchInput = (event) => {
     const { value } = event.target;
@@ -106,7 +106,7 @@ const RolePermissionTable = () => {
         params: {
           page: pagination.page,
           search: debounceSearch,
-          pageSize: pagination.itemsPerPage
+          pageSize: pagination.itemsPerPage,
         },
       });
       if (response.status === 200) {
@@ -142,7 +142,7 @@ const RolePermissionTable = () => {
 
   const confirmTogglePermission = async () => {
     if (!selectedRole || !selectedPermission) return;
-  
+
     try {
       const response = await axios.post(
         `/roles/${selectedRole.id}/toggle-permission`,
@@ -150,7 +150,7 @@ const RolePermissionTable = () => {
           permission: selectedPermission,
         }
       );
-  
+
       if (response.status === 200) {
         showAlert(response.data.message, "success");
         await fetchUser();
@@ -186,7 +186,7 @@ const RolePermissionTable = () => {
               </Button>
               {canAddPermission && (
                 <Button
-                color="purple"
+                  color="purple"
                   className="flex items-center gap-3"
                   size="sm"
                   onClick={handleOpenPermissionDialog}
