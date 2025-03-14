@@ -22,22 +22,18 @@ import UseDebounce from "../../components/UseDebounce";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const RolePermissionTable = () => {
+
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
-
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
-
   const { showAlert } = useAlert();
-
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
-
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -46,6 +42,14 @@ const RolePermissionTable = () => {
     itemsPerPage: 10,
     isLoading: false,
   });
+
+  useEffect(() => {
+    fetchRoles();
+  }, [pagination.page, debounceSearch, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    fetchPermissions();
+  }, []);
 
   const { user, fetchUser } = useContext(AuthContext);
 
@@ -78,26 +82,17 @@ const RolePermissionTable = () => {
   };
 
   const handlePageSizeChange = (value) => {
-    console.log(value);
     setPagination({
-      ...pagination,
-      itemsPerPage: value,
-      page: 1,
-    });
+          ...pagination,
+          page: 1,
+          itemsPerPage: Number(value),
+        })
   };
 
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
   };
-
-  useEffect(() => {
-    fetchRoles();
-  }, [pagination.page, debounceSearch, pagination.itemsPerPage]);
-
-  useEffect(() => {
-    fetchPermissions();
-  }, []);
 
   const fetchRoles = async () => {
     try {
@@ -119,7 +114,7 @@ const RolePermissionTable = () => {
           totalItems: total,
           links: links,
           itemsPerPage: per_page,
-          isLoading: false,
+          isLoading: false
         };
         setRoles(response.data.data || []);
         setPagination(newPagination);
