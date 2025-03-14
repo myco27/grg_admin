@@ -63,15 +63,15 @@ export default function Pagination({
     <Fragment>
       {/* Pagination */}
 
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="flex gap-x-2 items-center py-2">
+      <div className="flex flex-col items-center justify-between md:flex-row">
+        <div className="flex items-center gap-x-2 py-2">
           <Typography variant="small" color="blue-gray" className="font-normal">
             Showing{" "}
           </Typography>
           <Select
             value={itemsPerPage.toString()}
             label="Items"
-            className="text-sm min-w-[65px]"
+            className="min-w-[65px] text-sm"
             containerProps={{ className: "min-w-[65px]" }}
             menuProps={{ className: "min-w-[65px]" }}
             onChange={handlePageSizeChange}
@@ -80,7 +80,7 @@ export default function Pagination({
               <Option
                 key={size}
                 value={size.toString()}
-                className="text-sm w-full text-center"
+                className="w-full text-center text-sm"
               >
                 {size}
               </Option>
@@ -89,7 +89,7 @@ export default function Pagination({
           <Typography
             variant="small"
             color="blue-gray"
-            className="font-normal text-nowrap"
+            className="text-nowrap font-normal"
           >
             of {totalItems} items
           </Typography>
