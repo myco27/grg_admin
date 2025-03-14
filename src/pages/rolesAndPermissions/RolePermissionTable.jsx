@@ -43,7 +43,7 @@ const RolePermissionTable = () => {
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 0,
+    itemsPerPage: 10,
     isLoading: false,
   });
 
@@ -74,9 +74,17 @@ const RolePermissionTable = () => {
     setPagination({
       ...pagination,
       page: newPage,
-      isLoading: true,
     });
   };
+
+  const handlePageSizeChange = (value) => {
+    console.log(value);
+    setPagination({
+      ...pagination,
+      itemsPerPage: value,
+      page: 1
+    })
+  }
 
   const handleSearchInput = (event) => {
     const { value } = event.target;
@@ -85,8 +93,11 @@ const RolePermissionTable = () => {
 
   useEffect(() => {
     fetchRoles();
+  }, [pagination.page, debounceSearch, pagination.itemsPerPage]);
+
+  useEffect(() => {
     fetchPermissions();
-  }, [pagination.page, debounceSearch]);
+  }, []);
 
   const fetchRoles = async () => {
     try {
@@ -95,6 +106,7 @@ const RolePermissionTable = () => {
         params: {
           page: pagination.page,
           search: debounceSearch,
+          pageSize: pagination.itemsPerPage
         },
       });
       if (response.status === 200) {
@@ -200,11 +212,11 @@ const RolePermissionTable = () => {
             />
           </div>
         </CardHeader>
-        <CardBody className="p-4 overflow-scroll">
+        <CardBody className="overflow-scroll p-4">
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="border w-full min-w-max table-auto text-left">
+            <table className="w-full min-w-max table-auto border text-left">
               <thead>
                 <tr>
                   <th className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
@@ -213,7 +225,7 @@ const RolePermissionTable = () => {
                   {permissions.map((perm) => (
                     <th
                       key={perm.id}
-                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50 text-center"
+                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 text-center transition-colors hover:bg-blue-gray-50"
                     >
                       {perm.name.charAt(0).toUpperCase() + perm.name.slice(1)}
                     </th>
@@ -273,8 +285,7 @@ const RolePermissionTable = () => {
             itemsPerPage={pagination.itemsPerPage}
             totalPages={pagination.totalPages}
             onPageChange={(newPage) => handlePageChange(newPage)}
-            isLoading={pagination.isLoading}
-            links={pagination.links}
+            onPageSizeChange={handlePageSizeChange}
           />
         </CardFooter>
       </Card>
