@@ -180,11 +180,13 @@ const RolePermissionTable = () => {
                 className="flex items-center gap-3"
                 size="sm"
                 onClick={handleOpenRoleDialog}
+                color="purple"
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Role
               </Button>
               {canAddPermission && (
                 <Button
+                color="purple"
                   className="flex items-center gap-3"
                   size="sm"
                   onClick={handleOpenPermissionDialog}
@@ -301,8 +303,6 @@ const RolePermissionTable = () => {
             : `Are you sure you want to revoke the "${selectedPermission}" permission from the "${selectedRole?.name}" role?`
         }
       />
-
-      {/* FOR ADD ROLE AND PERMISSION */}
       <RoleDialog
         open={roleDialogOpen}
         onClose={() => setRoleDialogOpen(false)}

@@ -21,7 +21,7 @@ export default function Pagination({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const handlePageSizeChange = (value) => {    
+  const handlePageSizeChange = (value) => {
     onPageSizeChange(value);
   };
 
@@ -69,7 +69,9 @@ export default function Pagination({
             Showing{" "}
           </Typography>
           <Select
-            value={itemsPerPage.toString()}
+            value={
+               itemsPerPage.toString()
+            }
             label="Items"
             className="min-w-[65px] text-sm"
             containerProps={{ className: "min-w-[65px]" }}
