@@ -1,4 +1,8 @@
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import {
+  PencilIcon,
+  UserPlusIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -15,6 +19,10 @@ import {
   IconButton,
   Tooltip,
   Spinner,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -121,8 +129,7 @@ const AdminManagement = () => {
 
   const TABLE_HEAD = [
     "User ID",
-    "Full Name",
-    "Email",
+    "User Information",
     "Roles",
     "Permissions",
     "Date Created",
@@ -148,11 +155,11 @@ const AdminManagement = () => {
                 size="sm"
                 onClick={handleOpen}
               >
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add admin
+                <UserPlusIcon strokeWidth={2} className="w-5" /> Add admin
               </Button>
             </div>
           </div>
-          <div className="md:flex-row rounded-none">
+          <div className="rounded-none md:flex-row">
             <div className="float-end w-full md:w-72">
               <Input
                 label="Search User"
@@ -163,7 +170,7 @@ const AdminManagement = () => {
                     <Search className="h-5 w-5" />
                   )
                 }
-                size="md"
+                size="lg"
                 className="bg-white"
                 value={searchTerm}
                 onChange={(e) => handleSearchInput(e)}
@@ -172,11 +179,11 @@ const AdminManagement = () => {
           </div>
         </CardHeader>
 
-        <CardBody className="p-4 overflow-scroll">
+        <CardBody className="overflow-scroll p-4">
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="border w-full min-w-max table-auto text-left">
+            <table className="w-full min-w-max table-auto border text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head, index) => (
@@ -187,7 +194,7 @@ const AdminManagement = () => {
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                        className="flex gap-2 font-normal leading-none opacity-70"
                       >
                         {head}
                       </Typography>
@@ -204,7 +211,7 @@ const AdminManagement = () => {
                   // );
                   return (
                     <tr key={user.id}>
-                      <td className="p-4">
+                      <td className="flex p-4">
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -222,18 +229,8 @@ const AdminManagement = () => {
                         >
                           {user.first_name} {user.last_name}
                         </Typography>
+                        <Typography>{user.email}</Typography>
                       </td>
-
-                      <td className="p-4">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user.email}
-                        </Typography>
-                      </td>
-
                       {/* Role */}
                       <td className="p-4">
                         <Typography
@@ -248,19 +245,25 @@ const AdminManagement = () => {
                       </td>
 
                       {/* Permissions */}
-                      <td className="p-4">
+                      <td className="max-w-60">
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-normal"
+                          className="flex flex-wrap font-normal"
                         >
                           {user.all_permissions &&
                           user.all_permissions.length > 0
                             ? user.all_permissions.map((perm, index) => (
                                 <span key={index}>
-                                  {perm}
+                                  <Chip
+                                    color="purple"
+                                    variant="text"
+                                    size="sm"
+                                    className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                    value={perm}
+                                  ></Chip>
                                   {index !== user.all_permissions.length - 1 &&
-                                    ", "}
+                                    " "}
                                 </span>
                               ))
                             : "No Permissions"}
@@ -283,12 +286,19 @@ const AdminManagement = () => {
 
                       <td className="p-4">
                         <Tooltip content="Edit User">
-                          <IconButton
-                            variant="text"
-                            onClick={() => handleEditOpen(user.id)}
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </IconButton>
+                          <Menu>
+                            <MenuHandler>
+                              <IconButton variant="text">
+                                <EllipsisHorizontalIcon className="h-10 w-10" />
+                              </IconButton>
+                            </MenuHandler>
+                            <MenuList>
+                              <MenuItem>Action 1</MenuItem>
+                              <MenuItem>Action 2</MenuItem>
+                              <MenuItem>Action 3</MenuItem>
+                              <MenuItem>Action 4</MenuItem>
+                            </MenuList>
+                          </Menu>
                         </Tooltip>
                       </td>
                     </tr>
