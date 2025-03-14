@@ -27,6 +27,7 @@ const RoleDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
       }
     } catch (error) {
       console.error("Error creating role:", error);
+      showAlert('Error: role name is taken', 'error')
     }
   };
 
@@ -39,16 +40,17 @@ const RoleDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
       <DialogHeader>Add New Role</DialogHeader>
       <DialogBody>
         <Input
+        color="purple"
           label="Role Name"
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
         />
       </DialogBody>
       <DialogFooter className="flex gap-2">
-        <Button variant="text" color="gray" onClick={onClose}>
+        <Button variant="outlined" color="purple" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant="gradient" color="blue" onClick={handleConfirm}>
+        <Button variant="gradient" color="purple" onClick={handleConfirm}>
           Confirm
         </Button>
       </DialogFooter>
