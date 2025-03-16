@@ -29,6 +29,7 @@ const RolePermissionTable = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
   const { showAlert } = useAlert();
@@ -137,7 +138,7 @@ const RolePermissionTable = () => {
 
   const confirmTogglePermission = async () => {
     if (!selectedRole || !selectedPermission) return;
-
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `/roles/${selectedRole.id}/toggle-permission`,
@@ -154,6 +155,7 @@ const RolePermissionTable = () => {
     } catch (error) {
       console.error("Error toggling permission:", error);
     } finally {
+      setIsLoading(false);
       setOpen(false);
       setSelectedRole(null);
       setSelectedPermission("");
@@ -292,6 +294,7 @@ const RolePermissionTable = () => {
         open={open}
         onClose={() => setOpen(false)}
         onConfirm={confirmTogglePermission}
+        isLoading={isLoading}
         message={
           isAdding
             ? `Are you sure you want to grant the "${selectedPermission}" permission to the "${selectedRole?.name}" role?`

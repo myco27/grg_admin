@@ -12,9 +12,11 @@ import { useAlert } from "../../contexts/alertContext";
 
 const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
   const [permissionName, setPermissionName] = useState("");
+  const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
   const handleConfirm = async () => {
+    setLoading(true);
     try {
       const response = await axiosClient.post("/permissions/create", {
         name: permissionName,
@@ -26,7 +28,15 @@ const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
         onClose();
       }
     } catch (error) {
-      console.error("Error creating role:", error);
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,12 +54,23 @@ const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
           onChange={(e) => setPermissionName(e.target.value)}
         />
       </DialogBody>
-      <DialogFooter>
-        <Button variant="text" color="gray" onClick={onClose}>
-          Cancel
+      <DialogFooter className="flex gap-2">
+        <Button
+          variant="gradient"
+          color="gray"
+          disabled={loading}
+          onClick={onClose}
+        >
+          <span>Cancel</span>
         </Button>
-        <Button variant="gradient" color="blue" onClick={handleConfirm}>
-          Confirm
+        <Button
+          type="submit"
+          variant="gradient"
+          color="purple"
+          disabled={loading}
+          onClick={handleConfirm}
+        >
+          <span>{loading ? "Saving..." : "Save"}</span>
         </Button>
       </DialogFooter>
     </Dialog>

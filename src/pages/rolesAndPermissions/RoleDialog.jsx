@@ -12,9 +12,12 @@ import { useAlert } from "../../contexts/alertContext";
 
 const RoleDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
   const [roleName, setRoleName] = useState("");
+  const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
   const handleConfirm = async () => {
+    setLoading(true);
+
     try {
       const response = await axiosClient.post("/roles/create", {
         name: roleName,
@@ -26,8 +29,15 @@ const RoleDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
         onClose();
       }
     } catch (error) {
-      console.error("Error creating role:", error);
-      showAlert('Error: role name is taken', 'error')
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,18 +50,28 @@ const RoleDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
       <DialogHeader>Add New Role</DialogHeader>
       <DialogBody>
         <Input
-        color="purple"
           label="Role Name"
           value={roleName}
           onChange={(e) => setRoleName(e.target.value)}
         />
       </DialogBody>
       <DialogFooter className="flex gap-2">
-        <Button variant="outlined" color="purple" onClick={onClose}>
-          Cancel
+        <Button
+          variant="gradient"
+          color="gray"
+          disabled={loading}
+          onClick={onClose}
+        >
+          <span>Cancel</span>
         </Button>
-        <Button variant="gradient" color="purple" onClick={handleConfirm}>
-          Confirm
+        <Button
+          type="submit"
+          variant="gradient"
+          color="purple"
+          disabled={loading}
+          onClick={handleConfirm}
+        >
+          <span>{loading ? "Saving..." : "Save"}</span>
         </Button>
       </DialogFooter>
     </Dialog>
