@@ -5,7 +5,7 @@ function Footer() {
   return (
     <footer className="bg-white shadow-md border-t border-gray-300 py-2">
         <div className="mx-auto py-4 px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-center items-center">
                 <div className="text-gray-600 text-sm">
                     © {currentYear} GRG Admin. All rights reserved.
                 </div>
