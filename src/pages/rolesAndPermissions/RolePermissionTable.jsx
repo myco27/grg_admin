@@ -22,33 +22,37 @@ import UseDebounce from "../../components/UseDebounce";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const RolePermissionTable = () => {
+
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
-
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
-
   const { showAlert } = useAlert();
-
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
-
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 0,
+    itemsPerPage: 10,
     isLoading: false,
   });
 
+  useEffect(() => {
+    fetchRoles();
+  }, [pagination.page, debounceSearch, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    fetchPermissions();
+  }, []);
+
   const { user, fetchUser } = useContext(AuthContext);
- 
+
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
   const handleSwitch = (role, permission) => {
@@ -74,19 +78,21 @@ const RolePermissionTable = () => {
     setPagination({
       ...pagination,
       page: newPage,
-      isLoading: true,
     });
+  };
+
+  const handlePageSizeChange = (value) => {
+    setPagination({
+          ...pagination,
+          page: 1,
+          itemsPerPage: Number(value),
+        })
   };
 
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
   };
-
-  useEffect(() => {
-    fetchRoles();
-    fetchPermissions();
-  }, [pagination.page, debounceSearch]);
 
   const fetchRoles = async () => {
     try {
@@ -95,6 +101,7 @@ const RolePermissionTable = () => {
         params: {
           page: pagination.page,
           search: debounceSearch,
+          pageSize: pagination.itemsPerPage,
         },
       });
       if (response.status === 200) {
@@ -107,7 +114,7 @@ const RolePermissionTable = () => {
           totalItems: total,
           links: links,
           itemsPerPage: per_page,
-          isLoading: false,
+          isLoading: false
         };
         setRoles(response.data.data || []);
         setPagination(newPagination);
@@ -130,7 +137,7 @@ const RolePermissionTable = () => {
 
   const confirmTogglePermission = async () => {
     if (!selectedRole || !selectedPermission) return;
-  
+
     try {
       const response = await axios.post(
         `/roles/${selectedRole.id}/toggle-permission`,
@@ -138,7 +145,7 @@ const RolePermissionTable = () => {
           permission: selectedPermission,
         }
       );
-  
+
       if (response.status === 200) {
         showAlert(response.data.message, "success");
         await fetchUser();
@@ -168,11 +175,13 @@ const RolePermissionTable = () => {
                 className="flex items-center gap-3"
                 size="sm"
                 onClick={handleOpenRoleDialog}
+                color="purple"
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Role
               </Button>
               {canAddPermission && (
                 <Button
+                  color="purple"
                   className="flex items-center gap-3"
                   size="sm"
                   onClick={handleOpenPermissionDialog}
@@ -200,11 +209,11 @@ const RolePermissionTable = () => {
             />
           </div>
         </CardHeader>
-        <CardBody className="p-4 overflow-scroll">
+        <CardBody className="overflow-scroll p-4">
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="border w-full min-w-max table-auto text-left">
+            <table className="w-full min-w-max table-auto border text-left">
               <thead>
                 <tr>
                   <th className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
@@ -213,7 +222,7 @@ const RolePermissionTable = () => {
                   {permissions.map((perm) => (
                     <th
                       key={perm.id}
-                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50 text-center"
+                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 text-center transition-colors hover:bg-blue-gray-50"
                     >
                       {perm.name.charAt(0).toUpperCase() + perm.name.slice(1)}
                     </th>
@@ -273,8 +282,7 @@ const RolePermissionTable = () => {
             itemsPerPage={pagination.itemsPerPage}
             totalPages={pagination.totalPages}
             onPageChange={(newPage) => handlePageChange(newPage)}
-            isLoading={pagination.isLoading}
-            links={pagination.links}
+            onPageSizeChange={handlePageSizeChange}
           />
         </CardFooter>
       </Card>
@@ -290,8 +298,6 @@ const RolePermissionTable = () => {
             : `Are you sure you want to revoke the "${selectedPermission}" permission from the "${selectedRole?.name}" role?`
         }
       />
-
-      {/* FOR ADD ROLE AND PERMISSION */}
       <RoleDialog
         open={roleDialogOpen}
         onClose={() => setRoleDialogOpen(false)}

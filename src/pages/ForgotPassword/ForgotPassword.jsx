@@ -34,7 +34,7 @@ export default function ForgotPassword() {
 
   return (
     <>
-    {loading && <Loading/>}
+    {loading? <Loading/>:
       <div className="flex min-h-screen items-center justify-center bg-gray-100 p-2 text-center">
         <form
           onSubmit={handleSubmit}
@@ -83,6 +83,8 @@ export default function ForgotPassword() {
           </div>
         </form>
       </div>
+}
     </>
+
   );
 }
