@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   Typography,
   List,
@@ -15,6 +15,7 @@ const Sidebar = () => {
   const { sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } = useStateContext();
   const { user } = useContext(AuthContext);
   const location = useLocation();
+  const [sidebarHovered, setSidebarHovered] = useState(false);
 
   const canViewDashboardModule =
     user?.all_permissions?.includes("view dashboard module") || false;
@@ -30,11 +31,14 @@ const Sidebar = () => {
     <>
       {/* Desktop Sidebar */}
       <div
-        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-20
+        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-30
           ${sidebarCollapsed ? 'w-16' : 'w-64'}
-          group hover:w-64 overflow-hidden
+          ${sidebarHovered && sidebarCollapsed ? 'w-64' : ''}
+          overflow-hidden
           hidden md:block`}
         id="sidebar-container"
+        onMouseEnter={() => setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
       >
         {/* Background pattern as a fixed element */}
         <div className="absolute inset-0 w-64 pointer-events-none">
@@ -44,18 +48,19 @@ const Sidebar = () => {
         {/* Content container with z-index to appear above the background */}
         <div className="relative z-10 h-full">
           {/* Header with logo */}
-          <div className={`p-5 flex items-center border-b-2 border-white border-opacity-30 ${sidebarCollapsed ? 'mx-3' : 'mx-5'}`}>
-            <div className={`${sidebarCollapsed ? 'w-full flex justify-center' : ''}`}>
+          <div className={`py-4 flex items-center border-b-2 border-white border-opacity-30 ${sidebarCollapsed ? 'mx-3' : 'mx-5'}`}>
+            <div className={` ${sidebarCollapsed ? `${sidebarHovered ? 'pl-5' : ''}` : ''}`}>
               <img src="/logo.png" alt="logo" className="w-10 h-10 min-w-[40px]" />
             </div>
-            <Typography
-              variant="h5"
-              color="white"
-              className={`whitespace-nowrap transition-opacity duration-300 ml-3
-                ${sidebarCollapsed ? 'hidden' : 'block'}`}
-            >
-              Back Office
-            </Typography>
+            <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : 'ml-3'} transition-all duration-300`}>
+              <Typography
+                variant="h5"
+                color="white"
+                className="whitespace-nowrap"
+              >
+                Back Office
+              </Typography>
+            </div>
           </div>
 
           <div className={`${sidebarCollapsed ? 'mx-3' : 'mx-5'} border-b-2 border-white border-opacity-30 py-2`}>
@@ -64,19 +69,19 @@ const Sidebar = () => {
               {canViewDashboardModule && (
                 <Link to="/dashboard">
                   <ListItem 
-                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/dashboard' ? '!bg-[#3A1066]' : ''}`}
+                    className={`hover:bg-[#3A1066] ${sidebarCollapsed && !sidebarHovered ? 'w-[40px] px-2' : 'w-[220px]'} ${location.pathname === '/dashboard' ? '!bg-[#3A1066]' : ''}`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
                       <LayoutDashboard className={`h-5 w-5 text-white ${location.pathname === '/dashboard' ? 'text-purple-500' : ''}`} />
                     </ListItemPrefix>
-                    <Typography
-                      color="white"
-                      className={`font-normal text-sm whitespace-nowrap transition-opacity duration-300
-                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
-                        ${location.pathname === '/dashboard' ? '' : ''}`}
-                    >
-                      Dashboard
-                    </Typography>
+                    <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : ''} transition-all duration-300`}>
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Dashboard
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
@@ -85,19 +90,19 @@ const Sidebar = () => {
               {canViewUserModule && (
                 <Link to="/user-management">
                   <ListItem 
-                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/user-management' ? '!bg-[#3A1066]' : ''}`}
+                    className={`hover:bg-[#3A1066] ${sidebarCollapsed && !sidebarHovered ? 'w-[40px] px-2' : 'w-[220px]'} ${location.pathname === '/user-management' ? '!bg-[#3A1066]' : ''}`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
                       <UserRound className={`h-5 w-5 text-white ${location.pathname === '/user-management' ? 'text-purple-500' : ''}`} />
                     </ListItemPrefix>
-                    <Typography
-                      color="white"
-                      className={`font-normal text-sm whitespace-nowrap 
-                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
-                        ${location.pathname === '/user-management' ? '' : ''}`}
-                    >
-                      User Management
-                    </Typography>
+                    <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : ''} transition-all duration-300`}>
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        User Management
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
@@ -106,19 +111,19 @@ const Sidebar = () => {
               {canViewAdminModule && (
                 <Link to="/admin-management">
                   <ListItem 
-                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/admin-management' ? '!bg-[#3A1066]' : ''}`}
+                    className={`hover:bg-[#3A1066] ${sidebarCollapsed && !sidebarHovered ? 'w-[40px] px-2' : 'w-[220px]'} ${location.pathname === '/admin-management' ? '!bg-[#3A1066]' : ''}`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
                       <ShieldCheck className={`h-5 w-5 text-white ${location.pathname === '/admin-management' ? '' : ''}`} />
                     </ListItemPrefix>
-                    <Typography
-                      color="white"
-                      className={`font-normal text-sm whitespace-nowrap 
-                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
-                        ${location.pathname === '/admin-management' ? '' : ''}`}
-                    >
-                      Admin Management
-                    </Typography>
+                    <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : ''} transition-all duration-300`}>
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Admin Management
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
@@ -127,19 +132,19 @@ const Sidebar = () => {
               {canViewRolesAndPermissionsModule && (
                 <Link to="/roles-and-permissions">
                   <ListItem 
-                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/roles-and-permissions' ? '!bg-[#3A1066]' : ''}`}
+                    className={`hover:bg-[#3A1066] ${sidebarCollapsed && !sidebarHovered ? 'w-[40px] px-2' : 'w-[220px]'} ${location.pathname === '/roles-and-permissions' ? '!bg-[#3A1066]' : ''}`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
                       <LockKeyhole className={`h-5 w-5 text-white ${location.pathname === '/roles-and-permissions' ? '' : ''}`} />
                     </ListItemPrefix>
-                    <Typography
-                      color="white"
-                      className={`font-normal text-sm whitespace-nowrap transition-opacity duration-300
-                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
-                        ${location.pathname === '/roles-and-permissions' ? '' : ''}`}
-                    >
-                      Roles And Permissions
-                    </Typography>
+                    <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : ''} transition-all duration-300`}>
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Roles And Permissions
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
