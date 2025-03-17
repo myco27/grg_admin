@@ -1,5 +1,4 @@
 import {
-  PencilIcon,
   UserPlusIcon,
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/solid";
@@ -33,6 +32,7 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import AddAdminModal from "./AddAdminModal";
 import EditAdminModal from "./EditAdminModal";
+import ViewAdminModal from "./ViewAdminModal";
 
 const AdminManagement = () => {
   const navigate = useNavigate();
@@ -42,6 +42,8 @@ const AdminManagement = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [openView, setOpenView] = useState(false);
+
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -108,6 +110,11 @@ const AdminManagement = () => {
   const handleEditOpen = (userId) => {
     setSelectedUserId(userId);
     setEditOpen(!editOpen);
+  };
+
+  const handleOpenView = (userId) => {
+    setSelectedUserId(userId);
+    setOpenView((openView) => !openView);
   };
 
   const handlePageChange = (newPage) => {
@@ -252,21 +259,32 @@ const AdminManagement = () => {
                           className="flex flex-wrap font-normal"
                         >
                           {user.all_permissions &&
-                          user.all_permissions.length > 0
-                            ? user.all_permissions.map((perm, index) => (
-                                <span key={index}>
-                                  <Chip
-                                    color="purple"
-                                    variant="text"
-                                    size="sm"
-                                    className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                                    value={perm}
-                                  ></Chip>
-                                  {index !== user.all_permissions.length - 1 &&
-                                    " "}
-                                </span>
-                              ))
-                            : "No Permissions"}
+                          user.all_permissions.length > 0 ? (
+                            <>
+                              {user.all_permissions
+                                .slice(0, 3)
+                                .map((perm, index) => (
+                                  <span key={index}>
+                                    <Chip
+                                      color="purple"
+                                      variant="outlined"
+                                      size="sm"
+                                      className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                      value={perm}
+                                    />
+                                    {index !== 2 &&
+                                      index !==
+                                        user.all_permissions.length - 1 &&
+                                      " "}
+                                  </span>
+                                ))}
+                              {user.all_permissions.length > 3 && (
+                                <Typography variant='h4' className="text-gray-400">...</Typography>
+                              )}
+                            </>
+                          ) : (
+                            "No Permissions"
+                          )}
                         </Typography>
                       </td>
 
@@ -293,10 +311,12 @@ const AdminManagement = () => {
                               </IconButton>
                             </MenuHandler>
                             <MenuList>
-                              <MenuItem>Action 1</MenuItem>
-                              <MenuItem>Action 2</MenuItem>
-                              <MenuItem>Action 3</MenuItem>
-                              <MenuItem>Action 4</MenuItem>
+                              <MenuItem onClick={() => handleOpenView(user.id)}>
+                                View
+                              </MenuItem>
+                              <MenuItem onClick={() => handleEditOpen(user.id)}>
+                                Edit
+                              </MenuItem>
                             </MenuList>
                           </Menu>
                         </Tooltip>
@@ -332,6 +352,13 @@ const AdminManagement = () => {
       <EditAdminModal
         editOpen={editOpen}
         editHandleOpen={handleEditOpen}
+        adminId={selectedUserId}
+        fetchUsers={fetchUsers}
+      />
+
+      <ViewAdminModal
+        viewOpen={openView}
+        viewHandleOpen={handleOpenView}
         adminId={selectedUserId}
         fetchUsers={fetchUsers}
       />
