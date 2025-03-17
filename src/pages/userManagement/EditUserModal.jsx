@@ -217,7 +217,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   return (
     <>
-      <Dialog size="md" open={open} handler={handleOpen}>
+      <Dialog size={userType === "rider" ? "lg" : "md"} open={open} handler={handleOpen}>
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
           <form
@@ -521,9 +521,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                               />
 
                               <label htmlFor={key}>
-                                <Typography className="font-semibold text-sm">
-                                  {key.replace(/([A-Z])/g, " $1").trim()}{" "}
-                                  {/* Format label dynamically */}
+                                <Typography className="font-semibold text-sm text-nowrap">
+                                  {key.replace(/([A-Z])/g, " $1").trim().toUpperCase()}{" "}
                                 </Typography>
                               </label>
 
@@ -553,7 +552,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                           )
                         )}
                       </div>
-                      ;
                     </TabPanel>
                   </TabsBody>
                 </Tabs>

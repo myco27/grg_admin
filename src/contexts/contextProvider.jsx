@@ -3,6 +3,10 @@ import { createContext, useContext, useState } from "react";
 const stateContext = createContext({
   user: null,
   token: null,
+  sidebarCollapsed: false,
+  mobileMenuOpen: false,
+  setSidebarCollapsed: () => {},
+  setMobileMenuOpen: () => {},
   setUser: () => {},
   setToken: () => {},
 });
@@ -13,6 +17,8 @@ export const ContextProvider = ({ children }) => {
     return storedUser ? JSON.parse(storedUser) : null;
   });
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const setUser = (user) => {
     _setUser(user);
@@ -33,7 +39,16 @@ export const ContextProvider = ({ children }) => {
   };
 
   return (
-    <stateContext.Provider value={{ user, token, setUser, setToken }}>
+    <stateContext.Provider value={{ 
+      user, 
+      token, 
+      sidebarCollapsed,
+      mobileMenuOpen,
+      setSidebarCollapsed,
+      setMobileMenuOpen,
+      setUser, 
+      setToken 
+    }}>
       {children}
     </stateContext.Provider>
   );

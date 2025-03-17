@@ -20,7 +20,14 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
-import { Search } from "lucide-react";
+import {
+  Bike,
+  LandPlot,
+  LayoutDashboard,
+  Search,
+  Store,
+  UserRound,
+} from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import EditUserModal from "./EditUserModal";
@@ -134,22 +141,27 @@ const UserManagementPage = () => {
     {
       label: "All",
       value: "",
+      icon: <LayoutDashboard className="w-4 h-4" />,
     },
     {
       label: "Area Manager",
       value: "operator",
+      icon: <LandPlot className="w-4 h-4" />,
     },
     {
       label: "Restaurant",
       value: "restaurant",
+      icon: <Store className="w-4 h-4" />,
     },
     {
       label: "Rider",
       value: "rider",
+      icon: <Bike className="w-4 h-4" />,
     },
     {
       label: "Customer",
       value: "customer",
+      icon: <UserRound className="w-4 h-4" />,
     },
   ];
 
@@ -167,51 +179,41 @@ const UserManagementPage = () => {
       {canViewUserModule && (
         <Card className="h-full w-full">
           <CardHeader floated={false} shadow={false} className="rounded-none">
-            <div className="mb-8 flex items-center justify-between gap-8">
+            <div className="mb-4 flex items-center justify-between gap-8">
               <div>
-                <Typography variant="h5" color="blue-gray">
+                <Typography variant="h5" color="black">
                   User list
                 </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
+                <Typography className="font-normal">
                   See information about all Users
                 </Typography>
               </div>
-              <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-                {/* <Button
-         className="flex items-center gap-3"
-         size="sm"
-         onClick={handleOpen}
-       >
-         <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add admin
-       </Button> */}
-              </div>
             </div>
-            <div className="flex flex-col items-center justify-between gap-4 md:flex-row rounded-none">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
               <Tabs
                 value=""
-                className="w-full md:w-fit border px-1 border-gray-400 py-0.5 bg-white rounded-lg relative overflow-x-auto xl:overflow-visible"
+                className="rounded-md w-full md:w-fit relative overflow-x-auto xl:overflow-visible"
               >
-                <TabsHeader
-                  className="bg-transparent gap-x-4"
-                  indicatorProps={{
-                    className: "bg-purple-200 text-purple-900",
-                  }}
-                >
-                  {TABS.map(({ label, value }) => (
+                <TabsHeader className="bg-headerBg gap-x-4">
+                  {TABS.map(({ label, value, icon }) => (
                     <Tab
-                      className="text-nowrap text-sm font-medium text-gray-800 w-max"
                       key={value}
+                      className="rounded-md"
                       value={value}
                       onClick={() => handleClickStatus(value)}
                     >
-                      {label}
+                      <div className="flex items-center gap-2 text-nowrap text-sm font-medium text-gray-800 px-4">
+                        {icon}
+                        {label}
+                      </div>
                     </Tab>
                   ))}
                 </TabsHeader>
               </Tabs>
-              <div className="w-full md:w-72">
+              <div className="w-full rounded-md md:w-72">
                 <Input
                   label="Search User"
+                  className="rounded-md"
                   icon={
                     pagination.isLoading ? (
                       <Spinner className="h-5 w-5" />
@@ -219,8 +221,6 @@ const UserManagementPage = () => {
                       <Search className="h-5 w-5" />
                     )
                   }
-                  size="md"
-                  className="bg-white"
                   value={searchTerm}
                   onChange={(e) => handleSearchInput(e)}
                 />
@@ -232,20 +232,26 @@ const UserManagementPage = () => {
             {pagination.isLoading ? (
               <Loading />
             ) : (
-              <table className="border w-full min-w-max table-auto text-left">
+              <table className="rounded-md w-full min-w-max table-auto text-left">
                 <thead>
                   <tr>
                     {TABLE_HEAD.map((head, index) => (
                       <th
                         key={head}
-                        className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50"
+                        className={`bg-tableHeaderBg p-4 ${
+                          index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                        } ${
+                          index === TABLE_HEAD.length - 1
+                            ? "rounded-tr-md rounded-br-md"
+                            : ""
+                        }`}
                       >
                         <Typography
                           variant="small"
-                          color="blue-gray"
+                          color="black"
                           className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                         >
-                          {head}{" "}
+                          {head}
                         </Typography>
                       </th>
                     ))}
@@ -255,7 +261,7 @@ const UserManagementPage = () => {
                 <tbody>
                   {users.map((user) => {
                     return (
-                      <tr key={user.id}>
+                      <tr className="border-b border-gray-300 hover:bg-gray-100" key={user.id}>
                         <td className="p-4">
                           <div className="flex flex-col">
                             <Typography

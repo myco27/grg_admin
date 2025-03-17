@@ -22,7 +22,6 @@ import UseDebounce from "../../components/UseDebounce";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const RolePermissionTable = () => {
-
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -84,10 +83,10 @@ const RolePermissionTable = () => {
 
   const handlePageSizeChange = (value) => {
     setPagination({
-          ...pagination,
-          page: 1,
-          itemsPerPage: Number(value),
-        })
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(value),
+    });
   };
 
   const handleSearchInput = (event) => {
@@ -115,7 +114,7 @@ const RolePermissionTable = () => {
           totalItems: total,
           links: links,
           itemsPerPage: per_page,
-          isLoading: false
+          isLoading: false,
         };
         setRoles(response.data.data || []);
         setPagination(newPagination);
@@ -172,19 +171,17 @@ const RolePermissionTable = () => {
                 Roles & Permissions
               </Typography>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="flex rounded-md shrink-0 flex-col gap-2 sm:flex-row">
               <Button
-                className="flex items-center gap-3"
+                className="flex items-center gap-3 rounded-md"
                 size="sm"
                 onClick={handleOpenRoleDialog}
-                color="purple"
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Add Role
               </Button>
               {canAddPermission && (
                 <Button
-                  color="purple"
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-3 rounded-md"
                   size="sm"
                   onClick={handleOpenPermissionDialog}
                 >
@@ -215,20 +212,35 @@ const RolePermissionTable = () => {
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="w-full min-w-max table-auto border text-left">
+            <table className="rounded-md w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
-                  <th className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50">
+                  <th className="bg-tableHeaderBg p-4 rounded-tl-md rounded-bl-md">
                     Role
                   </th>
-                  {permissions.map((perm) => (
-                    <th
-                      key={perm.id}
-                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 text-center transition-colors hover:bg-blue-gray-50"
-                    >
-                      {perm.name.charAt(0).toUpperCase() + perm.name.slice(1)}
-                    </th>
-                  ))}
+                  {permissions.map((perm, index) => {
+                    // console.log(index);
+
+                    return (
+                      <th
+                        key={perm.id}
+                        className={`bg-tableHeaderBg p-4 ${
+                          index === permissions.length - 1
+                            ? "rounded-tr-md rounded-br-md"
+                            : ""
+                        }`}
+                      >
+                        <Typography
+                          variant="small"
+                          color="black"
+                          className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                        >
+                          {perm.name.charAt(0).toUpperCase() +
+                            perm.name.slice(1)}
+                        </Typography>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -240,7 +252,10 @@ const RolePermissionTable = () => {
                         role.name !== "developer"
                     )
                     .map((role) => (
-                      <tr key={role.id}>
+                      <tr
+                        className="border-b border-gray-300 hover:bg-gray-100"
+                        key={role.id}
+                      >
                         <td className="p-4">
                           {role.name.charAt(0).toUpperCase() +
                             role.name.slice(1)}

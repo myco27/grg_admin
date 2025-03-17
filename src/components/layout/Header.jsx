@@ -7,18 +7,27 @@ import {
   MenuList,
   MenuItem,
   Button,
+  IconButton,
 } from "@material-tailwind/react";
-import { ChevronDown, Settings, LogOut, User } from "lucide-react";
-import Sidebar from "./Sidebar";
-import { Link, useNavigate } from "react-router-dom";
+import { ChevronDown, LogOut, Menu as MenuIcon } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { showAlert } = useAlert();
-  const { user, setUser, setToken } = useStateContext();
+  const { 
+    user, 
+    setUser, 
+    setToken, 
+    sidebarCollapsed, 
+    setSidebarCollapsed,
+    mobileMenuOpen,
+    setMobileMenuOpen
+  } = useStateContext();
 
   useEffect(() => {
     if (!user) {
@@ -56,17 +65,42 @@ export default function Header() {
     }
   };
 
+  const toggleSidebar = () => {
+    // On desktop, toggle the sidebar collapse state
+    if (window.innerWidth >= 768) {
+      setSidebarCollapsed(!sidebarCollapsed);
+    } 
+    // On mobile, toggle the mobile menu
+    else {
+      setMobileMenuOpen(!mobileMenuOpen);
+    }
+  };
+
+  // Get page title based on current route
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case '/dashboard':
+        return 'Dashboard';
+      case '/user-management':
+        return 'User Management';
+      case '/admin-management':
+        return 'Admin Management';
+      case '/roles-and-permissions':
+        return 'Roles and Permissions';
+      default:
+        return 'Dashboard';
+    }
+  };
+
   return (
-    <div className="bg-purple-500 border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
-      <div className="flex items-center">
-        <Sidebar />
-        <Link to="/dashboard" >
-          <img 
-            src="/rockygo_logo.png" 
-            alt="RockyGo" 
-            className="h-7" 
-          />
-        </Link>
+    <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm py-1 flex flex-row justify-between items-center">
+      <div className="flex items-center gap-2">
+        <IconButton variant="text" size="lg" onClick={toggleSidebar} className="z-10">
+          <MenuIcon className="h-6 w-6 text-white" />
+        </IconButton>
+        <Typography color="white" className="font-medium">
+          {getPageTitle()}
+        </Typography>
       </div>
 
       <div className="flex items-center">
