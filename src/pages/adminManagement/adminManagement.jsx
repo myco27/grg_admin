@@ -149,9 +149,9 @@ const AdminManagement = () => {
                 See information about all Admins
               </Typography>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="rounded-md flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button
-                className="flex items-center gap-3"
+                className="flex items-center gap-3 rounded-md"
                 size="sm"
                 onClick={handleOpen}
               >
@@ -183,18 +183,24 @@ const AdminManagement = () => {
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="w-full min-w-max table-auto border text-left">
+            <table className="rounded-md w-full min-w-max table-auto text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head, index) => (
                     <th
                       key={head}
-                      className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50"
+                      className={`bg-tableHeaderBg p-4 ${
+                        index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                      } ${
+                        index === TABLE_HEAD.length - 1
+                          ? "rounded-tr-md rounded-br-md"
+                          : ""
+                      }`}
                     >
                       <Typography
                         variant="small"
-                        color="blue-gray"
-                        className="flex gap-2 font-normal leading-none opacity-70"
+                        color="black"
+                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                       >
                         {head}
                       </Typography>
@@ -210,7 +216,10 @@ const AdminManagement = () => {
                   //   user
                   // );
                   return (
-                    <tr key={user.id}>
+                    <tr
+                      className="border-b border-gray-300 hover:bg-gray-100"
+                      key={user.id}
+                    >
                       <td className="flex p-4">
                         <Typography
                           variant="small"
@@ -229,7 +238,13 @@ const AdminManagement = () => {
                         >
                           {user.first_name} {user.last_name}
                         </Typography>
-                        <Typography>{user.email}</Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {user.email}
+                        </Typography>
                       </td>
                       {/* Role */}
                       <td className="p-4">
