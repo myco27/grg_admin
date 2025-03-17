@@ -93,7 +93,7 @@ export default function Header() {
   };
 
   return (
-    <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm px-2 sm:px-6 py-1 flex flex-row justify-between items-center">
+    <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm py-1 flex flex-row justify-between items-center">
       <div className="flex items-center gap-2">
         <IconButton variant="text" size="lg" onClick={toggleSidebar} className="z-10">
           <MenuIcon className="h-6 w-6 text-white" />
