@@ -290,13 +290,19 @@ const AdminManagement = () => {
                                   </span>
                                 ))}
                               {user.all_permissions.length > 3 && (
-                                <Typography variant='h4' className="text-gray-400">...</Typography>
+                                <Typography
+                                  variant="h4"
+                                  className="text-gray-400"
+                                >
+                                  ...
+                                </Typography>
                               )}
                             </>
                           ) : (
                             "No Permissions"
                           )}
-                        </Typography>
+                        </div>{" "}
+                        {/* ✅ Corrected closing tag */}
                       </td>
 
                       <td className="p-4">
