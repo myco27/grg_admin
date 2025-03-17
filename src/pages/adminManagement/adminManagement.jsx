@@ -261,20 +261,16 @@ const AdminManagement = () => {
 
                       {/* Permissions */}
                       <td className="max-w-60">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="flex flex-wrap font-normal"
-                        >
+                        <div className="flex flex-wrap font-normal">
                           {user.all_permissions &&
                           user.all_permissions.length > 0
                             ? user.all_permissions.map((perm, index) => (
                                 <span key={index}>
                                   <Chip
                                     color="purple"
-                                    variant="text"
+                                    variant="ghost"
                                     size="sm"
-                                    className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                    className="m-1 max-w-fit bg-purple-50"
                                     value={perm}
                                   ></Chip>
                                   {index !== user.all_permissions.length - 1 &&
@@ -282,7 +278,7 @@ const AdminManagement = () => {
                                 </span>
                               ))
                             : "No Permissions"}
-                        </Typography>
+                        </div>
                       </td>
 
                       <td className="p-4">
