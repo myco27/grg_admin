@@ -1,22 +1,21 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import {
-  Drawer,
   Typography,
-  IconButton,
   List,
   ListItem,
   ListItemPrefix,
 } from "@material-tailwind/react";
-import { Menu, UserRound, ShieldCheck, LockKeyhole, LayoutDashboard } from "lucide-react";
-import { Link } from "react-router-dom";
+import { UserRound, ShieldCheck, LockKeyhole, LayoutDashboard } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useStateContext } from "../../contexts/contextProvider";
+
 
 const Sidebar = () => {
-  const [open, setOpen] = useState(false);
-  const openDrawer = () => setOpen(true);
-  const closeDrawer = () => setOpen(false);
-
+  const { sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } = useStateContext();
   const { user } = useContext(AuthContext);
+  const location = useLocation();
+
   const canViewDashboardModule =
     user?.all_permissions?.includes("view dashboard module") || false;
   const canViewUserModule =
@@ -29,140 +28,244 @@ const Sidebar = () => {
 
   return (
     <>
-      <IconButton variant="text" size="lg" onClick={openDrawer}>
-        <Menu className="h-8 w-8 text-white mt-[-4px]" />
-      </IconButton>
-      <Drawer open={open} onClose={closeDrawer}>
-        <div className="mb-2 flex items-center justify-between p-4">
-          <Typography variant="h5" color="blue-gray">
-            Backoffice Menu
-          </Typography>
-          <IconButton variant="text" color="blue-gray" onClick={closeDrawer}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </IconButton>
+      {/* Desktop Sidebar */}
+      <div
+        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-20
+          ${sidebarCollapsed ? 'w-16' : 'w-64'}
+          group hover:w-64 overflow-hidden
+          hidden md:block`}
+        id="sidebar-container"
+      >
+        {/* Background pattern as a fixed element */}
+        <div className="absolute inset-0 w-64 pointer-events-none">
+          <img src="/sidebar_pattern.png" alt="" className="h-full w-full object-cover" />
         </div>
-
-        {/* Hardcoded Menu Items */}
-        <List>
-          {/* Orders */}
-          {/* <Link to="/orders">
-            <ListItem onClick={closeDrawer}>
-              <ListItemPrefix>
-                <Package className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                Orders
-              </Typography>
-            </ListItem>
-          </Link> */}
-          {/* Riders */}
-          {/* <Link to="/riders">
-            <ListItem onClick={closeDrawer}>
-              <ListItemPrefix>
-                <Bike className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                Riders
-              </Typography>
-            </ListItem>
-          </Link> */}
-
-          {/* Dashboard */}
-          {canViewDashboardModule && (
-            <Link to="/dashboard">
-              <ListItem onClick={closeDrawer}>
-                <ListItemPrefix>
-                  <LayoutDashboard className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Dashboard
-                </Typography>
-              </ListItem>
-            </Link>
-          )}
-
-          {/* User Management */}
-          {canViewUserModule && (
-            <Link to="/user-management">
-              <ListItem onClick={closeDrawer}>
-                <ListItemPrefix>
-                  <UserRound className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  User Management
-                </Typography>
-              </ListItem>
-            </Link>
-          )}
-
-          {/* Admin Management */}
-          {canViewAdminModule && (
-            <Link to="/admin-management">
-              <ListItem onClick={closeDrawer}>
-                <ListItemPrefix>
-                  <ShieldCheck className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Admin Management
-                </Typography>
-              </ListItem>
-            </Link>
-          )}
-
-          {/* Roles and Permissions */}
-          {canViewRolesAndPermissionsModule && (
-            <Link to="/roles-and-permissions">
-              <ListItem onClick={closeDrawer}>
-                <ListItemPrefix>
-                  <LockKeyhole className="h-5 w-5" />
-                </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Roles And Permissions
-                </Typography>
-              </ListItem>
-            </Link>
-          )}
-
-          {/* Settings */}
-          {/* <Link to="/settings">
-            <ListItem onClick={closeDrawer}>
-              <ListItemPrefix>
-                <Settings className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                Settings
-              </Typography>
-            </ListItem>
-          </Link> */}
-          {/* Logout */}
-          {/* <ListItem onClick={handleLogout}>
-            <ListItemPrefix>
-              <LogOut className="h-5 w-5 text-red-500" />
-            </ListItemPrefix>
+        
+        {/* Content container with z-index to appear above the background */}
+        <div className="relative z-10 h-full">
+          {/* Header with logo */}
+          <div className={`p-5 flex items-center border-b-2 border-white border-opacity-30 ${sidebarCollapsed ? 'mx-3' : 'mx-5'}`}>
+            <div className={`${sidebarCollapsed ? 'w-full flex justify-center' : ''}`}>
+              <img src="/logo.png" alt="logo" className="w-10 h-10 min-w-[40px]" />
+            </div>
             <Typography
-              color="blue-gray"
-              className="mr-auto font-normal text-red-500"
+              variant="h5"
+              color="white"
+              className={`whitespace-nowrap transition-opacity duration-300 ml-3
+                ${sidebarCollapsed ? 'hidden' : 'block'}`}
             >
-              Log Out
+              Back Office
             </Typography>
-          </ListItem> */}
-        </List>
-      </Drawer>
+          </div>
+
+          <div className={`${sidebarCollapsed ? 'mx-3' : 'mx-5'} border-b-2 border-white border-opacity-30 py-2`}>
+            <List className="p-0">
+              {/* Dashboard */}
+              {canViewDashboardModule && (
+                <Link to="/dashboard">
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/dashboard' ? '!bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LayoutDashboard className={`h-5 w-5 text-white ${location.pathname === '/dashboard' ? 'text-purple-500' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className={`font-normal text-sm whitespace-nowrap transition-opacity duration-300
+                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
+                        ${location.pathname === '/dashboard' ? '' : ''}`}
+                    >
+                      Dashboard
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* User Management */}
+              {canViewUserModule && (
+                <Link to="/user-management">
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/user-management' ? '!bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <UserRound className={`h-5 w-5 text-white ${location.pathname === '/user-management' ? 'text-purple-500' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className={`font-normal text-sm whitespace-nowrap 
+                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
+                        ${location.pathname === '/user-management' ? '' : ''}`}
+                    >
+                      User Management
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Admin Management */}
+              {canViewAdminModule && (
+                <Link to="/admin-management">
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/admin-management' ? '!bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <ShieldCheck className={`h-5 w-5 text-white ${location.pathname === '/admin-management' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className={`font-normal text-sm whitespace-nowrap 
+                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
+                        ${location.pathname === '/admin-management' ? '' : ''}`}
+                    >
+                      Admin Management
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Roles and Permissions */}
+              {canViewRolesAndPermissionsModule && (
+                <Link to="/roles-and-permissions">
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/roles-and-permissions' ? '!bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LockKeyhole className={`h-5 w-5 text-white ${location.pathname === '/roles-and-permissions' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className={`font-normal text-sm whitespace-nowrap transition-opacity duration-300
+                        ${sidebarCollapsed ? 'hidden group-hover:block' : 'block'}
+                        ${location.pathname === '/roles-and-permissions' ? '' : ''}`}
+                    >
+                      Roles And Permissions
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+            </List>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      <div
+        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-40
+          w-64 md:hidden
+          ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        {/* Background pattern as a fixed element */}
+        <div className="absolute inset-0 w-64 pointer-events-none">
+          <img src="/sidebar_pattern.png" alt="" className="h-full w-full object-cover" />
+        </div>
+        
+        {/* Content container with z-index to appear above the background */}
+        <div className="relative z-10 h-full">
+          {/* Header with logo */}
+          <div className="p-5 flex items-center justify-between border-b-2 border-white border-opacity-30 mx-5">
+            <div className="flex items-center">
+              <img src="/logo.png" alt="logo" className="w-10 h-10" />
+              <Typography
+                variant="h5"
+                color="white"
+                className="whitespace-nowrap ml-3"
+              >
+                Back Office
+              </Typography>
+            </div>
+          </div>
+
+          <div className="mx-5 border-b-2 border-white border-opacity-30 py-2">
+            <List className="p-0">
+              {/* Dashboard */}
+              {canViewDashboardModule && (
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/dashboard' ? 'bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LayoutDashboard className={`h-5 w-5 text-white ${location.pathname === '/dashboard' ? 'text-purple-500' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="font-normal text-sm"
+                    >
+                      Dashboard
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* User Management */}
+              {canViewUserModule && (
+                <Link to="/user-management" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/user-management' ? 'bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <UserRound className={`h-5 w-5 text-white ${location.pathname === '/user-management' ? 'text-purple-500' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="font-normal text-sm"
+                    >
+                      User Management
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Admin Management */}
+              {canViewAdminModule && (
+                <Link to="/admin-management" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/admin-management' ? 'bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <ShieldCheck className={`h-5 w-5 text-white ${location.pathname === '/admin-management' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="font-normal text-sm"
+                    >
+                      Admin Management
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Roles and Permissions */}
+              {canViewRolesAndPermissionsModule && (
+                <Link to="/roles-and-permissions" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/roles-and-permissions' ? 'bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LockKeyhole className={`h-5 w-5 text-white ${location.pathname === '/roles-and-permissions' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="font-normal text-sm"
+                    >
+                      Roles And Permissions
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+            </List>
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay for mobile */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
     </>
   );
 };
 
-export default Sidebar;
+export default Sidebar; 
