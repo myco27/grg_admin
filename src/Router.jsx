@@ -26,7 +26,7 @@ const RootRedirect = () => {
 
   // Redirect to /orders if the user is logged in, otherwise to /admin/login
   return token ? (
-    <Navigate to="/user-management" replace />
+    <Navigate to="/dashboard" replace />
   ) : (
     <Navigate to="/admin/login" replace />
   );
