@@ -3,13 +3,16 @@ import axiosClient from "../../axiosClient";
 import { useAlert } from "../../contexts/alertContext";
 import {
   Button,
+  Card,
+  CardHeader,
   Chip,
   Dialog,
   DialogBody,
+  DialogFooter,
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
-import { CircleUserRound } from "lucide-react";
+import { CircleUserRound, UserIcon } from "lucide-react";
 
 const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   const [users, setUsers] = useState([]);
@@ -67,7 +70,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   }, [viewOpen, adminId]);
 
   return (
-    <Dialog open={viewOpen} handler={viewHandleOpen} className="overflow-auto">
+    <Dialog open={viewOpen} handler={viewHandleOpen} className="min-h-fit w-32 overflow-auto">
       <DialogHeader>User Details</DialogHeader>
       <DialogBody className="items-center justify-center">
         {loading ? (
@@ -75,47 +78,41 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
             <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
           </div>
         ) : (
-          <div className="flex max-w-full flex-col items-center justify-center gap-5 px-5">
-            <div>
-              <CircleUserRound className="h-32 w-32"></CircleUserRound>
-            </div>
-            <div className="flex flex-row gap-5">
-              <div className="flex flex-col">
+          <div className="flex h-full w-full flex-col gap-5">
+            <div className="flex flex-row gap-x-20"> 
+              <div>
                 <Typography variant="h5">First Name</Typography>
                 <Typography>{formData.first_name}</Typography>
               </div>
-              <div className="flex flex-col">
-                <Typography variant="h5">Last Name</Typography>
-                <Typography>{formData.last_name}</Typography>
+              <div>
+              <Typography variant="h5">Last Name</Typography>
+              <Typography>{formData.last_name}</Typography>
               </div>
             </div>
-            <div className="flex flex-col gap-6">
-              <div>
-                <Typography variant="h5">Email</Typography>
-                <Typography>{formData.email}</Typography>
-              </div>
-              <div>
-                <Typography variant="h5">Roles</Typography>
-                <Typography>{formData.role}</Typography>
-              </div>
-              <div>
-                <div className="overflow-scroll">
-                  {Object.entries(formData.permissions).map(([key, value]) => (
-                    <div key={key}>
-                      <Typography>{value}</Typography>
-                    </div>
-                  ))}
+            <div>
+            <Typography variant="h5">Email</Typography>
+            <Typography>{formData.email}</Typography>
+            </div>
+            <div className="flex flex-wrap">
+              <Typography variant="h5">Roles:</Typography>
+              <Chip className="m-1 max-w-fit bg-purple-50 text-purple-900" color="purple" value={formData.role}></Chip>
+            </div>
+            <div className="flex flex-wrap overflow-auto">
+              <Typography variant="h5">Permissions: </Typography>
+              {Object.entries(formData.permissions).map(([index, value]) => (
+                <div key={index}>
+                  <Chip color='purple' className="m-1 max-w-fit bg-purple-50 text-purple-900" value={value}></Chip>
                 </div>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="gradient" color="gray" onClick={viewHandleOpen}>
-                <span>Cancel</span>
-              </Button>
+              ))}
             </div>
           </div>
         )}
       </DialogBody>
+      <DialogFooter>
+        <Button variant="gradient" color="gray" onClick={viewHandleOpen}>
+          <span>Cancel</span>
+        </Button>
+      </DialogFooter>
     </Dialog>
   );
 };
