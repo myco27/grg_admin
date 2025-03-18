@@ -88,8 +88,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         setEmail(response.data.data.email);
         setMobileNumber(response.data.data.mobile_number);
         setLocalSupportNumber(response.data.data.local_support_number);
-        setBusinessLandlineNumber(response.data.data.mobile_number ?? "");
-        setBusinessContactNumber(response.data.data.store?.phone ?? "");
+        setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
+        setBusinessContactNumber(response.data.data.store?.mobile ?? "");
 
         if (response.data.data.address) {
           setAddress({
