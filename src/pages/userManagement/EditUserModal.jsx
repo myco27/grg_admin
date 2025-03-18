@@ -78,6 +78,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const fetchUserDetails = async () => {
+    setLoading(true);
     try {
       const response = await axiosClient.get(`/admin/users/${userId}`);
 
@@ -112,15 +113,17 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           };
 
           setRidersAttachments(attachments);
-          setLoading(false);
         }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateUser = async () => {
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -164,6 +167,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,7 +181,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setLoading(true);
     updateUser();
   };
 
@@ -217,7 +221,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   return (
     <>
-      <Dialog size={userType === "rider" ? "lg" : "md"} open={open} handler={handleOpen}>
+      <Dialog
+        size={userType === "rider" ? "lg" : "md"}
+        open={open}
+        handler={handleOpen}
+      >
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
           <form
@@ -522,7 +530,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
                               <label htmlFor={key}>
                                 <Typography className="font-semibold text-sm text-nowrap">
-                                  {key.replace(/([A-Z])/g, " $1").trim().toUpperCase()}{" "}
+                                  {key
+                                    .replace(/([A-Z])/g, " $1")
+                                    .trim()
+                                    .toUpperCase()}{" "}
                                 </Typography>
                               </label>
 
