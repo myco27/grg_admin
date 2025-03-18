@@ -149,6 +149,11 @@ const UserManagementPage = () => {
       icon: <LandPlot className="w-4 h-4" />,
     },
     {
+      label: "Central",
+      value: "central",
+      icon: <Store className="w-4 h-4" />,
+    },
+    {
       label: "Restaurant",
       value: "restaurant",
       icon: <Store className="w-4 h-4" />,
