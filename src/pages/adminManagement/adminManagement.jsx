@@ -268,7 +268,7 @@ const AdminManagement = () => {
 
                       {/* Permissions */}
                       <td className="max-w-60">
-                        <div className="flex flex-wrap font-normal">
+                        <div title='View more' className="flex cursor-pointer flex-wrap rounded font-normal" onClick={() =>handleOpenView(user.id)}>
                           {user.all_permissions &&
                           user.all_permissions.length > 0 ? (
                             <>
@@ -292,7 +292,7 @@ const AdminManagement = () => {
                               {user.all_permissions.length > 3 && (
                                 <Typography
                                   variant="h4"
-                                  className="text-gray-400"
+                                  className="text-gray-400 hover:text-gray-600"
                                 >
                                   ...
                                 </Typography>
@@ -302,7 +302,6 @@ const AdminManagement = () => {
                             "No Permissions"
                           )}
                         </div>{" "}
-                        {/* ✅ Corrected closing tag */}
                       </td>
 
                       <td className="p-4">
