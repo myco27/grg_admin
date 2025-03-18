@@ -170,7 +170,11 @@ const RolePermissionTable = () => {
               <Typography variant="h5" color="blue-gray">
                 Roles & Permissions
               </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                See information about Roles and Permissions
+              </Typography>
             </div>
+
             <div className="flex rounded-md shrink-0 flex-col gap-2 sm:flex-row">
               <Button
                 className="flex items-center gap-3 rounded-md"
