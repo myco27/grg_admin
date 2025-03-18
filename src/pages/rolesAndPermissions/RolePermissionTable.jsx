@@ -19,7 +19,7 @@ import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
 import Loading from "../../components/layout/Loading";
 import UseDebounce from "../../components/UseDebounce";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useStateContext } from "../../contexts/contextProvider";
 
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
@@ -51,7 +51,7 @@ const RolePermissionTable = () => {
     fetchPermissions();
   }, []);
 
-  const { user, fetchUser } = useContext(AuthContext);
+  const { user, fetchUser} = useStateContext();
 
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;

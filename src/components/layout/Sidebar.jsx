@@ -7,13 +7,11 @@ import {
 } from "@material-tailwind/react";
 import { UserRound, ShieldCheck, LockKeyhole, LayoutDashboard } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthContext";
 import { useStateContext } from "../../contexts/contextProvider";
 
 
 const Sidebar = () => {
-  const { sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } = useStateContext();
-  const { user } = useContext(AuthContext);
+  const { user, sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } = useStateContext();
   const location = useLocation();
   const [sidebarHovered, setSidebarHovered] = useState(false);
 

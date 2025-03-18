@@ -31,7 +31,7 @@ import {
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import EditUserModal from "./EditUserModal";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useStateContext } from "../../contexts/contextProvider";
 
 const UserManagementPage = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const UserManagementPage = () => {
     isLoading: false,
   });
 
-  const { user } = useContext(AuthContext);
+  const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
 
@@ -266,7 +266,10 @@ const UserManagementPage = () => {
                 <tbody>
                   {users.map((user) => {
                     return (
-                      <tr className="border-b border-gray-300 hover:bg-gray-100" key={user.id}>
+                      <tr
+                        className="border-b border-gray-300 hover:bg-gray-100"
+                        key={user.id}
+                      >
                         <td className="p-4">
                           <div className="flex flex-col">
                             <Typography
