@@ -268,7 +268,7 @@ const AdminManagement = () => {
 
                       {/* Permissions */}
                       <td className="max-w-60">
-                        <div title='View more' className="flex cursor-pointer flex-wrap rounded font-normal" onClick={() =>handleOpenView(user.id)}>
+                        <div className="flex cursor-pointer flex-wrap rounded font-normal" onClick={() =>handleOpenView(user.id)}>
                           {user.all_permissions &&
                           user.all_permissions.length > 0 ? (
                             <>
@@ -290,12 +290,14 @@ const AdminManagement = () => {
                                   </span>
                                 ))}
                               {user.all_permissions.length > 3 && (
+                                <Tooltip content='view more' className='bg-purple-500' placement='right-end'>
                                 <Typography
                                   variant="h4"
                                   className="text-gray-400 hover:text-gray-600"
                                 >
                                   ...
                                 </Typography>
+                                </Tooltip>
                               )}
                             </>
                           ) : (
