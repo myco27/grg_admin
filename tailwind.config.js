@@ -11,6 +11,8 @@ module.exports = withMT({
       colors: {
         headerBg: "#F4F5F7",
         tableHeaderBg: "#F0F0F0",
+        primary: "#612B9B",
+        secondary: "#ab47bc",
       },
     },
   },
