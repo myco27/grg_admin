@@ -7,10 +7,10 @@ import { ContextProvider } from "./contexts/contextProvider";
 import { AlertProvider } from "./contexts/alertContext";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 
-const favicon = document.getElementById("favicon");
-if (favicon) {
-  favicon.href = import.meta.env.VITE_APP_LOGO;
-}
+// const favicon = document.getElementById("favicon");
+// if (favicon) {
+//   favicon.href = import.meta.env.VITE_APP_LOGO;
+// }
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <StrictMode>

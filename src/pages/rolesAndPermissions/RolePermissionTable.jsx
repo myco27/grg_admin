@@ -19,7 +19,7 @@ import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
 import Loading from "../../components/layout/Loading";
 import UseDebounce from "../../components/UseDebounce";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useStateContext } from "../../contexts/contextProvider";
 
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
@@ -51,7 +51,7 @@ const RolePermissionTable = () => {
     fetchPermissions();
   }, []);
 
-  const { user, fetchUser } = useContext(AuthContext);
+  const { user, fetchUser} = useStateContext();
 
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
@@ -170,7 +170,11 @@ const RolePermissionTable = () => {
               <Typography variant="h5" color="blue-gray">
                 Roles & Permissions
               </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                See information about Roles and Permissions
+              </Typography>
             </div>
+
             <div className="flex rounded-md shrink-0 flex-col gap-2 sm:flex-row">
               <Button
                 className="flex items-center gap-3 rounded-md"

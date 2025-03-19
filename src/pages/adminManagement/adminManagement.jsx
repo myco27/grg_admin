@@ -1,5 +1,4 @@
 import {
-  PencilIcon,
   UserPlusIcon,
   EllipsisHorizontalIcon,
 } from "@heroicons/react/24/solid";
@@ -33,6 +32,7 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import AddAdminModal from "./AddAdminModal";
 import EditAdminModal from "./EditAdminModal";
+import ViewAdminModal from "./ViewAdminModal";
 
 const AdminManagement = () => {
   const navigate = useNavigate();
@@ -42,6 +42,8 @@ const AdminManagement = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [openView, setOpenView] = useState(false);
+
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -110,6 +112,11 @@ const AdminManagement = () => {
     setEditOpen(!editOpen);
   };
 
+  const handleOpenView = (userId) => {
+    setSelectedUserId(userId);
+    setOpenView((openView) => !openView);
+  };
+
   const handlePageChange = (newPage) => {
     setPagination({
       ...pagination,
@@ -149,7 +156,7 @@ const AdminManagement = () => {
                 See information about all Admins
               </Typography>
             </div>
-            <div className="rounded-md flex shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="flex shrink-0 flex-col gap-2 rounded-md sm:flex-row">
               <Button
                 className="flex items-center gap-3 rounded-md"
                 size="sm"
@@ -183,7 +190,7 @@ const AdminManagement = () => {
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="rounded-md w-full min-w-max table-auto text-left">
+            <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
                 <tr>
                   {TABLE_HEAD.map((head, index) => (
@@ -261,24 +268,42 @@ const AdminManagement = () => {
 
                       {/* Permissions */}
                       <td className="max-w-60">
-                        <div className="flex flex-wrap font-normal">
+                        <div className="flex cursor-pointer flex-wrap rounded font-normal" onClick={() =>handleOpenView(user.id)}>
                           {user.all_permissions &&
-                          user.all_permissions.length > 0
-                            ? user.all_permissions.map((perm, index) => (
-                                <span key={index}>
-                                  <Chip
-                                    color="purple"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="m-1 max-w-fit bg-purple-50"
-                                    value={perm}
-                                  ></Chip>
-                                  {index !== user.all_permissions.length - 1 &&
-                                    " "}
-                                </span>
-                              ))
-                            : "No Permissions"}
-                        </div>
+                          user.all_permissions.length > 0 ? (
+                            <>
+                              {user.all_permissions
+                                .slice(0, 3)
+                                .map((perm, index) => (
+                                  <span key={index}>
+                                    <Chip
+                                      color="purple"
+                                      variant="outlined"
+                                      size="sm"
+                                      className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                      value={perm}
+                                    />
+                                    {index !== 2 &&
+                                      index !==
+                                        user.all_permissions.length - 1 &&
+                                      " "}
+                                  </span>
+                                ))}
+                              {user.all_permissions.length > 3 && (
+                                <Tooltip content='view more' className='bg-purple-500' placement='right-end'>
+                                <Typography
+                                  variant="h4"
+                                  className="text-gray-400 hover:text-gray-600"
+                                >
+                                  ...
+                                </Typography>
+                                </Tooltip>
+                              )}
+                            </>
+                          ) : (
+                            "No Permissions"
+                          )}
+                        </div>{" "}
                       </td>
 
                       <td className="p-4">
@@ -304,10 +329,12 @@ const AdminManagement = () => {
                               </IconButton>
                             </MenuHandler>
                             <MenuList>
-                              <MenuItem>Action 1</MenuItem>
-                              <MenuItem>Action 2</MenuItem>
-                              <MenuItem>Action 3</MenuItem>
-                              <MenuItem>Action 4</MenuItem>
+                              <MenuItem onClick={() => handleOpenView(user.id)}>
+                                View
+                              </MenuItem>
+                              <MenuItem onClick={() => handleEditOpen(user.id)}>
+                                Edit
+                              </MenuItem>
                             </MenuList>
                           </Menu>
                         </Tooltip>
@@ -343,6 +370,13 @@ const AdminManagement = () => {
       <EditAdminModal
         editOpen={editOpen}
         editHandleOpen={handleEditOpen}
+        adminId={selectedUserId}
+        fetchUsers={fetchUsers}
+      />
+
+      <ViewAdminModal
+        viewOpen={openView}
+        viewHandleOpen={handleOpenView}
         adminId={selectedUserId}
         fetchUsers={fetchUsers}
       />

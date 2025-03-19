@@ -78,17 +78,17 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const fetchUserDetails = async () => {
+    setLoading(true);
     try {
       const response = await axiosClient.get(`/admin/users/${userId}`);
-
       if (response.status === 200) {
         setFirstName(response.data.data.first_name);
         setLastName(response.data.data.last_name);
         setEmail(response.data.data.email);
         setMobileNumber(response.data.data.mobile_number);
         setLocalSupportNumber(response.data.data.local_support_number);
-        setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
-        setBusinessContactNumber(response.data.data.store?.mobile ?? "");
+        setBusinessLandlineNumber(response.data.data.mobile_number ?? "");
+        setBusinessContactNumber(response.data.data.store?.phone ?? "");
 
         if (response.data.data.address) {
           setAddress({
@@ -112,15 +112,17 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           };
 
           setRidersAttachments(attachments);
-          setLoading(false);
         }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateUser = async () => {
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -164,6 +166,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,7 +180,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setLoading(true);
     updateUser();
   };
 
@@ -217,7 +220,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   return (
     <>
-      <Dialog size={userType === "rider" ? "lg" : "md"} open={open} handler={handleOpen}>
+      <Dialog
+        size={userType === "rider" ? "lg" : "md"}
+        open={open}
+        handler={handleOpen}
+      >
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
           <form
@@ -404,7 +411,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       User Information
                     </Tab>
 
-                    <Tab
+                    {/* <Tab
                       value="rider_attachments"
                       onClick={() => setActiveTab("rider_attachments")}
                       className={`justify-start ${
@@ -414,7 +421,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       }`}
                     >
                       Rider Attachments
-                    </Tab>
+                    </Tab> */}
                   </TabsHeader>
 
                   <TabsBody className="max-h-[50vh] overflow-y-auto px-2">
@@ -522,7 +529,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
                               <label htmlFor={key}>
                                 <Typography className="font-semibold text-sm text-nowrap">
-                                  {key.replace(/([A-Z])/g, " $1").trim().toUpperCase()}{" "}
+                                  {key
+                                    .replace(/([A-Z])/g, " $1")
+                                    .trim()
+                                    .toUpperCase()}{" "}
                                 </Typography>
                               </label>
 

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import axiosClient from "../axiosClient";
 
 const stateContext = createContext({
   user: null,
@@ -38,6 +39,15 @@ export const ContextProvider = ({ children }) => {
     }
   };
 
+  const fetchUser = async () => {
+    try {
+      const response = await axiosClient.get("/user");
+      setUser(response.data.user);
+    } catch (err) {
+      setUser(null);
+    }
+  };
+
   return (
     <stateContext.Provider value={{ 
       user, 
@@ -47,7 +57,8 @@ export const ContextProvider = ({ children }) => {
       setSidebarCollapsed,
       setMobileMenuOpen,
       setUser, 
-      setToken 
+      setToken,
+      fetchUser
     }}>
       {children}
     </stateContext.Provider>
