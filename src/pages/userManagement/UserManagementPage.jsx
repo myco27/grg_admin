@@ -32,6 +32,9 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import EditUserModal from "./EditUserModal";
 import { useStateContext } from "../../contexts/contextProvider";
+import {  ArrowLeftRight } from 'lucide-react';
+
+
 
 const UserManagementPage = () => {
   const navigate = useNavigate();
@@ -51,6 +54,8 @@ const UserManagementPage = () => {
     itemsPerPage: 10,
     isLoading: false,
   });
+  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5]);
+  const [isRotated, setIsRotated] = useState(false);
 
   const { user } = useStateContext();
   const canViewUserModule =
@@ -134,6 +139,20 @@ const UserManagementPage = () => {
       page: 1,
       itemsPerPage: Number(newSize),
     });
+  };
+
+  const rotateColumns = () => {
+    setTableHeadOrder(prevOrder => {
+      if (isRotated) {
+        // If already rotated, revert to original order
+        return [0, 1, 2, 3, 4, 5];
+      } else {
+        // Rotate: move last to first, shift others right
+        const newOrder = [prevOrder[prevOrder.length - 1], ...prevOrder.slice(0, -1)];
+        return newOrder;
+      }
+    });
+    setIsRotated(!isRotated); // Toggle the rotation state
   };
   // EVENT LISTENERS END
 
@@ -229,6 +248,12 @@ const UserManagementPage = () => {
                   value={searchTerm}
                   onChange={(e) => handleSearchInput(e)}
                 />
+                <button
+                  className="absolute right-3 top-4 text-gray-500 hover:text-gray-700"
+                  onClick={rotateColumns}
+                >
+                  <ArrowLeftRight className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </CardHeader>
@@ -240,9 +265,9 @@ const UserManagementPage = () => {
               <table className="rounded-md w-full min-w-max table-auto text-left">
                 <thead>
                   <tr>
-                    {TABLE_HEAD.map((head, index) => (
+                    {tableHeadOrder.map((colIndex, index) => (
                       <th
-                        key={head}
+                        key={TABLE_HEAD[colIndex]}
                         className={`bg-tableHeaderBg p-4 ${
                           index === 0 ? "rounded-tl-md rounded-bl-md" : ""
                         } ${
@@ -256,7 +281,7 @@ const UserManagementPage = () => {
                           color="black"
                           className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                         >
-                          {head}
+                          {TABLE_HEAD[colIndex]}
                         </Typography>
                       </th>
                     ))}
@@ -264,124 +289,131 @@ const UserManagementPage = () => {
                 </thead>
 
                 <tbody>
-                  {users.map((user) => {
-                    return (
-                      <tr
-                        className="border-b border-gray-300 hover:bg-gray-100"
-                        key={user.id}
-                      >
-                        <td className="p-4">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {user.id}
-                            </Typography>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            {/* <Avatar src={img} alt={name} size="sm" /> */}
-                            <div className="flex flex-col">
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal"
-                              >
-                                {user.first_name} {user.last_name}
-                              </Typography>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-normal opacity-70"
-                              >
-                                {user.email}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td className="p-4">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {user.user_type
-                                ? user.user_type.toUpperCase()
-                                : ""}
-                            </Typography>
-                          </div>
-                        </td>
-
-                        <td className="p-4">
-                          <div className="w-max">
-                            <Chip
-                              variant="ghost"
-                              size="sm"
-                              value={
-                                user.is_active == 1
-                                  ? "Active"
-                                  : user.is_active == 2
-                                  ? "Suspended"
-                                  : user.is_active == 3
-                                  ? "Deleted"
-                                  : "Inactive"
-                              }
-                              color={
-                                user.is_active == 1
-                                  ? "green"
-                                  : user.is_active == 2
-                                  ? "orange"
-                                  : user.is_active == 3
-                                  ? "red"
-                                  : "blue-gray"
-                              }
-                            />
-                          </div>
-                        </td>
-
-                        <td className="p-4">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {new Date(user.created_at).toLocaleString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                  // hour: "2-digit",
-                                  // minute: "2-digit",
-                                  // second: "2-digit",
-                                  // hour12: true,
-                                }
-                              )}
-                            </Typography>
-                          </div>
-                        </td>
-
-                        <td className="p-4">
-                          <Tooltip content="Edit User">
-                            <IconButton
-                              variant="text"
-                              onClick={() =>
-                                handleEditOpen(user.id, user.user_type)
-                              }
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </IconButton>
-                          </Tooltip>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {users.map((user) => (
+                    <tr
+                      className="border-b border-gray-300 hover:bg-gray-100"
+                      key={user.id}
+                    >
+                      {tableHeadOrder.map((colIndex) => {
+                        // Return the appropriate cell based on column index
+                        switch(colIndex) {
+                          case 0: // User ID
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {user.id}
+                                  </Typography>
+                                </div>
+                              </td>
+                            );
+                          case 1: // User Information
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="flex items-center gap-3">
+                                  <div className="flex flex-col">
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal"
+                                    >
+                                      {user.first_name} {user.last_name}
+                                    </Typography>
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal opacity-70"
+                                    >
+                                      {user.email}
+                                    </Typography>
+                                  </div>
+                                </div>
+                              </td>
+                            );
+                          case 2: // User Type
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {user.user_type ? user.user_type.toUpperCase() : ""}
+                                  </Typography>
+                                </div>
+                              </td>
+                            );
+                          case 3: // Status
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="w-max">
+                                  <Chip
+                                    variant="ghost"
+                                    size="sm"
+                                    value={
+                                      user.is_active == 1
+                                        ? "Active"
+                                        : user.is_active == 2
+                                        ? "Suspended"
+                                        : user.is_active == 3
+                                        ? "Deleted"
+                                        : "Inactive"
+                                    }
+                                    color={
+                                      user.is_active == 1
+                                        ? "green"
+                                        : user.is_active == 2
+                                        ? "orange"
+                                        : user.is_active == 3
+                                        ? "red"
+                                        : "blue-gray"
+                                    }
+                                  />
+                                </div>
+                              </td>
+                            );
+                          case 4: // Date Created
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {new Date(user.created_at).toLocaleString("en-US", {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </Typography>
+                                </div>
+                              </td>
+                            );
+                          case 5: // Action
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <Tooltip content="Edit User">
+                                  <IconButton
+                                    variant="text"
+                                    onClick={() => handleEditOpen(user.id, user.user_type)}
+                                  >
+                                    <PencilIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                              </td>
+                            );
+                          default:
+                            return null;
+                        }
+                      })}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             )}
