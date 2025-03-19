@@ -411,7 +411,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       User Information
                     </Tab>
 
-                    <Tab
+                    {/* <Tab
                       value="rider_attachments"
                       onClick={() => setActiveTab("rider_attachments")}
                       className={`justify-start ${
@@ -421,7 +421,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       }`}
                     >
                       Rider Attachments
-                    </Tab>
+                    </Tab> */}
                   </TabsHeader>
 
                   <TabsBody className="max-h-[50vh] overflow-y-auto px-2">
