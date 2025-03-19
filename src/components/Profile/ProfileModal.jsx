@@ -13,13 +13,7 @@ import { Base, Header, Body, Footer, Sidebar } from "../Modal";
 import { useStateContext } from "../../contexts/contextProvider";
 
 const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [localSupportNumber, setLocalSupportNumber] = useState("");
-  const [businessLandlineNumber, setBusinessLandlineNumber] = useState("");
-  const [businessContactNumber, setBusinessContactNumber] = useState("");
+
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,59 +27,59 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [activeTab, setActiveTab] = useState("basic_setting");
   const { user } = useStateContext();
 
-  const fetchUserDetails = async () => {
-    try {
-      const response = await axiosClient.get(`/admin/users/${userId}`);
-      if (response.status === 200) {
-        setFirstName(response.data.data.first_name);
-        setLastName(response.data.data.last_name);
-        setEmail(response.data.data.email);
-        setMobileNumber(response.data.data.mobile_number);
-        setLocalSupportNumber(response.data.data.local_support_number);
-        setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
-        setBusinessContactNumber(response.data.data.store?.mobile ?? "");
-      }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  };
+  // const fetchUserDetails = async () => {
+  //   try {
+  //     const response = await axiosClient.get(`/admin/users/${userId}`);
+  //     if (response.status === 200) {
+  //       setFirstName(response.data.data.first_name);
+  //       setLastName(response.data.data.last_name);
+  //       setEmail(response.data.data.email);
+  //       setMobileNumber(response.data.data.mobile_number);
+  //       setLocalSupportNumber(response.data.data.local_support_number);
+  //       setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
+  //       setBusinessContactNumber(response.data.data.store?.mobile ?? "");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user details:", error);
+  //   }
+  // };
 
-  const updateUser = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("first_name", firstName);
-      formData.append("last_name", lastName);
-      formData.append("email", email);
-      formData.append("mobile_number", mobileNumber);
-      formData.append("local_support_number", localSupportNumber);
-      formData.append("business_landline_number", businessLandlineNumber);
-      formData.append("business_contact_number", businessContactNumber);
-      if (password) formData.append("password", password);
-      if (confirmPassword) formData.append("password_confirmation", confirmPassword);
+  // const updateUser = async () => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("first_name", firstName);
+  //     formData.append("last_name", lastName);
+  //     formData.append("email", email);
+  //     formData.append("mobile_number", mobileNumber);
+  //     formData.append("local_support_number", localSupportNumber);
+  //     formData.append("business_landline_number", businessLandlineNumber);
+  //     formData.append("business_contact_number", businessContactNumber);
+  //     if (password) formData.append("password", password);
+  //     if (confirmPassword) formData.append("password_confirmation", confirmPassword);
 
-      const response = await axiosClient.post(
-        `/admin/users/update/${userId}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+  //     const response = await axiosClient.post(
+  //       `/admin/users/update/${userId}`,
+  //       formData,
+  //       {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       }
+  //     );
 
-      if (response.status === 202) {
-        showAlert("User updated successfully!", "success");
-        fetchUsers();
-        handleOpen();
-      }
-    } catch (error) {
-      if (error.response?.data?.errors) {
-        Object.values(error.response.data.errors)
-          .flat()
-          .forEach((errorMessage) => showAlert(errorMessage, "error"));
-      } else {
-        showAlert("An error occurred. Please try again.", "error");
-      }
-    }
-  };
+  //     if (response.status === 202) {
+  //       showAlert("User updated successfully!", "success");
+  //       fetchUsers();
+  //       handleOpen();
+  //     }
+  //   } catch (error) {
+  //     if (error.response?.data?.errors) {
+  //       Object.values(error.response.data.errors)
+  //         .flat()
+  //         .forEach((errorMessage) => showAlert(errorMessage, "error"));
+  //     } else {
+  //       showAlert("An error occurred. Please try again.", "error");
+  //     }
+  //   }
+  // };
 
   const toggleVisibility = (field) => {
     setPasswordVisibility((prevState) => ({
@@ -100,30 +94,31 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     updateUser();
   };
 
-  useEffect(() => {
-    setLoading(true);
-    if (open && userId) {
-      fetchUserDetails();
-    } else {
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setMobileNumber("");
-      setLocalSupportNumber("");
-      setBusinessLandlineNumber("");
-      setBusinessContactNumber("");
-      setPassword("");
-      setConfirmPassword("");
-      setPasswordVisibility({ 
-        password: false, 
-        newPassword: false,
-        confirmPassword: false 
-      });
-    }
-    setLoading(false);
-  }, [open, userId]);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   if (open && userId) {
+  //     fetchUserDetails();
+  //   } else {
+  //     setFirstName("");
+  //     setLastName("");
+  //     setEmail("");
+  //     setMobileNumber("");
+  //     setLocalSupportNumber("");
+  //     setBusinessLandlineNumber("");
+  //     setBusinessContactNumber("");
+  //     setPassword("");
+  //     setConfirmPassword("");
+  //     setPasswordVisibility({ 
+  //       password: false, 
+  //       newPassword: false,
+  //       confirmPassword: false 
+  //     });
+  //   }
+  //   setLoading(false);
+  // }, [open, userId]);
 
   // Define tabs for the sidebar
+  
   const tabs = [
     {
       value: "basic_setting",
@@ -145,19 +140,19 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Input
               label="First Name"
               type="text"
-              value={firstName}
+              value={user.first_name}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <Input
               label="Last Name"
               type="text"
-              value={lastName}
+              value={user.last_name}
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
           <div className="flex gap-2 py-4 border-b border-gray-300">
             <Input
-              value={email}
+              value={user.email}
               onChange={(e) => setEmail(e.target.value)}
               label="Email"
               type="email"
@@ -168,7 +163,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Input
               label="Mobile Number"
               type="text"
-              value={mobileNumber}
+              value=""
               onChange={(e) => setMobileNumber(e.target.value)}
               autoComplete="tel"
             />
@@ -257,8 +252,6 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     }
   ];
 
-  console.log(user);
-
   return (
     <form onSubmit={handleSubmit}>
       <Base open={open} handleOpen={handleOpen} size="lg">
@@ -271,7 +264,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               sidebarTitle="PROFILE" 
             />
             <div className="w-full">
-              <Header title={tabs.find(tab => tab.value === activeTab)?.label} onClose={handleOpen}/>
+              <Header title={tabs.find(tab => tab.value === activeTab)?.label} onClose={handleOpen} />
               <Body tabs={tabs} activeTab={activeTab} />
               <Footer 
                 loading={loading} 
