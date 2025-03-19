@@ -116,12 +116,12 @@ export default function Header() {
         <IconButton variant="text" size="lg" onClick={toggleSidebar} className="z-10">
           <MenuIcon className="h-6 w-6 text-white" />
         </IconButton>
-        <Typography color="white" className="font-medium">
+        <Typography color="white" className="font-medium text-nowrap">
           {getPageTitle()}
         </Typography>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex justify-end items-end w-full">
         <Menu placement="bottom-end">
           <MenuHandler>
             <Button
