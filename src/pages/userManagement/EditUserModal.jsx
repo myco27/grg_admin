@@ -22,6 +22,8 @@ import { EyeIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
+  const [previewImage, setPreviewImage] = useState("");
+  const [openImage, setOpenImage] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,6 +43,16 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     city: "",
     state: "",
   });
+
+  const checkimagePreview = (e, key, value) => {
+    e.preventDefault();
+    setPreviewImage(
+      imagePreview[key] ||
+        `${import.meta.env.VITE_APP_IMAGE_PATH}/applicant/${value}`
+    );
+    setOpenImage(!openImage);
+  };
+
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
     confirmPassword: false,
@@ -222,15 +234,16 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   return (
     <>
       <Dialog
+        aria-modal="true"
         size={userType === "rider" ? "lg" : "md"}
         open={open}
-        handler={handleOpen}
       >
+        <div onClick={(e) => e.stopPropagation()} className="p-4">
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col justify-between gap-4 min-h-[50vh]"
+            className="flex min-h-[50vh] flex-col justify-between gap-4"
           >
             {/* Operator Field */}
             {userType === "operator" && (
@@ -341,7 +354,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 />
 
                 {/* Password Field */}
-                <div className="relative ">
+                <div className="relative">
                   <Input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -393,11 +406,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               <>
                 <Tabs
                   value={activeTab}
-                  className="w-full flex gap-4"
+                  className="flex w-full gap-4"
                   orientation="vertical"
                 >
                   <TabsHeader
-                    className="bg-gray-100 text-nowrap my-4"
+                    className="my-4 text-nowrap bg-gray-100"
                     indicatorProps={{
                       className: "bg-purple-500",
                     }}
@@ -456,7 +469,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       />
 
                       {/* Password Field */}
-                      <div className="relative ">
+                      <div className="relative">
                         <Input
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -509,61 +522,85 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     </TabPanel>
 
                     {/* Riders Attachments Tab */}
-                    <TabPanel
-                      className="flex flex-col gap-4 px-0"
-                      value="rider_attachments"
-                    >
-                      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-                        {Object.entries(ridersAttachments).map(
-                          ([key, value]) => (
-                            <div
-                              key={key}
-                              className="flex flex-col items-center gap-2"
-                            >
-                              <input
-                                type="file"
-                                id={key}
-                                accept="image/*"
-                                onChange={(e) => handleImageChange(e, key)}
-                                className="hidden"
-                              />
+                    {activeTab == "info" ? (
+                      <div></div>
+                    ) : (
+                      <TabPanel
+                        className="flex flex-col gap-4 px-0"
+                        value="rider_attachments"
+                      >
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          {Object.entries(ridersAttachments).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex flex-col items-center gap-2"
+                              >
+                                <input
+                                  type="file"
+                                  id={key}
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, key)}
+                                  className="hidden"
+                                />
 
-                              <label htmlFor={key}>
-                                <Typography className="font-semibold text-sm text-nowrap">
-                                  {key
-                                    .replace(/([A-Z])/g, " $1")
-                                    .trim()
-                                    .toUpperCase()}{" "}
-                                </Typography>
-                              </label>
+                                <label htmlFor={key}>
+                                  <Typography className="text-nowrap text-sm font-semibold">
+                                    {key
+                                      .replace(/([A-Z])/g, " $1")
+                                      .trim()
+                                      .toUpperCase()}{" "}
+                                  </Typography>
+                                </label>
 
-                              <label htmlFor={key} className="cursor-pointer">
                                 {imagePreview[key] || value ? (
-                                  <Avatar
-                                    src={
-                                      imagePreview[key] ||
-                                      `${
-                                        import.meta.env.VITE_APP_IMAGE_PATH
-                                      }/applicant/${value}`
-                                    }
-                                    alt={`${key} Preview`}
-                                    className="border border-gray-300 shadow-md w-48 h-48"
-                                    variant="rounded"
-                                  />
+                                  <div className="flex">
+                                    <div className="group relative">
+                                      <Avatar
+                                        src={
+                                          imagePreview[key] ||
+                                          `${
+                                            import.meta.env.VITE_APP_IMAGE_PATH
+                                          }/applicant/${value}`
+                                        }
+                                        alt={`${key} Preview`}
+                                        className="h-48 w-48 border border-gray-300 object-cover shadow-md"
+                                        variant="rounded"
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                        <Button
+                                          onClick={(e) =>
+                                            checkimagePreview(e, key, value)
+                                          }
+                                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                        >
+                                          <span>View</span>
+                                        </Button>
+                                        <Button
+                                          onClick={() =>
+                                            document.getElementById(key).click()
+                                          }
+                                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                        >
+                                          Upload
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  </div>
                                 ) : (
-                                  <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg border border-gray-300 shadow-md">
-                                    <span className="text-gray-500 text-sm text-center">
+                                  <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
+                                    <span className="text-center text-sm text-gray-500">
                                       Upload{" "}
                                       {key.replace(/([A-Z])/g, " $1").trim()}
                                     </span>
                                   </div>
                                 )}
-                              </label>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </TabPanel>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </TabPanel>
+                    )}
                   </TabsBody>
                 </Tabs>
               </>
@@ -673,7 +710,39 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             </div>
           </form>
         </DialogBody>
+        </div>
       </Dialog>
+
+      {openImage && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75" 
+        style={{zIndex:999999}}
+  >
+    {/* Background Overlay (Prevents Closing When Clicking Outside) */}
+    <div className="absolute inset-0" />
+
+    {/* Image Preview Modal */}
+    <div 
+      className="relative z-50 rounded-lg bg-white p-4 shadow-lg"
+      onClick={(e) => e.stopPropagation()} // ✅ Prevent bubbling to parent modal
+    >
+      <img
+        src={previewImage}
+        alt="Full Preview"
+        className="max-h-screen max-w-full"
+      />
+      <button
+        className="absolute right-2 top-2 rounded-full bg-white px-3 py-1 text-black shadow-md"
+        onClick={() => {
+          setOpenImage(false); 
+        }}
+      >
+        ✕ Close
+      </button>
+    </div>
+  </div>
+)}
+
     </>
   );
 };
