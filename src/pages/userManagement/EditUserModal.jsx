@@ -238,7 +238,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         size={userType === "rider" ? "lg" : "md"}
         open={open}
       >
-        <div onClick={(e) => e.stopPropagation()} className="p-4">
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
           <form
@@ -710,7 +709,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             </div>
           </form>
         </DialogBody>
-        </div>
       </Dialog>
 
       {openImage && (
@@ -718,13 +716,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-75" 
         style={{zIndex:999999}}
   >
-    {/* Background Overlay (Prevents Closing When Clicking Outside) */}
+
     <div className="absolute inset-0" />
 
-    {/* Image Preview Modal */}
+   
     <div 
       className="relative z-50 rounded-lg bg-white p-4 shadow-lg"
-      onClick={(e) => e.stopPropagation()} // ✅ Prevent bubbling to parent modal
     >
       <img
         src={previewImage}
@@ -733,7 +730,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       />
       <button
         className="absolute right-2 top-2 rounded-full bg-white px-3 py-1 text-black shadow-md"
-        onClick={() => {
+        onClick={(e) => {
           setOpenImage(false); 
         }}
       >

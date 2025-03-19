@@ -71,7 +71,7 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("/admin/users/create", formData);
+      const response = await axios.post("/admin/users/add", formData);
 
       if (response.status === 201) {
         fetchUsers();

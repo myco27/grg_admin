@@ -9,16 +9,20 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
-import { ChevronDown, LogOut, Menu as MenuIcon } from "lucide-react";
+import { ChevronDown, LogOut, Menu as MenuIcon, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
-
+import ProfileModal from "../Profile/ProfileModal";
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showAlert } = useAlert();
+  const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const { 
     user, 
     setUser, 
@@ -28,6 +32,16 @@ export default function Header() {
     mobileMenuOpen,
     setMobileMenuOpen
   } = useStateContext();
+
+  const handleOpen = () => {
+    setOpen(!open);
+  };
+
+  const handleProfileOpen = (userId, userType) => {
+    setSelectedUserId(userId);
+    setSelectedUser(userType);
+    setProfileOpen(!profileOpen);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -65,6 +79,10 @@ export default function Header() {
     }
   };
 
+  const openProfileModal = () => {
+    handleProfileOpen(user.id, user.user_type);
+  };
+
   const toggleSidebar = () => {
     // On desktop, toggle the sidebar collapse state
     if (window.innerWidth >= 768) {
@@ -98,12 +116,12 @@ export default function Header() {
         <IconButton variant="text" size="lg" onClick={toggleSidebar} className="z-10">
           <MenuIcon className="h-6 w-6 text-white" />
         </IconButton>
-        <Typography color="white" className="font-medium">
+        <Typography color="white" className="font-medium text-nowrap">
           {getPageTitle()}
         </Typography>
       </div>
 
-      <div className="flex items-center">
+      <div className="flex justify-end items-end w-full">
         <Menu placement="bottom-end">
           <MenuHandler>
             <Button
@@ -133,6 +151,12 @@ export default function Header() {
             </MenuItem>
             <hr className="my-2 border-blue-gray-50" /> */}
             <MenuItem
+              className="flex items-center gap-2 text-gray-500"
+              onClick={openProfileModal}
+            >
+              <User className="h-4 w-4" /> Profile
+            </MenuItem>
+            <MenuItem
               className="flex items-center gap-2 text-red-500"
               onClick={handleLogout}
             >
@@ -141,6 +165,12 @@ export default function Header() {
           </MenuList>
         </Menu>
       </div>
+      <ProfileModal 
+      open={profileOpen} 
+      handleOpen={handleProfileOpen} 
+      userId={selectedUserId} 
+      userType={selectedUser} 
+      />
     </div>
   );
 }
