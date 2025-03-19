@@ -20,6 +20,7 @@ import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
+import DialogBoxLoading from "../../components/layout/DialogBoxLoading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [firstName, setFirstName] = useState("");
@@ -184,8 +185,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
-
     if (open && userId) {
       fetchUserDetails();
     } else {
@@ -214,8 +213,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
-
-    setLoading(false);
   }, [open, userId]);
 
   return (
@@ -227,191 +224,193 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       >
         <DialogHeader>Edit User</DialogHeader>
         <DialogBody>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col justify-between gap-4 min-h-[50vh]"
-          >
-            {/* Operator Field */}
-            {userType === "operator" && (
-              <>
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  autoComplete="username"
-                />
-                <Input
-                  label="First Name"
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                <Input
-                  label="Last Name"
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                <Input
-                  label="Local Support Number"
-                  type="text"
-                  value={localSupportNumber}
-                  autoComplete="tel"
-                  onChange={(e) => setLocalSupportNumber(e.target.value)}
-                />
-                {/* Password Field */}
-                <div className="relative">
+          {loading ? (
+            <DialogBoxLoading />
+          ) : (
+            <form
+              className="flex flex-col justify-between gap-4 min-h-[50vh]"
+            >
+              {/* Operator Field */}
+              {userType === "operator" && (
+                <>
                   <Input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type={passwordVisibility.password ? "text" : "password"}
-                    className="pr-10"
-                    autoComplete="new-password"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    autoComplete="username"
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("password")}
-                  >
-                    {passwordVisibility.password ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-
-                {/* Confirm Password Field */}
-                <div className="relative">
                   <Input
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    label="Confirm Password"
-                    type={
-                      passwordVisibility.confirmPassword ? "text" : "password"
-                    }
-                    className="pr-10"
-                    autoComplete="new-password"
+                    label="First Name"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("confirmPassword")}
-                  >
-                    {passwordVisibility.confirmPassword ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </>
-            )}
-            {/* Customer Field */}
-            {userType === "customer" && (
-              <>
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  autoComplete="username"
-                />
-                <Input
-                  label="First Name"
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                <Input
-                  label="Last Name"
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                <Input
-                  label="Mobile Number"
-                  type="text"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  autoComplete="tel"
-                />
-
-                {/* Password Field */}
-                <div className="relative ">
                   <Input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type={passwordVisibility.password ? "text" : "password"}
-                    className="pr-10"
-                    autoComplete="new-password"
+                    label="Last Name"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("password")}
-                  >
-                    {passwordVisibility.password ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-                {/* Confirm Password Field */}
-                <div className="relative">
                   <Input
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    label="Confirm Password"
-                    type={
-                      passwordVisibility.confirmPassword ? "text" : "password"
-                    }
-                    className="pr-10"
-                    autoComplete="new-password"
+                    label="Local Support Number"
+                    type="text"
+                    value={localSupportNumber}
+                    autoComplete="tel"
+                    onChange={(e) => setLocalSupportNumber(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("confirmPassword")}
-                  >
-                    {passwordVisibility.confirmPassword ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </>
-            )}
-            {/* Rider Fields */}
-            {userType === "rider" && (
-              <>
-                <Tabs
-                  value={activeTab}
-                  className="w-full flex gap-4"
-                  orientation="vertical"
-                >
-                  <TabsHeader
-                    className="bg-gray-100 text-nowrap my-4"
-                    indicatorProps={{
-                      className: "bg-purple-500",
-                    }}
-                  >
-                    <Tab
-                      value="info"
-                      onClick={() => setActiveTab("info")}
-                      className={`justify-start ${
-                        activeTab === "info" ? "text-white" : "text-gray-700"
-                      }`}
+                  {/* Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      type={passwordVisibility.password ? "text" : "password"}
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("password")}
                     >
-                      User Information
-                    </Tab>
+                      {passwordVisibility.password ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
 
-                    {/* <Tab
+                  {/* Confirm Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      label="Confirm Password"
+                      type={
+                        passwordVisibility.confirmPassword ? "text" : "password"
+                      }
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("confirmPassword")}
+                    >
+                      {passwordVisibility.confirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+              {/* Customer Field */}
+              {userType === "customer" && (
+                <>
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    autoComplete="username"
+                  />
+                  <Input
+                    label="First Name"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    label="Last Name"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <Input
+                    label="Mobile Number"
+                    type="text"
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+
+                  {/* Password Field */}
+                  <div className="relative ">
+                    <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      type={passwordVisibility.password ? "text" : "password"}
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("password")}
+                    >
+                      {passwordVisibility.password ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  {/* Confirm Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      label="Confirm Password"
+                      type={
+                        passwordVisibility.confirmPassword ? "text" : "password"
+                      }
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("confirmPassword")}
+                    >
+                      {passwordVisibility.confirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+              {/* Rider Fields */}
+              {userType === "rider" && (
+                <>
+                  <Tabs
+                    value={activeTab}
+                    className="w-full flex gap-4"
+                    orientation="vertical"
+                  >
+                    <TabsHeader
+                      className="bg-gray-100 text-nowrap my-4"
+                      indicatorProps={{
+                        className: "bg-purple-500",
+                      }}
+                    >
+                      <Tab
+                        value="info"
+                        onClick={() => setActiveTab("info")}
+                        className={`justify-start ${
+                          activeTab === "info" ? "text-white" : "text-gray-700"
+                        }`}
+                      >
+                        User Information
+                      </Tab>
+
+                      {/* <Tab
                       value="rider_attachments"
                       onClick={() => setActiveTab("rider_attachments")}
                       className={`justify-start ${
@@ -422,256 +421,263 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     >
                       Rider Attachments
                     </Tab> */}
-                  </TabsHeader>
+                    </TabsHeader>
 
-                  <TabsBody className="max-h-[50vh] overflow-y-auto px-2">
-                    {/* User Information Tab */}
-                    <TabPanel className="flex flex-col gap-4 px-0" value="info">
-                      <Input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        label="Email"
-                        type="email"
-                        autoComplete="username"
-                      />
-                      <Input
-                        label="First Name"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                      />
-                      <Input
-                        label="Last Name"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                      <Input
-                        label="Mobile Number"
-                        type="text"
-                        value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value)}
-                        autoComplete="tel"
-                      />
-
-                      {/* Password Field */}
-                      <div className="relative ">
+                    <TabsBody className="max-h-[50vh] overflow-y-auto px-2">
+                      {/* User Information Tab */}
+                      <TabPanel
+                        className="flex flex-col gap-4 px-0"
+                        value="info"
+                      >
                         <Input
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          label="Password"
-                          type={
-                            passwordVisibility.password ? "text" : "password"
-                          }
-                          className="pr-10"
-                          autoComplete="new-password"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          label="Email"
+                          type="email"
+                          autoComplete="username"
                         />
-                        <button
-                          type="button"
-                          className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                          onClick={() => toggleVisibility("password")}
-                        >
-                          {passwordVisibility.password ? (
-                            <EyeSlashIcon className="h-5 w-5" />
-                          ) : (
-                            <EyeIcon className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-
-                      {/* Confirm Password Field */}
-                      <div className="relative">
                         <Input
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          label="Confirm Password"
-                          type={
-                            passwordVisibility.confirmPassword
-                              ? "text"
-                              : "password"
-                          }
-                          className="pr-10"
-                          autoComplete="new-password"
+                          label="First Name"
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
                         />
-                        <button
-                          type="button"
-                          className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                          onClick={() => toggleVisibility("confirmPassword")}
-                        >
-                          {passwordVisibility.confirmPassword ? (
-                            <EyeSlashIcon className="h-5 w-5" />
-                          ) : (
-                            <EyeIcon className="h-5 w-5" />
-                          )}
-                        </button>
-                      </div>
-                    </TabPanel>
+                        <Input
+                          label="Last Name"
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                        />
+                        <Input
+                          label="Mobile Number"
+                          type="text"
+                          value={mobileNumber}
+                          onChange={(e) => setMobileNumber(e.target.value)}
+                          autoComplete="tel"
+                        />
 
-                    {/* Riders Attachments Tab */}
-                    <TabPanel
-                      className="flex flex-col gap-4 px-0"
-                      value="rider_attachments"
+                        {/* Password Field */}
+                        <div className="relative ">
+                          <Input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            label="Password"
+                            type={
+                              passwordVisibility.password ? "text" : "password"
+                            }
+                            className="pr-10"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                            onClick={() => toggleVisibility("password")}
+                          >
+                            {passwordVisibility.password ? (
+                              <EyeSlashIcon className="h-5 w-5" />
+                            ) : (
+                              <EyeIcon className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Confirm Password Field */}
+                        <div className="relative">
+                          <Input
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            label="Confirm Password"
+                            type={
+                              passwordVisibility.confirmPassword
+                                ? "text"
+                                : "password"
+                            }
+                            className="pr-10"
+                            autoComplete="new-password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                            onClick={() => toggleVisibility("confirmPassword")}
+                          >
+                            {passwordVisibility.confirmPassword ? (
+                              <EyeSlashIcon className="h-5 w-5" />
+                            ) : (
+                              <EyeIcon className="h-5 w-5" />
+                            )}
+                          </button>
+                        </div>
+                      </TabPanel>
+
+                      {/* Riders Attachments Tab */}
+                      <TabPanel
+                        className="flex flex-col gap-4 px-0"
+                        value="rider_attachments"
+                      >
+                        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                          {Object.entries(ridersAttachments).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="flex flex-col items-center gap-2"
+                              >
+                                <input
+                                  type="file"
+                                  id={key}
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, key)}
+                                  className="hidden"
+                                />
+
+                                <label htmlFor={key}>
+                                  <Typography className="font-semibold text-sm text-nowrap">
+                                    {key
+                                      .replace(/([A-Z])/g, " $1")
+                                      .trim()
+                                      .toUpperCase()}{" "}
+                                  </Typography>
+                                </label>
+
+                                <label htmlFor={key} className="cursor-pointer">
+                                  {imagePreview[key] || value ? (
+                                    <Avatar
+                                      src={
+                                        imagePreview[key] ||
+                                        `${
+                                          import.meta.env.VITE_APP_IMAGE_PATH
+                                        }/applicant/${value}`
+                                      }
+                                      alt={`${key} Preview`}
+                                      className="border border-gray-300 shadow-md w-48 h-48"
+                                      variant="rounded"
+                                    />
+                                  ) : (
+                                    <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg border border-gray-300 shadow-md">
+                                      <span className="text-gray-500 text-sm text-center">
+                                        Upload{" "}
+                                        {key.replace(/([A-Z])/g, " $1").trim()}
+                                      </span>
+                                    </div>
+                                  )}
+                                </label>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </TabPanel>
+                    </TabsBody>
+                  </Tabs>
+                </>
+              )}
+              {(userType === "central" || userType === "restaurant") && (
+                <>
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    type="email"
+                    autoComplete="username"
+                  />
+                  <Input
+                    label="First Name"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    label="Last Name"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  <Input
+                    label="Business Landline Number"
+                    type="text"
+                    value={businessLandlineNumber}
+                    onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+                  <Input
+                    label="Business Contact Number"
+                    type="text"
+                    value={businessContactNumber}
+                    onChange={(e) => setBusinessContactNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+
+                  {/* Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Password"
+                      type={passwordVisibility.password ? "text" : "password"}
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("password")}
                     >
-                      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-                        {Object.entries(ridersAttachments).map(
-                          ([key, value]) => (
-                            <div
-                              key={key}
-                              className="flex flex-col items-center gap-2"
-                            >
-                              <input
-                                type="file"
-                                id={key}
-                                accept="image/*"
-                                onChange={(e) => handleImageChange(e, key)}
-                                className="hidden"
-                              />
+                      {passwordVisibility.password ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
 
-                              <label htmlFor={key}>
-                                <Typography className="font-semibold text-sm text-nowrap">
-                                  {key
-                                    .replace(/([A-Z])/g, " $1")
-                                    .trim()
-                                    .toUpperCase()}{" "}
-                                </Typography>
-                              </label>
-
-                              <label htmlFor={key} className="cursor-pointer">
-                                {imagePreview[key] || value ? (
-                                  <Avatar
-                                    src={
-                                      imagePreview[key] ||
-                                      `${
-                                        import.meta.env.VITE_APP_IMAGE_PATH
-                                      }/applicant/${value}`
-                                    }
-                                    alt={`${key} Preview`}
-                                    className="border border-gray-300 shadow-md w-48 h-48"
-                                    variant="rounded"
-                                  />
-                                ) : (
-                                  <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded-lg border border-gray-300 shadow-md">
-                                    <span className="text-gray-500 text-sm text-center">
-                                      Upload{" "}
-                                      {key.replace(/([A-Z])/g, " $1").trim()}
-                                    </span>
-                                  </div>
-                                )}
-                              </label>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </TabPanel>
-                  </TabsBody>
-                </Tabs>
-              </>
-            )}
-            {(userType === "central" || userType === "restaurant") && (
-              <>
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  label="Email"
-                  type="email"
-                  autoComplete="username"
-                />
-                <Input
-                  label="First Name"
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                <Input
-                  label="Last Name"
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                <Input
-                  label="Business Landline Number"
-                  type="text"
-                  value={businessLandlineNumber}
-                  onChange={(e) => setBusinessLandlineNumber(e.target.value)}
-                  autoComplete="tel"
-                />
-                <Input
-                  label="Business Contact Number"
-                  type="text"
-                  value={businessContactNumber}
-                  onChange={(e) => setBusinessContactNumber(e.target.value)}
-                  autoComplete="tel"
-                />
-
-                {/* Password Field */}
-                <div className="relative">
-                  <Input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    type={passwordVisibility.password ? "text" : "password"}
-                    className="pr-10"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("password")}
-                  >
-                    {passwordVisibility.password ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-
-                {/* Confirm Password Field */}
-                <div className="relative">
-                  <Input
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    label="Confirm Password"
-                    type={
-                      passwordVisibility.confirmPassword ? "text" : "password"
-                    }
-                    className="pr-10"
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                    onClick={() => toggleVisibility("confirmPassword")}
-                  >
-                    {passwordVisibility.confirmPassword ? (
-                      <EyeSlashIcon className="h-5 w-5" />
-                    ) : (
-                      <EyeIcon className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </>
-            )}
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="gradient"
-                color="gray"
-                disabled={loading}
-                onClick={handleOpen}
-              >
-                <span>Cancel</span>
-              </Button>
-              <Button
-                type="submit"
-                variant="gradient"
-                color="purple"
-                disabled={loading}
-              >
-                <span>{loading ? "Saving..." : "Save"}</span>
-              </Button>
-            </div>
-          </form>
+                  {/* Confirm Password Field */}
+                  <div className="relative">
+                    <Input
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      label="Confirm Password"
+                      type={
+                        passwordVisibility.confirmPassword ? "text" : "password"
+                      }
+                      className="pr-10"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleVisibility("confirmPassword")}
+                    >
+                      {passwordVisibility.confirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+            </form>
+          )}
         </DialogBody>
+        <DialogFooter>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="gradient"
+              color="gray"
+              disabled={loading}
+              onClick={handleOpen}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              type="submit"
+              variant="gradient"
+              color="purple"
+              disabled={loading}
+              onClick={handleSubmit}
+            >
+              <span>{loading ? "Saving..." : "Save"}</span>
+            </Button>
+          </div>
+        </DialogFooter>
       </Dialog>
     </>
   );
