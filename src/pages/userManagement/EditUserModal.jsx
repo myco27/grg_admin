@@ -81,15 +81,14 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     setLoading(true);
     try {
       const response = await axiosClient.get(`/admin/users/${userId}`);
-
       if (response.status === 200) {
         setFirstName(response.data.data.first_name);
         setLastName(response.data.data.last_name);
         setEmail(response.data.data.email);
         setMobileNumber(response.data.data.mobile_number);
         setLocalSupportNumber(response.data.data.local_support_number);
-        setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
-        setBusinessContactNumber(response.data.data.store?.mobile ?? "");
+        setBusinessLandlineNumber(response.data.data.mobile_number ?? "");
+        setBusinessContactNumber(response.data.data.store?.phone ?? "");
 
         if (response.data.data.address) {
           setAddress({
