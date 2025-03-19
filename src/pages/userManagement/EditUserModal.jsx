@@ -33,6 +33,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [address, setAddress] = useState({
     houseNumber: "",
     building: "",
@@ -123,6 +124,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const updateUser = async () => {
+    setSaveLoading(true);
     setLoading(true);
     try {
       const formData = new FormData();
@@ -169,6 +171,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       }
     } finally {
       setLoading(false);
+      setSaveLoading(false);
     }
   };
 
@@ -674,7 +677,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               disabled={loading}
               onClick={handleSubmit}
             >
-              <span>{loading ? "Saving..." : "Save"}</span>
+              <span>{saveLoading ? "Saving..." : "Save"}</span>
             </Button>
           </div>
         </DialogFooter>
