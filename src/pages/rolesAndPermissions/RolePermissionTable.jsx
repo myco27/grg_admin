@@ -13,7 +13,7 @@ import {
 } from "@material-tailwind/react";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useAlert } from "../../contexts/alertContext";
-import { UserPlusIcon, ShieldCheckIcon, Search } from "lucide-react";
+import { UserPlusIcon, ShieldCheckIcon, Search, Circle } from "lucide-react";
 import RoleDialog from "./RoleDialog";
 import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
@@ -175,7 +175,7 @@ const RolePermissionTable = () => {
               </Typography>
             </div>
 
-            <div className="flex rounded-md shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="flex shrink-0 flex-col gap-2 rounded-md sm:flex-row">
               <Button
                 className="flex items-center gap-3 rounded-md"
                 size="sm"
@@ -216,10 +216,10 @@ const RolePermissionTable = () => {
           {pagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="rounded-md w-full min-w-max table-auto text-left">
+            <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
                 <tr>
-                  <th className="bg-tableHeaderBg p-4 rounded-tl-md rounded-bl-md">
+                  <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
                     Role
                   </th>
                   {permissions.map((perm, index) => {
@@ -274,8 +274,16 @@ const RolePermissionTable = () => {
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
+
+                                    
                                   )}
-                                  color="green"
+                                  className="h-full w-full checked:bg-white"
+                                  circleProps={{ className: role.permissions?.some(
+                                    (p) => p.name === perm.name
+                                  ) ? "bg-purple-800 border-none" : "" }}
+                                  containerProps={{className:"border  " }}
+
+                                  
                                 />
                               </div>
                             </td>
