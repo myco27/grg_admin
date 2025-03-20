@@ -177,7 +177,7 @@ const AdminManagement = () => {
                     <Search className="h-5 w-5" />
                   )
                 }
-                size="lg"
+                size="md"
                 className="bg-white"
                 value={searchTerm}
                 onChange={(e) => handleSearchInput(e)}
