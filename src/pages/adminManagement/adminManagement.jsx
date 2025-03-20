@@ -290,7 +290,7 @@ const AdminManagement = () => {
                                   </span>
                                 ))}
                               {user.all_permissions.length > 3 && (
-                                <Tooltip content='view more' className='bg-purple-500' placement='right-end'>
+                                <Tooltip content='view more'  placement='right-end'>
                                 <Typography
                                   variant="h4"
                                   className="text-gray-400 hover:text-gray-600"
