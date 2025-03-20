@@ -237,7 +237,6 @@ const UserManagementPage = () => {
               <div className="w-full rounded-md md:w-72">
                 <Input
                   label="Search User"
-                  className="rounded-md"
                   icon={
                     pagination.isLoading ? (
                       <Spinner className="h-5 w-5" />
@@ -245,6 +244,8 @@ const UserManagementPage = () => {
                       <Search className="h-5 w-5" />
                     )
                   }
+                    size="md"
+              className="bg-white"
                   value={searchTerm}
                   onChange={(e) => handleSearchInput(e)}
                 />
