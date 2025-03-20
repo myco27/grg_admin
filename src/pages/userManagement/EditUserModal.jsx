@@ -530,7 +530,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                           <span>View</span>
                         </Button>
                         <Button
-                          onClick={() => handleImageOpen}
+                           onClick={() =>
+                            document.getElementById(key).click()
+                          }
+
                           className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
                         >
                           Upload
