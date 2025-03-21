@@ -30,6 +30,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
     try {
       const response = await axiosClient.get("/roles");
       if (response.status == 200) {
+        // console.log("success");
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -47,6 +48,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
 
       if (response.status === 200) {
         const responseData = response.data.user;
+        // console.log(responseData);
         setFormData({
           first_name: responseData.first_name,
           last_name: responseData.last_name,
