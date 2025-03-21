@@ -5,17 +5,16 @@ const Sidebar = ({
   activeTab,
   setActiveTab,
   tabs = [],
-  className = "",
-  bgColor = "bg-primary",
+  className = "", bgColor ="bg-primary",
   indicatorColor = "bg-[#3A1066]",
   textColor = "text-white",
   sidebarTitle = ""
 }) => {
   return (
     <div className={`${bgColor} px-4 ${className}`}>
-    <DialogHeader className="text-white text-sm ml-0 pl-1 pb-1">{sidebarTitle}</DialogHeader>
+    <DialogHeader className="ml-0 pb-1 pl-1 text-sm text-white">{sidebarTitle}</DialogHeader>
       <TabsHeader
-        className="bg-transparent text-nowrap w-full h-full gap-2"
+        className="h-full w-full flex-row gap-2 text-nowrap bg-transparent sm:flex-col"
         indicatorProps={{
           className: indicatorColor,
         }}
@@ -27,7 +26,7 @@ const Sidebar = ({
             onClick={() => setActiveTab(tab.value)}
             className={`justify-start ${textColor}`}
           >
-            <div className="flex items-center text-xs p-1">
+            <div className="flex items-center p-1 text-xs">
               {tab.icon && React.cloneElement(tab.icon, { className: "w-4 h-4 mr-2" })}
               {tab.label}
             </div>

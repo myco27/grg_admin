@@ -554,6 +554,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           </div>
 
           <Dialog
+          aria-hidden='true'
             open={openImage}
             handler={handleImageOpen}
             className="flex h-full w-full flex-col items-center justify-center bg-transparent"
@@ -580,8 +581,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         </>
       ),
     },
+    
+    
   ];
-
   const centralTabs = [
     {
       value: activeTab,
@@ -683,21 +685,26 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               className="flex w-full rounded-lg"
               orientation="vertical"
             >
-              <div className="flex w-full">
+              <div className="flex w-full flex-col sm:flex-row">
+                
                 <Sidebar
+                className="py-5"
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   tabs={riderTabs}
                   sidebarTitle="PROFILE"
                 />
+                
                 <div className="w-full">
-                  <Header
+                <Header
+              
                     title={
+                      
                       riderTabs.find((tab) => tab.value === activeTab)?.label
                     }
                     onClose={handleOpen}
                   />
-                  <Body tabs={riderTabs} activeTab={activeTab} />
+                  <Body tabs={riderTabs}  activeTab={activeTab} />
                   <Footer
                     loading={loading}
                     onCancel={handleOpen}
@@ -717,8 +724,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               className="flex w-full rounded-lg"
               orientation="vertical"
             >
-              <div className="flex w-full">
+              <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
+                className="py-5"
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   tabs={operatorTabs}
@@ -753,8 +761,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               className="flex w-full rounded-lg"
               orientation="vertical"
             >
-              <div className="flex w-full">
+              <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
+                className="py-5"
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   tabs={customerTabs}
@@ -788,8 +797,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               className="flex w-full rounded-lg"
               orientation="vertical"
             >
-              <div className="flex w-full">
+              <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
+                className="py-5"
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                   tabs={centralTabs}

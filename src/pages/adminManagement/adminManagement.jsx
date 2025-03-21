@@ -376,9 +376,6 @@ const AdminManagement = () => {
                       const reversedCol = [columns[columns.length-1], ...columns.slice(0,-1)]
                       return reversedCol;
                     })(): columns;
-                  
-                  console.log(displayColumns);
-                  
               
 
                   return (
