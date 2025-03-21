@@ -274,14 +274,12 @@ const RolePermissionTable = () => {
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
+                                    
 
                                     
                                   )}
-                                  className="h-full w-full checked:bg-white"
-                                  circleProps={{ className: role.permissions?.some(
-                                    (p) => p.name === perm.name
-                                  ) ? "bg-green-500 border-none" : "" }}
-                                  containerProps={{className:"border  " }}
+                                  color="green"
+                                  
 
                                   
                                 />
