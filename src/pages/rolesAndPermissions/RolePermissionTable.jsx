@@ -51,7 +51,7 @@ const RolePermissionTable = () => {
     fetchPermissions();
   }, []);
 
-  const { user, fetchUser} = useStateContext();
+  const { user, fetchUser } = useStateContext();
 
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
@@ -274,14 +274,8 @@ const RolePermissionTable = () => {
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
-                                    
-
-                                    
                                   )}
                                   color="green"
-                                  
-
-                                  
                                 />
                               </div>
                             </td>

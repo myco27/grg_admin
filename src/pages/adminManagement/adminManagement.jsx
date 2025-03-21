@@ -43,7 +43,6 @@ const AdminManagement = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [openView, setOpenView] = useState(false);
-  const [isRowReversed, setisRowReversed] = useState(false);
   const [isColumnReversed, setisColumnReversed] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -149,8 +148,6 @@ const AdminManagement = () => {
       itemsPerPage: Number(newSize),
     });
   };
-
-  // EVENT LISTENERS END
 
   return (
     <>
