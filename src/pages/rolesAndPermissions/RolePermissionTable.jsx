@@ -275,7 +275,6 @@ const RolePermissionTable = () => {
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
                                   )}
-                                  className="h-full w-full"
                                   color="green"
                                 />
                               </div>

@@ -10,6 +10,7 @@ const Base = ({
 }) => {
   return (
     <Dialog 
+      aria-hidden='false'
       size={size} 
       open={open} 
       handler={handleOpen}

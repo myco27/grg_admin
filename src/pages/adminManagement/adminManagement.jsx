@@ -27,7 +27,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
-import { Search } from "lucide-react";
+import { Search, ArrowLeftRight, ArrowDownUp } from "lucide-react";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import AddAdminModal from "./AddAdminModal";
@@ -43,8 +43,7 @@ const AdminManagement = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [openView, setOpenView] = useState(false);
-  const [lastToFirst, setLastToFirst] = useState(false);
-
+  const [isColumnReversed, setisColumnReversed] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -54,10 +53,27 @@ const AdminManagement = () => {
     isLoading: false,
   });
 
+  const TABLE_HEAD = [
+    "User ID",
+    "User Information",
+    "Roles",
+    "Permissions",
+    "Date Created",
+    "Action",
+  ];
+
+  const reversedThead = isColumnReversed
+  ? (() => {
+      const reversedHead = [TABLE_HEAD[TABLE_HEAD.length-1], ...TABLE_HEAD.slice(0,-1)]
+      return reversedHead;
+    })()
+  : TABLE_HEAD;
+
+
   const fetchUsers = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
-
+      
       const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
           search: debounceSearch,
@@ -133,17 +149,6 @@ const AdminManagement = () => {
     });
   };
 
-  // EVENT LISTENERS END
-
-  const TABLE_HEAD = [
-    "User ID",
-    "User Information",
-    "Roles",
-    "Permissions",
-    "Date Created",
-    "Action",
-  ];
-
   return (
     <>
       <Card className="h-full w-full">
@@ -168,7 +173,10 @@ const AdminManagement = () => {
             </div>
           </div>
           <div className="rounded-none md:flex-row">
-            <div className="float-end w-full md:w-72">
+            <div className="float-end m-1 flex flex-row gap-1 md:w-72">
+              <button onClick={() => setisColumnReversed(!isColumnReversed)}>
+                <ArrowLeftRight className="text-gray-500 hover:text-gray-700"/>
+              </button>
               <Input
                 label="Search User"
                 icon={
@@ -183,13 +191,6 @@ const AdminManagement = () => {
                 value={searchTerm}
                 onChange={(e) => handleSearchInput(e)}
               />
-              <button
-                onClick={() => setLastToFirst(!lastToFirst)}
-                className="mb-4 rounded bg-blue-500 px-4 py-2 text-white"
-              >
-                Move Last Column to First
-              </button>
-              ;
             </div>
           </div>
         </CardHeader>
@@ -200,20 +201,16 @@ const AdminManagement = () => {
           ) : (
             <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
-                <tr className="bg-gray-200 grid grid-cols-6">
-                  {TABLE_HEAD.map((head, index) => (
+                <tr>
+                  {reversedThead.map((head, index) => (
                     <th
                       key={head}
                       className={`bg-tableHeaderBg p-4 ${
                         index === 0 ? "rounded-tl-md rounded-bl-md" : ""
                       } ${
-                        index === TABLE_HEAD.length - 1
+                        index === reversedThead.length - 1
                           ? "rounded-tr-md rounded-br-md"
                           : ""
-                      } ${
-                        index === TABLE_HEAD.length - 1
-                          ? "order-1"
-                          : `order-${index + 2}`
                       }`}
                     >
                       <Typography
@@ -230,16 +227,10 @@ const AdminManagement = () => {
 
               <tbody>
                 {users.map((user) => {
-                  // console.log(
-                  //   "Permissions for user:",
-                  //   user
-                  // );
-                  return (
-                    <tr
-                      className="border-b border-gray-300 hover:bg-gray-100 grid grid-cols-6"
-                      key={user.id}
-                    >
-                     <td className={`p-4 ${lastToFirst ? "order-2" : "order-1"}`}>
+                  const columns = [
+                    {
+                      key: "id",
+                      value: (
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -247,45 +238,52 @@ const AdminManagement = () => {
                         >
                           {user.id}
                         </Typography>
-                      </td>
-
-                      <td className={`p-4 ${lastToFirst ? "order-3" : "order-2"}`}>
+                      ),
+                      className: "flex p-4",
+                    },
+                    {
+                      key: "name",
+                      value: (
+                        <>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {user.first_name} {user.last_name}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {user.email}
+                          </Typography>
+                        </>
+                      ),
+                      className: "p-4",
+                    },
+                    {
+                      key: "role",
+                      value: (
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {user.first_name} {user.last_name}
+                          {user.roles?.[0]?.name?.toUpperCase() || "N/A"}
                         </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user.email}
-                        </Typography>
-                      </td>
-                      {/* Role */}
-                      <td className={`p-4 ${lastToFirst ? "order-4" : "order-3"}`}>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {user.roles
-                            ? user.roles[0].name.toUpperCase()
-                            : "N/A"}
-                        </Typography>
-                      </td>
-
-                      {/* Permissions */}
-                      <td className={`max-w-60 ${lastToFirst ? "order-5" : "order-4"}`}>
+                      ),
+                      className: "p-4",
+                    },
+                    {
+                      key: "permissions",
+                      value: (
                         <div
                           className="flex cursor-pointer flex-wrap rounded font-normal"
                           onClick={() => handleOpenView(user.id)}
                         >
-                          {user.all_permissions &&
-                          user.all_permissions.length > 0 ? (
+                          {user.all_permissions?.length > 0 ? (
                             <>
                               {user.all_permissions
                                 .slice(0, 3)
@@ -306,7 +304,7 @@ const AdminManagement = () => {
                                 ))}
                               {user.all_permissions.length > 3 && (
                                 <Tooltip
-                                  content="view more"
+                                  content="View more"
                                   placement="right-end"
                                 >
                                   <Typography
@@ -321,10 +319,13 @@ const AdminManagement = () => {
                           ) : (
                             "No Permissions"
                           )}
-                        </div>{" "}
-                      </td>
-
-                      <td className={`p-4 ${lastToFirst ? "order-6" : "order-5"}`}>
+                        </div>
+                      ),
+                      className: "max-w-60",
+                    },
+                    {
+                      key: "created_at",
+                      value: (
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -336,9 +337,12 @@ const AdminManagement = () => {
                             day: "numeric",
                           })}
                         </Typography>
-                      </td>
-
-                      <td className={`p-4 ${lastToFirst ? "order-1" : "order-6"}`}>
+                      ),
+                      className: "p-4",
+                    },
+                    {
+                      key: "actions",
+                      value: (
                         <Tooltip content="Edit User">
                           <Menu>
                             <MenuHandler>
@@ -356,7 +360,28 @@ const AdminManagement = () => {
                             </MenuList>
                           </Menu>
                         </Tooltip>
-                      </td>
+                      ),
+                      className: "p-4",
+                    },
+                  ];
+                  
+                  const displayColumns = isColumnReversed
+                    ? (() => {
+                      const reversedCol = [columns[columns.length-1], ...columns.slice(0,-1)]
+                      return reversedCol;
+                    })(): columns;
+              
+
+                  return (
+                    <tr
+                      key={user.id}
+                      className="border-b border-gray-300 hover:bg-gray-100"
+                    >
+                      {displayColumns.map((col) => (
+                        <td key={col.key} className={col.className}>
+                          {col.value}
+                        </td>
+                      ))}
                     </tr>
                   );
                 })}
