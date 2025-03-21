@@ -51,7 +51,7 @@ const RolePermissionTable = () => {
     fetchPermissions();
   }, []);
 
-  const { user, fetchUser} = useStateContext();
+  const { user, fetchUser } = useStateContext();
 
   const canAddPermission =
     user?.all_permissions?.includes("can add permission") || false;
@@ -274,16 +274,9 @@ const RolePermissionTable = () => {
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
-
-                                    
                                   )}
-                                  className="h-full w-full checked:bg-white"
-                                  circleProps={{ className: role.permissions?.some(
-                                    (p) => p.name === perm.name
-                                  ) ? "bg-purple-800 border-none" : "" }}
-                                  containerProps={{className:"border  " }}
-
-                                  
+                                  className="h-full w-full"
+                                  color="green"
                                 />
                               </div>
                             </td>
