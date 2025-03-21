@@ -205,6 +205,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     setLoading(true);
 
     if (open && userId) {
+      setLoading(true)
       fetchUserDetails();
     } else {
       setFirstName("");
