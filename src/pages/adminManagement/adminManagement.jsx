@@ -43,6 +43,7 @@ const AdminManagement = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [openView, setOpenView] = useState(false);
+  const [lastToFirst, setLastToFirst] = useState(false);
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -182,6 +183,13 @@ const AdminManagement = () => {
                 value={searchTerm}
                 onChange={(e) => handleSearchInput(e)}
               />
+              <button
+                onClick={() => setLastToFirst(!lastToFirst)}
+                className="mb-4 rounded bg-blue-500 px-4 py-2 text-white"
+              >
+                Move Last Column to First
+              </button>
+              ;
             </div>
           </div>
         </CardHeader>
@@ -192,7 +200,7 @@ const AdminManagement = () => {
           ) : (
             <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
-                <tr>
+                <tr className="bg-gray-200 grid grid-cols-6">
                   {TABLE_HEAD.map((head, index) => (
                     <th
                       key={head}
@@ -202,6 +210,10 @@ const AdminManagement = () => {
                         index === TABLE_HEAD.length - 1
                           ? "rounded-tr-md rounded-br-md"
                           : ""
+                      } ${
+                        index === TABLE_HEAD.length - 1
+                          ? "order-1"
+                          : `order-${index + 2}`
                       }`}
                     >
                       <Typography
@@ -224,10 +236,10 @@ const AdminManagement = () => {
                   // );
                   return (
                     <tr
-                      className="border-b border-gray-300 hover:bg-gray-100"
+                      className="border-b border-gray-300 hover:bg-gray-100 grid grid-cols-6"
                       key={user.id}
                     >
-                      <td className="flex p-4">
+                     <td className={`p-4 ${lastToFirst ? "order-2" : "order-1"}`}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -237,7 +249,7 @@ const AdminManagement = () => {
                         </Typography>
                       </td>
 
-                      <td className="p-4">
+                      <td className={`p-4 ${lastToFirst ? "order-3" : "order-2"}`}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -254,7 +266,7 @@ const AdminManagement = () => {
                         </Typography>
                       </td>
                       {/* Role */}
-                      <td className="p-4">
+                      <td className={`p-4 ${lastToFirst ? "order-4" : "order-3"}`}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -267,8 +279,11 @@ const AdminManagement = () => {
                       </td>
 
                       {/* Permissions */}
-                      <td className="max-w-60">
-                        <div className="flex cursor-pointer flex-wrap rounded font-normal" onClick={() =>handleOpenView(user.id)}>
+                      <td className={`max-w-60 ${lastToFirst ? "order-5" : "order-4"}`}>
+                        <div
+                          className="flex cursor-pointer flex-wrap rounded font-normal"
+                          onClick={() => handleOpenView(user.id)}
+                        >
                           {user.all_permissions &&
                           user.all_permissions.length > 0 ? (
                             <>
@@ -290,13 +305,16 @@ const AdminManagement = () => {
                                   </span>
                                 ))}
                               {user.all_permissions.length > 3 && (
-                                <Tooltip content='view more'  placement='right-end'>
-                                <Typography
-                                  variant="h4"
-                                  className="text-gray-400 hover:text-gray-600"
+                                <Tooltip
+                                  content="view more"
+                                  placement="right-end"
                                 >
-                                  ...
-                                </Typography>
+                                  <Typography
+                                    variant="h4"
+                                    className="text-gray-400 hover:text-gray-600"
+                                  >
+                                    ...
+                                  </Typography>
                                 </Tooltip>
                               )}
                             </>
@@ -306,7 +324,7 @@ const AdminManagement = () => {
                         </div>{" "}
                       </td>
 
-                      <td className="p-4">
+                      <td className={`p-4 ${lastToFirst ? "order-6" : "order-5"}`}>
                         <Typography
                           variant="small"
                           color="blue-gray"
@@ -320,7 +338,7 @@ const AdminManagement = () => {
                         </Typography>
                       </td>
 
-                      <td className="p-4">
+                      <td className={`p-4 ${lastToFirst ? "order-1" : "order-6"}`}>
                         <Tooltip content="Edit User">
                           <Menu>
                             <MenuHandler>
