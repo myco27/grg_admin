@@ -24,6 +24,8 @@ const Sidebar = () => {
   const canViewRolesAndPermissionsModule =
     user?.all_permissions?.includes("view roles and permissions module") ||
     false;
+  const canViewApplicationsModule =
+    user?.all_permissions?.includes("view application module") || false;
 
   return (
     <>
@@ -146,6 +148,27 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
+              {/* Applications */}
+              {canViewApplicationsModule && (
+                <Link to="/applications">
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] ${sidebarCollapsed && !sidebarHovered ? 'w-[40px] px-2' : 'w-[220px]'} ${location.pathname === '/applications' ? '!bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LockKeyhole className={`h-5 w-5 text-white ${location.pathname === '/applications' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <div className={`${sidebarCollapsed && !sidebarHovered ? 'absolute left-[-9999px]' : ''} transition-all duration-300`}>
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Applications
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
             </List>
           </div>
         </div>
@@ -178,7 +201,7 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <div className="mx-5 border-b-2 border-white border-opacity-30 py-2">
+          <div className="mx-5 border-b-2 border-white border-opacity-30 py-2">test
             <List className="p-0">
               {/* Dashboard */}
               {canViewDashboardModule && (
@@ -255,6 +278,25 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
+              {/* Applications */}
+             
+                <Link to="/applications" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem 
+                    className={`hover:bg-[#3A1066] w-[220px] ${location.pathname === '/applications' ? 'bg-[#3A1066]' : ''}`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LockKeyhole className={`h-5 w-5 text-white ${location.pathname === '/applications' ? '' : ''}`} />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="font-normal text-sm"
+                    >
+                      Applications
+                    </Typography>
+                  </ListItem>
+                </Link>
+              
             </List>
           </div>
         </div>
