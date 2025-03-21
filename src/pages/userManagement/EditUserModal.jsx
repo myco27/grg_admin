@@ -490,7 +490,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       icon: "",
       content: (
         <>
-          <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
+          {activeTab !== "info"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
             {Object.entries(ridersAttachments).map(([key, value]) => (
               <div key={key} className="flex flex-col items-center gap-2">
                 <input
@@ -551,7 +551,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 )}
               </div>
             ))}
-          </div>
+          </div>):(<div></div>)}
 
           <Dialog
           aria-hidden='true'
@@ -683,7 +683,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
-              orientation="vertical"
+              orientation="horizontal"
             >
               <div className="flex w-full flex-col sm:flex-row">
                 
@@ -722,7 +722,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
-              orientation="vertical"
+              orientation="horizontal"
             >
               <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
@@ -759,7 +759,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
            <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
-              orientation="vertical"
+              orientation="horizontal"
             >
               <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
@@ -795,7 +795,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
-              orientation="vertical"
+              orientation="horizontal"
             >
               <div className="flex w-full flex-col sm:flex-row">
                 <Sidebar
