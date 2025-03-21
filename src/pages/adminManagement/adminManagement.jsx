@@ -64,13 +64,17 @@ const AdminManagement = () => {
   ];
 
   const reversedThead = isColumnReversed
-    ? [...TABLE_HEAD].reverse()
-    : TABLE_HEAD;
+  ? (() => {
+      const reversedHead = [TABLE_HEAD[TABLE_HEAD.length-1], ...TABLE_HEAD.slice(0,-1)]
+      return reversedHead;
+    })()
+  : TABLE_HEAD;
+
 
   const fetchUsers = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
-
+      
       const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
           search: debounceSearch,
@@ -172,21 +176,13 @@ const AdminManagement = () => {
             </div>
           </div>
           <div className="rounded-none md:flex-row">
-            <div className="float-end m-1 flex flex-row md:w-72">
-              <IconButton
-                variant="text"
-                onClick={() => setisRowReversed(!isRowReversed)}
-              >
-                {" "}
-                <ArrowDownUp />
-              </IconButton>
-              <IconButton
-                variant="text"
-                onClick={() => setisColumnReversed(!isColumnReversed)}
-              >
-                {" "}
-                <ArrowLeftRight />
-              </IconButton>
+            <div className="float-end m-1 flex flex-row gap-1 md:w-72">
+              <button onClick={() => setisRowReversed(!isRowReversed)}>
+                <ArrowDownUp className="text-gray-500 hover:text-gray-700" />
+              </button>
+              <button onClick={() => setisColumnReversed(!isColumnReversed)}>
+                <ArrowLeftRight className="text-gray-500 hover:text-gray-700"/>
+              </button>
               <Input
                 label="Search User"
                 icon={
@@ -236,7 +232,7 @@ const AdminManagement = () => {
               </thead>
 
               <tbody>
-              {(isRowReversed ? [...users].reverse() : users).map((user) => {
+                {(isRowReversed ? [...users].reverse() : users).map((user) => {
                   const columns = [
                     {
                       key: "id",
@@ -374,10 +370,16 @@ const AdminManagement = () => {
                       className: "p-4",
                     },
                   ];
-
+                  
                   const displayColumns = isColumnReversed
-                    ? [...columns].reverse()
-                    : columns;
+                    ? (() => {
+                      const reversedCol = [columns[columns.length-1], ...columns.slice(0,-1)]
+                      return reversedCol;
+                    })(): columns;
+                  
+                  console.log(displayColumns);
+                  
+              
 
                   return (
                     <tr

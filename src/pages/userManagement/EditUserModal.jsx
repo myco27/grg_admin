@@ -14,12 +14,14 @@ import {
   DialogHeader,
   DialogFooter,
   IconButton,
+  Spinner,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon, X } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
+import Loading from "../../components/layout/Loading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [previewImage, setPreviewImage] = useState("");
@@ -400,7 +402,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       ),
     },
   ];
-
   const riderTabs = [
     {
       value: "info",
@@ -489,7 +490,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       icon: "",
       content: (
         <>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
             {Object.entries(ridersAttachments).map(([key, value]) => (
               <div key={key} className="flex flex-col items-center gap-2">
                 <input
@@ -584,7 +585,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const centralTabs = [
     {
       value: activeTab,
-      label: "Central/Restaurant User",
+      label: "User Information",
       icon: "",
       content: (
         <>
@@ -674,9 +675,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   return (
     <>
-      {userType === "rider" ? (
+     {userType === "rider" && (
         <form onSubmit={handleSubmit}>
-          <Base open={open} handleOpen={handleOpen} size="lg">
+          <Base open={open} handleOpen={handleOpen} size="lg" >
             <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
@@ -707,10 +708,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             </Tabs>
           </Base>
         </form>
-      ) : (
-        <div></div>
-      )}
-
+   )}
       {userType === "operator" && (
         <form onSubmit={handleSubmit}>
           <Base open={open} handleOpen={handleOpen} size="lg">
@@ -733,7 +731,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     }
                     onClose={handleOpen}
                   />
-                  <Body tabs={operatorTabs} activeTab={activeTab} />
+
+             <Body tabs={operatorTabs} activeTab={activeTab} />
                   <Footer
                     loading={loading}
                     onCancel={handleOpen}
@@ -749,7 +748,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       {userType === "customer" && (
         <form onSubmit={handleSubmit}>
           <Base open={open} handleOpen={handleOpen} size="lg">
-            <Tabs
+           <Tabs
               value={activeTab}
               className="flex w-full rounded-lg"
               orientation="vertical"

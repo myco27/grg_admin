@@ -280,7 +280,7 @@ const RolePermissionTable = () => {
                                   className="h-full w-full checked:bg-white"
                                   circleProps={{ className: role.permissions?.some(
                                     (p) => p.name === perm.name
-                                  ) ? "bg-purple-800 border-none" : "" }}
+                                  ) ? "bg-green-500 border-none" : "" }}
                                   containerProps={{className:"border  " }}
 
                                   
