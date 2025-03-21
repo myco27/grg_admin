@@ -591,7 +591,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       icon: "",
       content: (
         <>
-          <Input
+        
+        <Input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             label="Email"
@@ -677,154 +678,72 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   return (
     <>
-     {userType === "rider" && (
-        <form onSubmit={handleSubmit}>
-          <Base open={open} handleOpen={handleOpen} size="lg" >
-            <Tabs
-              value={activeTab}
-              className="flex w-full rounded-lg"
-              orientation="horizontal"
-            >
-              <div className="flex w-full flex-col sm:flex-row">
-                
-                <Sidebar
-                className="py-5"
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  tabs={riderTabs}
-                  sidebarTitle="PROFILE"
-                />
-                
-                <div className="w-full">
-                <Header
-              
-                    title={
-                      
-                      riderTabs.find((tab) => tab.value === activeTab)?.label
-                    }
-                    onClose={handleOpen}
-                  />
-                  <Body tabs={riderTabs}  activeTab={activeTab} />
-                  <Footer
-                    loading={loading}
-                    onCancel={handleOpen}
-                    onSubmit={handleSubmit}
-                  />
-                </div>
-              </div>
-            </Tabs>
-          </Base>
-        </form>
-   )}
-      {userType === "operator" && (
-        <form onSubmit={handleSubmit}>
-          <Base open={open} handleOpen={handleOpen} size="lg">
-            <Tabs
-              value={activeTab}
-              className="flex w-full rounded-lg"
-              orientation="horizontal"
-            >
-              <div className="flex w-full flex-col sm:flex-row">
-                <Sidebar
-                className="py-5"
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  tabs={operatorTabs}
-                  sidebarTitle="PROFILE"
-                />
-                <div className="w-full">
-                  <Header
-                    title={
-                      operatorTabs.find((tab) => tab.value === activeTab)?.label
-                    }
-                    onClose={handleOpen}
-                  />
-
-             <Body tabs={operatorTabs} activeTab={activeTab} />
-                  <Footer
-                    loading={loading}
-                    onCancel={handleOpen}
-                    onSubmit={handleSubmit}
-                  />
-                </div>
-              </div>
-            </Tabs>
-          </Base>
-        </form>
-      )}
-
-      {userType === "customer" && (
-        <form onSubmit={handleSubmit}>
-          <Base open={open} handleOpen={handleOpen} size="lg">
-           <Tabs
-              value={activeTab}
-              className="flex w-full rounded-lg"
-              orientation="horizontal"
-            >
-              <div className="flex w-full flex-col sm:flex-row">
-                <Sidebar
-                className="py-5"
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  tabs={customerTabs}
-                  sidebarTitle="PROFILE"
-                />
-                <div className="w-full">
-                  <Header
-                    title={
-                      customerTabs.find((tab) => tab.value === activeTab)?.label
-                    }
-                    onClose={handleOpen}
-                  />
-                  <Body tabs={customerTabs} activeTab={activeTab} />
-                  <Footer
-                    loading={loading}
-                    onCancel={handleOpen}
-                    onSubmit={handleSubmit}
-                  />
-                </div>
-              </div>
-            </Tabs>
-          </Base>
-        </form>
-      )}
-
-      {(userType === "central" || userType === "restaurant") && (
-        <form onSubmit={handleSubmit}>
-          <Base open={open} handleOpen={handleOpen} size="lg">
-            <Tabs
-              value={activeTab}
-              className="flex w-full rounded-lg"
-              orientation="horizontal"
-            >
-              <div className="flex w-full flex-col sm:flex-row">
-                <Sidebar
-                className="py-5"
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  tabs={centralTabs}
-                  sidebarTitle="PROFILE"
-                />
-                <div className="w-full">
-                  <Header
-                    title={
-                      customerTabs.find((tab) => tab.value === activeTab)?.label
-                    }
-                    onClose={handleOpen}
-                  />
-                  <Body tabs={centralTabs} activeTab={activeTab} />
-                  <Footer
-                    loading={loading}
-                    onCancel={handleOpen}
-                    onSubmit={handleSubmit}
-                  />
-                </div>
-              </div>
-            </Tabs>
-          </Base>
-        </form>
-      )}
-    </>
+  {loading ? (
+    <div className="flex h-[50vh] items-center justify-center">
+      <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
+    </div>
+  ) : (
+    <form onSubmit={handleSubmit}>
+      <Base open={open} handleOpen={handleOpen} size="lg">
+        <Tabs
+          value={activeTab}
+          className="flex w-full rounded-lg"
+          orientation="horizontal"
+        >
+          <div className="flex w-full flex-col sm:flex-row">
+            <Sidebar
+              className="py-5"
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              tabs={
+                userType === "rider"
+                  ? riderTabs
+                  : userType === "operator"
+                  ? operatorTabs
+                  : userType === "customer"
+                  ? customerTabs
+                  : centralTabs
+              }
+              sidebarTitle="PROFILE"
+            />
+            <div className="w-full">
+              <Header
+                title={
+                  (userType === "rider"
+                    ? riderTabs
+                    : userType === "operator"
+                    ? operatorTabs
+                    : userType === "customer"
+                    ? customerTabs
+                    : centralTabs
+                  ).find((tab) => tab.value === activeTab)?.label
+                }
+                onClose={handleOpen}
+              />
+              <Body
+                tabs={
+                  userType === "rider"
+                    ? riderTabs
+                    : userType === "operator"
+                    ? operatorTabs
+                    : userType === "customer"
+                    ? customerTabs
+                    : centralTabs
+                }
+                activeTab={activeTab}
+              />
+              <Footer
+                loading={loading}
+                onCancel={handleOpen}
+                onSubmit={handleSubmit}
+              />
+            </div>
+          </div>
+        </Tabs>
+      </Base>
+    </form>
+  )}
+</>
   );
 };
 
