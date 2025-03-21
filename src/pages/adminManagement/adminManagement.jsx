@@ -177,9 +177,6 @@ const AdminManagement = () => {
           </div>
           <div className="rounded-none md:flex-row">
             <div className="float-end m-1 flex flex-row gap-1 md:w-72">
-              <button onClick={() => setisRowReversed(!isRowReversed)}>
-                <ArrowDownUp className="text-gray-500 hover:text-gray-700" />
-              </button>
               <button onClick={() => setisColumnReversed(!isColumnReversed)}>
                 <ArrowLeftRight className="text-gray-500 hover:text-gray-700"/>
               </button>
@@ -232,7 +229,7 @@ const AdminManagement = () => {
               </thead>
 
               <tbody>
-                {(isRowReversed ? [...users].reverse() : users).map((user) => {
+                {users.map((user) => {
                   const columns = [
                     {
                       key: "id",
@@ -376,9 +373,6 @@ const AdminManagement = () => {
                       const reversedCol = [columns[columns.length-1], ...columns.slice(0,-1)]
                       return reversedCol;
                     })(): columns;
-                  
-                  console.log(displayColumns);
-                  
               
 
                   return (
