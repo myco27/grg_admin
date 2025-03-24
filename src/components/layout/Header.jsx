@@ -15,6 +15,7 @@ import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
 import ProfileModal from "../Profile/ProfileModal";
+import ConfirmationDialog from "../ConfirmationDialog";
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,14 +24,15 @@ export default function Header() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const { 
-    user, 
-    setUser, 
-    setToken, 
-    sidebarCollapsed, 
+  const [loading, setLoading] = useState(false);
+  const {
+    user,
+    setUser,
+    setToken,
+    sidebarCollapsed,
     setSidebarCollapsed,
     mobileMenuOpen,
-    setMobileMenuOpen
+    setMobileMenuOpen,
   } = useStateContext();
 
   const handleOpen = () => {
@@ -56,15 +58,16 @@ export default function Header() {
   }, [user, setUser, setToken, showAlert, navigate]);
 
   const handleLogoClick = () => {
-    navigate('/user-management');
+    navigate("/user-management");
   };
 
   const handleLogout = async () => {
+    setLoading(true);
     try {
       const response = await axiosClient.post("/admin/logout");
       if (response.status === 204) {
         localStorage.removeItem("ACCESS_TOKEN");
-        localStorage.removeItem("USER"); 
+        localStorage.removeItem("USER");
 
         setUser(null);
         setToken(null);
@@ -76,6 +79,8 @@ export default function Header() {
         "An error occurred while logging out. Please try again.",
         "error"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,7 +92,7 @@ export default function Header() {
     // On desktop, toggle the sidebar collapse state
     if (window.innerWidth >= 768) {
       setSidebarCollapsed(!sidebarCollapsed);
-    } 
+    }
     // On mobile, toggle the mobile menu
     else {
       setMobileMenuOpen(!mobileMenuOpen);
@@ -97,23 +102,28 @@ export default function Header() {
   // Get page title based on current route
   const getPageTitle = () => {
     switch (location.pathname) {
-      case '/dashboard':
-        return 'Dashboard';
-      case '/user-management':
-        return 'User Management';
-      case '/admin-management':
-        return 'Admin Management';
-      case '/roles-and-permissions':
-        return 'Roles and Permissions';
+      case "/dashboard":
+        return "Dashboard";
+      case "/user-management":
+        return "User Management";
+      case "/admin-management":
+        return "Admin Management";
+      case "/roles-and-permissions":
+        return "Roles and Permissions";
       default:
-        return 'Dashboard';
+        return "Dashboard";
     }
   };
 
   return (
     <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm py-1 flex flex-row justify-between items-center">
       <div className="flex items-center gap-2">
-        <IconButton variant="text" size="lg" onClick={toggleSidebar} className="z-10">
+        <IconButton
+          variant="text"
+          size="lg"
+          onClick={toggleSidebar}
+          className="z-10"
+        >
           <MenuIcon className="h-6 w-6 text-white" />
         </IconButton>
         <Typography color="white" className="font-medium text-nowrap">
@@ -129,7 +139,11 @@ export default function Header() {
               className="flex items-center gap-2 p-2 normal-case"
             >
               <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">  {user?.first_name?.[0]}{user?.last_name?.[0]}</span>
+                <span className="text-blue-600 font-bold text-lg">
+                  {" "}
+                  {user?.first_name?.[0]}
+                  {user?.last_name?.[0]}
+                </span>
               </div>
               <div className="hidden sm:flex flex-col items-start">
                 <Typography color="white" className="font-medium">
@@ -158,18 +172,27 @@ export default function Header() {
             </MenuItem>
             <MenuItem
               className="flex items-center gap-2 text-red-500"
-              onClick={handleLogout}
+              onClick={handleOpen}
             >
               <LogOut className="h-4 w-4" /> Sign Out
             </MenuItem>
           </MenuList>
         </Menu>
       </div>
-      <ProfileModal 
-      open={profileOpen} 
-      handleOpen={handleProfileOpen} 
-      userId={selectedUserId} 
-      userType={selectedUser} 
+      <ProfileModal
+        open={profileOpen}
+        handleOpen={handleProfileOpen}
+        userId={selectedUserId}
+        userType={selectedUser}
+      />
+
+      {/* CONFIRMATION DIALOG BOX */}
+      <ConfirmationDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        onConfirm={handleLogout}
+        isLoading={loading}
+        message={"Are you sure you want to log out?"}
       />
     </div>
   );
