@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
-import {
-  Input,
-  Tabs,
-  Typography,
-} from "@material-tailwind/react";
+import { Input, Tabs, Typography } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
-import { UserRoundCog, LockKeyhole } from 'lucide-react';
+import { UserRoundCog, LockKeyhole } from "lucide-react";
 import { Base, Header, Body, Footer, Sidebar } from "../Modal";
 import { useStateContext } from "../../contexts/contextProvider";
-
 
 const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [passwordError, setPasswordError] = useState(false);
@@ -32,29 +27,32 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const changePassword = async (event) => {
     event.preventDefault();
     try {
-      const response = await axiosClient.post(`/admin/users/update-password/${userId}`, {
-        old_password: password,
-        new_password: newPassword,
-        new_password_confirmation: confirmPassword,
-      });
+      const response = await axiosClient.post(
+        `/admin/users/update-password/${userId}`,
+        {
+          old_password: password,
+          new_password: newPassword,
+          new_password_confirmation: confirmPassword,
+        }
+      );
       if (response.status === 200) {
         showAlert("Password updated successfully!", "success");
         handleOpen();
       }
     } catch (error) {
-      if (error.response?.data?.validation_error) {
-        Object.values(error.response.data.validation_error)
-          .flat()
-          .forEach((errorMessage) => showAlert(errorMessage, "error"));
-      } else if (error.response?.data?.error_message == "Old password is incorrect!") {
-        setPasswordError(true); // Set the error state to true
-        setPasswordErrorMessage(error.response?.data?.error_message); // error message
+      if (error.response?.data?.errors) {
+        if (typeof error.response.data.errors === "object") {
+          Object.values(error.response.data.errors)
+            .flat()
+            .forEach((errorMessage) => showAlert(errorMessage, "error"));
+        } else {
+          showAlert(error.response.data.errors, "error");
+        }
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
-      
     }
-  }
+  };
 
   // const fetchUserDetails = async () => {
   //   try {
@@ -118,16 +116,14 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const handleSubmit = (event) => {
-  event.preventDefault();
-  setLoading(true);
-  if (activeTab === "security") {
-    changePassword(event);
-  } else {
-    updateUser();  // Only if updating user details
-  }
-};
-
-
+    event.preventDefault();
+    setLoading(true);
+    if (activeTab === "security") {
+      changePassword(event);
+    } else {
+      updateUser(); // Only if updating user details
+    }
+  };
 
   // useEffect(() => {
   //   setLoading(true);
@@ -143,17 +139,17 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   //     setBusinessContactNumber("");
   //     setPassword("");
   //     setConfirmPassword("");
-  //     setPasswordVisibility({ 
-  //       password: false, 
+  //     setPasswordVisibility({
+  //       password: false,
   //       newPassword: false,
-  //       confirmPassword: false 
+  //       confirmPassword: false
   //     });
   //   }
   //   setLoading(false);
   // }, [open, userId]);
 
   // Define tabs for the sidebar
-  
+
   const tabs = [
     {
       value: "basic_setting",
@@ -162,12 +158,21 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       content: (
         <>
           <div className="border-b border-gray-300 pb-2">
-            <Typography variant="small" className="text-xs font-semibold">Photo</Typography>
+            <Typography variant="small" className="text-xs font-semibold">
+              Photo
+            </Typography>
             <div className="flex items-center py-4 gap-5">
               <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center"></div>
               <div>
-                <Typography variant="small" className="text-[10px] text-gray-500">JPG or PNG. Max size of 800K</Typography>
-                <button className="text-[10px] text-white py-1 px-2 bg-primary rounded">Choose File</button>
+                <Typography
+                  variant="small"
+                  className="text-[10px] text-gray-500"
+                >
+                  JPG or PNG. Max size of 800K
+                </Typography>
+                <button className="text-[10px] text-white py-1 px-2 bg-primary rounded">
+                  Choose File
+                </button>
               </div>
             </div>
           </div>
@@ -204,7 +209,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             />
           </div>
         </>
-      )
+      ),
     },
     {
       value: "security",
@@ -242,7 +247,13 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               </button>
             </div>
             {passwordError && (
-              <Typography id="current-password-error" variant="small" className="text-xs text-red-500 font-semibold pb-2">{passwordErrorMessage}</Typography>
+              <Typography
+                id="current-password-error"
+                variant="small"
+                className="text-xs text-red-500 font-semibold pb-2"
+              >
+                {passwordErrorMessage}
+              </Typography>
             )}
 
             <div className="py-2">
@@ -267,8 +278,12 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                   )}
                 </button>
               </div>
-              <Typography variant="small" className="text-xs text-gray-500 pt-2">
-                Your password must be at least 8 characters and should include a combination of numbers, letters and special characters (!$@%).
+              <Typography
+                variant="small"
+                className="text-xs text-gray-500 pt-2"
+              >
+                Your password must be at least 8 characters and should include a
+                combination of numbers, letters and special characters (!$@%).
               </Typography>
             </div>
 
@@ -295,28 +310,37 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             </div>
           </form>
         </>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <form onSubmit={handleSubmit}>
       <Base open={open} handleOpen={handleOpen} size="lg">
-        <Tabs value={activeTab} className="w-full flex rounded-lg" orientation="vertical">      
+        <Tabs
+          value={activeTab}
+          className="w-full flex rounded-lg"
+          orientation="vertical"
+        >
           <div className="flex w-full">
-            <Sidebar 
-              activeTab={activeTab} 
-              setActiveTab={setActiveTab} 
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
               tabs={tabs}
-              sidebarTitle="PROFILE" 
+              sidebarTitle="PROFILE"
             />
             <div className="w-full">
-              <Header title={tabs.find(tab => tab.value === activeTab)?.label} onClose={handleOpen} />
+              <Header
+                title={tabs.find((tab) => tab.value === activeTab)?.label}
+                onClose={handleOpen}
+              />
               <Body tabs={tabs} activeTab={activeTab} />
-              <Footer 
-                loading={loading} 
-                onCancel={handleOpen} 
-                onSubmit={tabs.find(tab => tab.value === activeTab)?.handleSubmit}
+              <Footer
+                loading={loading}
+                onCancel={handleOpen}
+                onSubmit={
+                  tabs.find((tab) => tab.value === activeTab)?.handleSubmit
+                }
               />
             </div>
           </div>
