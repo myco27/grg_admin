@@ -8,7 +8,12 @@ import { UserRoundCog, LockKeyhole } from "lucide-react";
 import { Base, Header, Body, Footer, Sidebar } from "../Modal";
 import { useStateContext } from "../../contexts/contextProvider";
 
-const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
+const ProfileModal = ({ open, handleOpen, userId, userType }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +27,10 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   });
   const { showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState("basic_setting");
-  const { user } = useStateContext();
+  const { user, fetchUsers } = useStateContext();
 
   const changePassword = async (event) => {
+    setLoading(true);
     event.preventDefault();
     try {
       const response = await axiosClient.post(
@@ -51,62 +57,56 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
-  // const fetchUserDetails = async () => {
-  //   try {
-  //     const response = await axiosClient.get(`/admin/users/${userId}`);
-  //     if (response.status === 200) {
-  //       setFirstName(response.data.data.first_name);
-  //       setLastName(response.data.data.last_name);
-  //       setEmail(response.data.data.email);
-  //       setMobileNumber(response.data.data.mobile_number);
-  //       setLocalSupportNumber(response.data.data.local_support_number);
-  //       setBusinessLandlineNumber(response.data.data.store?.phone ?? "");
-  //       setBusinessContactNumber(response.data.data.store?.mobile ?? "");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user details:", error);
-  //   }
-  // };
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axiosClient.get(`/admin/users/${userId}/roles`);
 
-  // const updateUser = async () => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("first_name", firstName);
-  //     formData.append("last_name", lastName);
-  //     formData.append("email", email);
-  //     formData.append("mobile_number", mobileNumber);
-  //     formData.append("local_support_number", localSupportNumber);
-  //     formData.append("business_landline_number", businessLandlineNumber);
-  //     formData.append("business_contact_number", businessContactNumber);
-  //     if (password) formData.append("password", password);
-  //     if (confirmPassword) formData.append("password_confirmation", confirmPassword);
+      if (response.status === 200) {
+        setFirstName(response.data.user.first_name);
+        setLastName(response.data.user.last_name);
+        setEmail(response.data.user.email);
+        setMobileNumber(response.data.user.mobile_number);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
-  //     const response = await axiosClient.post(
-  //       `/admin/users/update/${userId}`,
-  //       formData,
-  //       {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       }
-  //     );
+  const updateUser = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axiosClient.post(
+        `/admin/users/update-profile/${userId}`,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          mobile_number: mobileNumber,
+        }
+      );
 
-  //     if (response.status === 202) {
-  //       showAlert("User updated successfully!", "success");
-  //       fetchUsers();
-  //       handleOpen();
-  //     }
-  //   } catch (error) {
-  //     if (error.response?.data?.errors) {
-  //       Object.values(error.response.data.errors)
-  //         .flat()
-  //         .forEach((errorMessage) => showAlert(errorMessage, "error"));
-  //     } else {
-  //       showAlert("An error occurred. Please try again.", "error");
-  //     }
-  //   }
-  // };
+      if (response.status === 200) {
+        showAlert(response.data.message, "success");
+        handleOpen();
+      }
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleVisibility = (field) => {
     setPasswordVisibility((prevState) => ({
@@ -121,32 +121,16 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     if (activeTab === "security") {
       changePassword(event);
     } else {
-      updateUser(); // Only if updating user details
+      updateUser(event);
     }
   };
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   if (open && userId) {
-  //     fetchUserDetails();
-  //   } else {
-  //     setFirstName("");
-  //     setLastName("");
-  //     setEmail("");
-  //     setMobileNumber("");
-  //     setLocalSupportNumber("");
-  //     setBusinessLandlineNumber("");
-  //     setBusinessContactNumber("");
-  //     setPassword("");
-  //     setConfirmPassword("");
-  //     setPasswordVisibility({
-  //       password: false,
-  //       newPassword: false,
-  //       confirmPassword: false
-  //     });
-  //   }
-  //   setLoading(false);
-  // }, [open, userId]);
+  useEffect(() => {
+    if (open) {
+      fetchUserDetails();
+    }
+    
+  }, [open, userId]);
 
   // Define tabs for the sidebar
 
@@ -180,19 +164,19 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Input
               label="First Name"
               type="text"
-              value={user.first_name}
+              value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <Input
               label="Last Name"
               type="text"
-              value={user.last_name}
+              value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
           <div className="flex gap-2 py-4 border-b border-gray-300">
             <Input
-              value={user.email}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
               label="Email"
               type="email"
@@ -203,7 +187,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             <Input
               label="Mobile Number"
               type="text"
-              value=""
+              value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               autoComplete="tel"
             />
@@ -338,9 +322,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               <Footer
                 loading={loading}
                 onCancel={handleOpen}
-                onSubmit={
-                  tabs.find((tab) => tab.value === activeTab)?.handleSubmit
-                }
+                onSubmit={handleSubmit}
               />
             </div>
           </div>
