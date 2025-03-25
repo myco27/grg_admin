@@ -123,10 +123,6 @@ const UserManagementPage = () => {
     });
   };
 
-  const handleOpen = () => {
-    setOpen(!open);
-  };
-
   const handleEditOpen = (userId, userType) => {
     setSelectedUserId(userId);
     setSelectedUser(userType);
@@ -160,32 +156,32 @@ const UserManagementPage = () => {
     {
       label: "All",
       value: "",
-      icon: <LayoutDashboard className="w-4 h-4" />,
+      icon: <LayoutDashboard className="h-4 w-4" />,
     },
     {
       label: "Area Manager",
       value: "operator",
-      icon: <LandPlot className="w-4 h-4" />,
+      icon: <LandPlot className="h-4 w-4" />,
     },
     {
       label: "Central",
       value: "central",
-      icon: <Store className="w-4 h-4" />,
+      icon: <Store className="h-4 w-4" />,
     },
     {
       label: "Restaurant",
       value: "restaurant",
-      icon: <Store className="w-4 h-4" />,
+      icon: <Store className="h-4 w-4" />,
     },
     {
       label: "Rider",
       value: "rider",
-      icon: <Bike className="w-4 h-4" />,
+      icon: <Bike className="h-4 w-4" />,
     },
     {
       label: "Customer",
       value: "customer",
-      icon: <UserRound className="w-4 h-4" />,
+      icon: <UserRound className="h-4 w-4" />,
     },
   ];
 
@@ -216,9 +212,9 @@ const UserManagementPage = () => {
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
               <Tabs
                 value=""
-                className="rounded-md w-full md:w-fit relative overflow-x-auto xl:overflow-visible"
+                className="relative w-full overflow-x-auto rounded-md md:w-fit xl:overflow-visible"
               >
-                <TabsHeader className="bg-headerBg gap-x-4">
+                <TabsHeader className="gap-x-4 bg-headerBg">
                   {TABS.map(({ label, value, icon }) => (
                     <Tab
                       key={value}
@@ -226,7 +222,7 @@ const UserManagementPage = () => {
                       value={value}
                       onClick={() => handleClickStatus(value)}
                     >
-                      <div className="flex items-center gap-2 text-nowrap text-sm font-medium text-gray-800 px-4">
+                      <div className="flex items-center gap-2 text-nowrap px-4 text-sm font-medium text-gray-800">
                         {icon}
                         {label}
                       </div>
@@ -259,11 +255,11 @@ const UserManagementPage = () => {
             </div>
           </CardHeader>
 
-          <CardBody className="p-4 overflow-scroll">
+          <CardBody className="overflow-scroll p-4">
             {pagination.isLoading ? (
               <Loading />
             ) : (
-              <table className="rounded-md w-full min-w-max table-auto text-left">
+              <table className="w-full min-w-max table-auto rounded-md text-left">
                 <thead>
                   <tr>
                     {tableHeadOrder.map((colIndex, index) => (
