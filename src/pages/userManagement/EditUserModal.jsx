@@ -18,11 +18,10 @@ import {
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
-import { EyeIcon, Info, X } from "lucide-react";
+import { EyeIcon, X, UserRoundCog, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import Loading from "../../components/layout/Loading";
-import { PaperClipIcon } from "@heroicons/react/24/solid";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [previewImage, setPreviewImage] = useState("");
@@ -64,7 +63,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     confirmPassword: false,
   });
   const { showAlert } = useAlert();
-  const [activeTab, setActiveTab] = useState("info");
+  const [activeTab, setActiveTab] = useState("User Details");
 
   const [ridersAttachments, setRidersAttachments] = useState({
     license: null,
@@ -203,7 +202,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   useEffect(() => {
-    console.log("USE EFFECT TEST")
     setLoading(true);
 
     if (open && userId) {
@@ -239,177 +237,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     setLoading(false);
   }, [open, userId]);
 
-  const operatorTabs = [
+  const tabs = [
     {
-      value: activeTab, // Remove curly braces
-      label: "User Information",
-      icon: <Info/>,
-      content: (
-        <>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            type="email"
-            autoComplete="username"
-          />
-          <Input
-            label="First Name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <Input
-            label="Last Name"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <Input
-            label="Local Support Number"
-            type="text"
-            value={localSupportNumber}
-            autoComplete="tel"
-            onChange={(e) => setLocalSupportNumber(e.target.value)}
-          />
-
-          {/* Password Field */}
-          <div className="relative">
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Password"
-              type={passwordVisibility.password ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("password")}
-            >
-              {passwordVisibility.password ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="relative">
-            <Input
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              label="Confirm Password"
-              type={passwordVisibility.confirmPassword ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("confirmPassword")}
-            >
-              {passwordVisibility.confirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </>
-      ),
-    },
-  ];
-  const customerTabs = [
-    {
-      value: activeTab,
-      label: "Customer",
-      icon: <Info/>,
-      content: (
-        <>
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            type="email"
-            autoComplete="username"
-          />
-          <Input
-            label="First Name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <Input
-            label="Last Name"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <Input
-            label="Mobile Number"
-            type="text"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            autoComplete="tel"
-          />
-
-          {/* Password Field */}
-          <div className="relative">
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Password"
-              type={passwordVisibility.password ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("password")}
-            >
-              {passwordVisibility.password ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="relative">
-            <Input
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              label="Confirm Password"
-              type={passwordVisibility.confirmPassword ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("confirmPassword")}
-            >
-              {passwordVisibility.confirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </>
-      ),
-    },
-  ];
-  const riderTabs = [
-    {
-      value: "info",
-      label: "Information",
-      icon: <Info/>,
+      value: "User Details",
+      label: "Details",
+      icon: <UserRoundCog/>,
       content: (
         <div className="flex flex-col gap-5">
           <Input
@@ -431,14 +263,43 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
-          <Input
-            label="Mobile Number"
-            type="text"
-            value={mobileNumber}
-            onChange={(e) => setMobileNumber(e.target.value)}
-            autoComplete="tel"
-          />
-
+          
+       {userType === "rider" || userType === "customer" ?(
+       <Input
+       label="Mobile Number"
+       type="text"
+       value={mobileNumber}
+       onChange={(e) => setMobileNumber(e.target.value)}
+       autoComplete="tel"
+     />):
+     userType === "operator"? (
+      <Input
+      label="Local Support Number"
+      type="text"
+      value={localSupportNumber}
+      autoComplete="tel"
+      onChange={(e) => setLocalSupportNumber(e.target.value)}
+    />
+     ):
+     userType === "central" || userType === "restaurant" ?
+     (
+      <>
+     <Input
+     label="Business Landline Number"
+     type="text"
+     value={businessLandlineNumber}
+     onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+     autoComplete="tel"
+   />
+   <Input
+     label="Business Contact Number"
+     type="text"
+     value={businessContactNumber}
+     onChange={(e) => setBusinessContactNumber(e.target.value)}
+     autoComplete="tel"
+   />
+   </>):(<div></div>)
+       }
           {/* Password Field */}
           <div className="relative">
             <Input
@@ -487,13 +348,15 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         </div>
       ),
     },
-    {
-      value: "riders_attachment",
+    
+    
+      ...(userType === "rider"?[{
+      value: "Attachments",
       label: "Attachments",
-      icon: <PaperClipIcon/>,
+      icon: <PaperclipIcon></PaperclipIcon>,
       content: (
         <>
-          {activeTab !== "info"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
+          {activeTab !== "User Details"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
             {Object.entries(ridersAttachments).map(([key, value]) => (
               <div key={key} className="flex flex-col items-center gap-2">
                 <input
@@ -583,101 +446,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           </Dialog>
         </>
       ),
-    },
+    }]:[])
     
     
   ];
-  const centralTabs = [
-    {
-      value: activeTab,
-      label: "User Information",
-      icon: <Info/>,
-      content: (
-        <>
-        
-        <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            type="email"
-            autoComplete="username"
-          />
-          <Input
-            label="First Name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <Input
-            label="Last Name"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          <Input
-            label="Business Landline Number"
-            type="text"
-            value={businessLandlineNumber}
-            onChange={(e) => setBusinessLandlineNumber(e.target.value)}
-            autoComplete="tel"
-          />
-          <Input
-            label="Business Contact Number"
-            type="text"
-            value={businessContactNumber}
-            onChange={(e) => setBusinessContactNumber(e.target.value)}
-            autoComplete="tel"
-          />
 
-          {/* Password Field */}
-          <div className="relative">
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Password"
-              type={passwordVisibility.password ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("password")}
-            >
-              {passwordVisibility.password ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="relative">
-            <Input
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              label="Confirm Password"
-              type={passwordVisibility.confirmPassword ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("confirmPassword")}
-            >
-              {passwordVisibility.confirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </>
-      ),
-    },
-  ];
 
   return (
     <>
@@ -698,40 +471,19 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               className="py-5"
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              tabs={
-                userType === "rider"
-                  ? riderTabs
-                  : userType === "operator"
-                  ? operatorTabs
-                  : userType === "customer"
-                  ? customerTabs
-                  : centralTabs
-              }
+              tabs={tabs}
+             
               sidebarTitle="PROFILE"
             />
             <div className="w-full">
               <Header
                 title={
-                  (userType === "rider"
-                    ? riderTabs
-                    : userType === "operator"
-                    ? operatorTabs
-                    : userType === "customer"
-                    ? customerTabs
-                    : centralTabs
-                  ).find((tab) => tab.value === activeTab)?.label
+                 activeTab
                 }
                 onClose={handleOpen}
               />
               <Body
-                tabs={
-                  userType === "rider"
-                    ? riderTabs
-                    : userType === "operator"
-                    ? operatorTabs
-                    : userType === "customer"
-                    ? customerTabs
-                    : centralTabs
+                tabs={tabs
                 }
                 activeTab={activeTab}
               />
