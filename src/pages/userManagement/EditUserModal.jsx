@@ -197,6 +197,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const handleSubmit = (event) => {
+    setActiveTab("User Details")
     event.preventDefault();
     updateUser();
   };
@@ -205,7 +206,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     setLoading(true);
 
     if (open && userId) {
-      setLoading(true)
+      setLoading(true);
       fetchUserDetails();
     } else {
       setFirstName("");
@@ -241,7 +242,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: "User Details",
       label: "Details",
-      icon: <UserRoundCog/>,
+      icon: <UserRoundCog />,
       content: (
         <div className="flex flex-col gap-5">
           <Input
@@ -263,43 +264,43 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
-          
-       {userType === "rider" || userType === "customer" ?(
-       <Input
-       label="Mobile Number"
-       type="text"
-       value={mobileNumber}
-       onChange={(e) => setMobileNumber(e.target.value)}
-       autoComplete="tel"
-     />):
-     userType === "operator"? (
-      <Input
-      label="Local Support Number"
-      type="text"
-      value={localSupportNumber}
-      autoComplete="tel"
-      onChange={(e) => setLocalSupportNumber(e.target.value)}
-    />
-     ):
-     userType === "central" || userType === "restaurant" ?
-     (
-      <>
-     <Input
-     label="Business Landline Number"
-     type="text"
-     value={businessLandlineNumber}
-     onChange={(e) => setBusinessLandlineNumber(e.target.value)}
-     autoComplete="tel"
-   />
-   <Input
-     label="Business Contact Number"
-     type="text"
-     value={businessContactNumber}
-     onChange={(e) => setBusinessContactNumber(e.target.value)}
-     autoComplete="tel"
-   />
-   </>):(<div></div>)
-       }
+
+          {userType === "rider" || userType === "customer" ? (
+            <Input
+              label="Mobile Number"
+              type="text"
+              value={mobileNumber}
+              onChange={(e) => setMobileNumber(e.target.value)}
+              autoComplete="tel"
+            />
+          ) : userType === "operator" ? (
+            <Input
+              label="Local Support Number"
+              type="text"
+              value={localSupportNumber}
+              autoComplete="tel"
+              onChange={(e) => setLocalSupportNumber(e.target.value)}
+            />
+          ) : userType === "central" || userType === "restaurant" ? (
+            <>
+              <Input
+                label="Business Landline Number"
+                type="text"
+                value={businessLandlineNumber}
+                onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                autoComplete="tel"
+              />
+              <Input
+                label="Business Contact Number"
+                type="text"
+                value={businessContactNumber}
+                onChange={(e) => setBusinessContactNumber(e.target.value)}
+                autoComplete="tel"
+              />
+            </>
+          ) : (
+            <div></div>
+          )}
           {/* Password Field */}
           <div className="relative">
             <Input
@@ -348,157 +349,162 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         </div>
       ),
     },
-    
-    
-      ...(userType === "rider"?[{
-      value: "Attachments",
-      label: "Attachments",
-      icon: <PaperclipIcon></PaperclipIcon>,
-      content: (
-        <>
-          {activeTab !== "User Details"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
-            {Object.entries(ridersAttachments).map(([key, value]) => (
-              <div key={key} className="flex flex-col items-center gap-2">
-                <input
-                  type="file"
-                  id={key}
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, key)}
-                  className="hidden"
-                />
-                <label htmlFor={key}>
-                  <Typography className="text-nowrap text-sm font-semibold">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .trim()
-                      .toUpperCase()}{" "}
-                  </Typography>
-                </label>
 
-                {imagePreview[key] || value ? (
-                  <div className="flex">
-                    <div className="group relative">
-                      <Avatar
-                        src={
-                          imagePreview[key] ||
-                          `${
-                            import.meta.env.VITE_APP_IMAGE_PATH
-                          }/applicant/${value}`
-                        }
-                        alt={`${key} Preview`}
-                        className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                        variant="rounded"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <Button
-                          onClick={(e) => checkimagePreview(e, key, value)}
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          <span>View</span>
-                        </Button>
-                        <Button
-                           onClick={() =>
-                            document.getElementById(key).click()
-                          }
+    ...(userType === "rider"
+      ? [
+          {
+            value: "Attachments",
+            label: "Attachments",
+            icon: <PaperclipIcon></PaperclipIcon>,
+            content: (
+              <>
+                {activeTab !== "User Details" ? (
+                  <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
+                    {Object.entries(ridersAttachments).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex flex-col items-center gap-2"
+                      >
+                        <input
+                          type="file"
+                          id={key}
+                          accept="image/*"
+                          onChange={(e) => handleImageChange(e, key)}
+                          className="hidden"
+                        />
+                        <label htmlFor={key}>
+                          <Typography className="text-nowrap text-sm font-semibold">
+                            {key
+                              .replace(/([A-Z])/g, " $1")
+                              .trim()
+                              .toUpperCase()}{" "}
+                          </Typography>
+                        </label>
 
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          Upload
-                        </Button>
+                        {imagePreview[key] || value ? (
+                          <div className="flex">
+                            <div className="group relative">
+                              <Avatar
+                                src={
+                                  imagePreview[key] ||
+                                  `${
+                                    import.meta.env.VITE_APP_IMAGE_PATH
+                                  }/applicant/${value}`
+                                }
+                                alt={`${key} Preview`}
+                                className="h-48 w-48 border border-gray-300 object-cover shadow-md"
+                                variant="rounded"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                <Button
+                                  onClick={(e) =>
+                                    checkimagePreview(e, key, value)
+                                  }
+                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                >
+                                  <span>View</span>
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    document.getElementById(key).click()
+                                  }
+                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                >
+                                  Upload
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
+                            <span className="text-center text-sm text-gray-500">
+                              Upload {key.replace(/([A-Z])/g, " $1").trim()}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    ))}
                   </div>
                 ) : (
-                  <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                    <span className="text-center text-sm text-gray-500">
-                      Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                    </span>
-                  </div>
+                  <div></div>
                 )}
-              </div>
-            ))}
-          </div>):(<div></div>)}
 
-          <Dialog
-          aria-hidden='true'
-            open={openImage}
-            handler={handleImageOpen}
-            className="flex h-full w-full flex-col items-center justify-center bg-transparent"
-          >
-            <div className="flex min-w-full items-end justify-end">
-              <DialogHeader className="flex flex-row">
-                <IconButton
-                  className="flex justify-end"
-                  variant="text"
-                  onClick={handleImageOpen}
+                <Dialog
+                  aria-hidden="true"
+                  open={openImage}
+                  handler={handleImageOpen}
+                  className="flex h-full w-full flex-col items-center justify-center bg-transparent"
                 >
-                  <X color="white" />
-                </IconButton>
-              </DialogHeader>
-            </div>
-            <DialogBody>
-              <img
-                src={previewImage}
-                alt="Full Preview"
-                className="min-w-[42rem] max-w-2xl"
-              />
-            </DialogBody>
-          </Dialog>
-        </>
-      ),
-    }]:[])
-    
-    
+                  <div className="flex min-w-full items-end justify-end">
+                    <DialogHeader className="flex flex-row">
+                      <IconButton
+                        className="flex justify-end"
+                        variant="text"
+                        onClick={handleImageOpen}
+                      >
+                        <X color="white" />
+                      </IconButton>
+                    </DialogHeader>
+                  </div>
+                  <DialogBody>
+                    <img
+                      src={previewImage}
+                      alt="Full Preview"
+                      className="min-w-[42rem] max-w-2xl"
+                    />
+                  </DialogBody>
+                </Dialog>
+              </>
+            ),
+          },
+        ]
+      : []),
   ];
-
 
   return (
     <>
-  {loading ? (
-    <div className="flex h-[50vh] items-center justify-center">
-      <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
-    </div>
-  ) : (
-    <form onSubmit={handleSubmit}>
-      <Base open={open} handleOpen={handleOpen} size="lg">
-        <Tabs
-          value={activeTab}
-          className="flex w-full rounded-lg"
-          orientation="horizontal"
-        >
-          <div className="flex w-full flex-col sm:flex-row">
-            <Sidebar
-              className="py-5"
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              tabs={tabs}
-             
-              sidebarTitle="PROFILE"
-            />
-            <div className="w-full">
-              <Header
-                title={
-                 activeTab
-                }
-                onClose={handleOpen}
-              />
-              <Body
-                tabs={tabs
-                }
-                activeTab={activeTab}
-              />
-              <Footer
-                loading={loading}
-                onCancel={handleOpen}
-                onSubmit={handleSubmit}
-              />
-            </div>
-          </div>
-        </Tabs>
-      </Base>
-    </form>
-  )}
-</>
+      {loading ? (
+        <div className="flex h-[50vh] items-center justify-center">
+          <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <Base
+            open={open}
+            handleOpen={() => {
+              handleOpen();
+              setActiveTab("User Details");
+            }}
+            size="lg"
+          >
+            <Tabs
+              value={activeTab}
+              className="flex w-full rounded-lg"
+              orientation="horizontal"
+            >
+              <div className="flex w-full flex-col sm:flex-row">
+                <Sidebar
+                  className="py-5"
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  tabs={tabs}
+                  sidebarTitle="PROFILE"
+                />
+                <div className="w-full">
+                  <Header title={activeTab} onClose={() => {handleOpen(); setActiveTab("User Details");}} />
+                  <Body tabs={tabs} activeTab={activeTab} />
+                  <Footer
+                    loading={loading}
+                    onCancel={() => {handleOpen(); setActiveTab("User Details")}}
+                    onSubmit={handleSubmit}
+                  />
+                </div>
+              </div>
+            </Tabs>
+          </Base>
+        </form>
+      )}
+    </>
   );
 };
 
