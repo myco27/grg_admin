@@ -13,6 +13,7 @@ import {
 import { EyeIcon, EyeOff } from "lucide-react";
 
 const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -89,7 +90,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   /** Handle Form Submission */
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    setSaving(true);
     try {
       const response = await axiosClient.put(
         `/admin/users/${adminId}/update`,
@@ -108,11 +109,12 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
           .forEach((errorMessage) => {
             showAlert(`${errorMessage}`, "error");
           });
-          setLoading(false);
+        setLoading(false);
       } else {
         showAlert("An error occurred. Please try again.", "error");
-        setLoading(false);
       }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -182,6 +184,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
                   type="button"
                   className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
                   onClick={() => toggleVisibility(field)}
+                  disabled={true}
                 >
                   {passwordVisibility[field] ? (
                     <EyeOff className="h-5 w-5" />
@@ -193,16 +196,16 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
             ))}
 
             <div className="flex justify-end gap-2">
-              <Button variant="gradient" color="gray" onClick={editHandleOpen}>
-                <span>Cancel</span>
-              </Button>
               <Button
-                type="submit"
                 variant="gradient"
-                color="purple"
-                disabled={loading}
+                color="gray"
+                disabled={saving}
+                onClick={editHandleOpen}
               >
-                <span>{loading ? "Saving..." : "Save"}</span>
+                <span className="m-0 p-0">Cancel</span>
+              </Button>
+              <Button className="bg-primary" type="submit" disabled={saving}>
+                <span className="m-0 p-0">{saving ? "Saving..." : "Save"}</span>
               </Button>
             </div>
           </form>

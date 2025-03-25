@@ -83,14 +83,14 @@ content: (
   <>
 
   <div className="flex h-full w-full flex-col gap-5 overflow-auto">
-            <div className="flex flex-row gap-x-20">
+            <div className="flex flex-col gap-x-20 sm:flex-row">
               <div className="flex flex-col">
                 <Typography variant="h6">First Name</Typography>
                 <Typography className="max-h-[50px] min-w-[200px] rounded-md border border-gray-500 bg-gray-300 p-3" >{formData.first_name}</Typography>
               </div>
               <div className="flex flex-col">
                 <Typography variant="h6">Last Name</Typography>
-                <Typography className="rounded-md. max-h-[50px] min-w-[200px] border border-gray-500 bg-gray-300 p-3">{formData.last_name}</Typography>
+                <Typography className="max-h-[50px] min-w-[200px] rounded-md border border-gray-500 bg-gray-300 p-3">{formData.last_name}</Typography>
               </div>
             </div>
             <div>
