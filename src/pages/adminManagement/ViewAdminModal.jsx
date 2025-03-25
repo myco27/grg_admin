@@ -82,7 +82,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
       content: (
         <>
           <div className="flex h-full w-full flex-col gap-5 overflow-auto p-2">
-            <div className="flex flex-col gap-x-20 sm:flex-row">
+            <div className="flex flex-col gap-5 gap-x-20 sm:flex-row">
               <div className="flex flex-col">
                 <Input
                   readOnly={true}

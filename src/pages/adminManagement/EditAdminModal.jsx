@@ -121,7 +121,8 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   };
 
   return (
-    <Dialog open={editOpen} handler={editHandleOpen}>
+    <form>
+    <Dialog className='aria-hidden:true'open={editOpen} handler={editHandleOpen}>
       <DialogHeader>Edit Admin</DialogHeader>
       <DialogBody className="flex flex-col gap-4">
  
@@ -132,6 +133,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
         ):(
        <>
             {/* Role Selection */}
+            
             <Select
               id="role"
               required
@@ -216,6 +218,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
             </div>
       </DialogFooter>
     </Dialog>
+    </form>
   );
 };
 
