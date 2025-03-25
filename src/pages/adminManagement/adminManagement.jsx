@@ -36,6 +36,7 @@ import ViewAdminModal from "./ViewAdminModal";
 
 const AdminManagement = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
@@ -72,6 +73,7 @@ const AdminManagement = () => {
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       setPagination({ ...pagination, isLoading: true });
       
       const response = await axiosClient.get("/roles/users-with-roles", {
@@ -102,6 +104,7 @@ const AdminManagement = () => {
     } catch (error) {
       // navigate("/notfound");
     } finally {
+      setLoading(false)
     }
   };
 
@@ -422,6 +425,7 @@ const AdminManagement = () => {
         viewHandleOpen={handleOpenView}
         adminId={selectedUserId}
         fetchUsers={fetchUsers}
+        loading={loading}
       />
     </>
   );

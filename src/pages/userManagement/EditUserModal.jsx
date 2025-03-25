@@ -492,7 +492,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 />
                 <div className="w-full">
                   <Header title={activeTab} onClose={() => {handleOpen(); setActiveTab("User Details");}} />
-                  <Body tabs={tabs} activeTab={activeTab} />
+                  <Body tabs={tabs} activeTab={activeTab} loading={loading} />
                   <Footer
                     loading={loading}
                     onCancel={() => {handleOpen(); setActiveTab("User Details")}}

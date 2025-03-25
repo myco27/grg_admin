@@ -16,7 +16,7 @@ import {
 import { Tabs } from "@material-tailwind/react";
 import { Body, Base, Footer, Header, Sidebar } from "../../components/Modal";
 import { UserRoundCog } from "lucide-react";
-const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
+const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -29,12 +29,15 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   const [loading, setLoading] = useState(false);
 
   const fetchRoles = async () => {
+    setLoading(true);
     try {
       const response = await axiosClient.get("/roles");
       if (response.status == 200) {
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -49,7 +52,6 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
 
       if (response.status === 200) {
         const responseData = response.data.user;
-        // console.log(responseData);
         setFormData({
           first_name: responseData.first_name,
           last_name: responseData.last_name,
@@ -57,10 +59,12 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
           role: responseData.roles?.[0]?.name || "",
           permissions: responseData.all_permissions,
         });
-        setLoading(false);
+      
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -76,7 +80,7 @@ label: "User Details",
 icon: <UserRoundCog/>,
 content: (
   <>
-  {loading?(<Spinner></Spinner>):(
+
   <div className="flex h-full w-full flex-col gap-5 overflow-auto">
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col">
@@ -112,8 +116,7 @@ content: (
                 </div>
               ))}
             </div>
-          </div>)
-}
+          </div> 
   </>
 )
 }
@@ -121,11 +124,6 @@ content: (
 
   return (
     <>
-      {loading ? (
-        <div className="flex h-[50vh] items-center justify-center">
-          <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
-        </div>
-      ) : (
         <form>
           <Base open={viewOpen} handleOpen={viewHandleOpen} size="lg">
             <Tabs
@@ -155,6 +153,7 @@ content: (
                     tabs={tabs
                     }
                     activeTab={activeTab}
+                    loading={loading}
                   />
                   <Footer
                     loading={loading}
@@ -165,7 +164,6 @@ content: (
             </Tabs>
           </Base>
         </form>
-      )}
     </>
 
   )
