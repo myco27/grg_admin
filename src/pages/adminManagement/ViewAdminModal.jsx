@@ -27,6 +27,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
   });
   const [activeTab, setActiveTab] = useState("User Details")
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false)
 
   const fetchRoles = async () => {
     setLoading(true);
@@ -156,7 +157,8 @@ content: (
                     loading={loading}
                   />
                   <Footer
-                    loading={loading}
+                    loading={saving}
+                    showSubmit={false}
                     onCancel={viewHandleOpen}
                   />
                 </div>

@@ -24,6 +24,7 @@ import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import Loading from "../../components/layout/Loading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
+  const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -140,7 +141,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const updateUser = async () => {
-    setLoading(true);
+    setSaving(true);
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -185,7 +186,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         showAlert("An error occurred. Please try again.", "error");
       }
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
@@ -481,7 +482,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 activeTab={activeTab}
               />
               <Footer
-                loading={loading}
+                loading={saving}
                 onCancel={handleOpen}
                 onSubmit={handleSubmit}
               />
