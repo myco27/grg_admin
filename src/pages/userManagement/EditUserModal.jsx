@@ -142,6 +142,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   const updateUser = async () => {
     setSaving(true);
+    setLoading(true)
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -187,6 +188,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       }
     } finally {
       setSaving(false);
+      setLoading(false)
     }
   };
 
@@ -482,7 +484,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 activeTab={activeTab}
               />
               <Footer
-                loading={saving}
+                loading={loading}
+                saving={saving}
                 onCancel={handleOpen}
                 onSubmit={handleSubmit}
               />

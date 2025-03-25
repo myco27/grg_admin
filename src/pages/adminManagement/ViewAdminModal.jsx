@@ -27,7 +27,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
   });
   const [activeTab, setActiveTab] = useState("User Details")
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false)
+
 
   const fetchRoles = async () => {
     setLoading(true);
@@ -86,16 +86,16 @@ content: (
             <div className="flex flex-row gap-x-20">
               <div className="flex flex-col">
                 <Typography variant="h6">First Name</Typography>
-                <Typography className="max-h-[50px] min-w-[200px] rounded border border-gray-500 bg-gray-300 p-3" >{formData.first_name}</Typography>
+                <Typography className="max-h-[50px] min-w-[200px] rounded-md border border-gray-500 bg-gray-300 p-3" >{formData.first_name}</Typography>
               </div>
               <div className="flex flex-col">
                 <Typography variant="h6">Last Name</Typography>
-                <Typography className="max-h-[50px] min-w-[200px] rounded border border-gray-500 bg-gray-300 p-3">{formData.last_name}</Typography>
+                <Typography className="rounded-md. max-h-[50px] min-w-[200px] border border-gray-500 bg-gray-300 p-3">{formData.last_name}</Typography>
               </div>
             </div>
             <div>
               <Typography variant="h6">Email</Typography>
-              <Typography className="mr-2 rounded border border-gray-500 bg-gray-300 p-3">{formData.email}</Typography>
+              <Typography className="mr-2 rounded-md border border-gray-500 bg-gray-300 p-3">{formData.email}</Typography>
             </div>
             <div className="flex flex-wrap">
               <Typography variant="h5">Roles:</Typography>
@@ -157,7 +157,7 @@ content: (
                     loading={loading}
                   />
                   <Footer
-                    loading={saving}
+                    loading={loading}
                     showSubmit={false}
                     onCancel={viewHandleOpen}
                   />

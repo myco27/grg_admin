@@ -3,10 +3,10 @@ import { DialogFooter, Button } from "@material-tailwind/react";
 
 const Footer = ({
   children,
-  className = "",
-  cancelText = "Cancel",
+  className = "", cancelText ="Cancel",
   submitText = "Save",
   loading = false,
+  saving = false,
   onCancel,
   onSubmit,
   showCancel = true,
@@ -36,7 +36,7 @@ const Footer = ({
               onClick={onSubmit}
               {...submitButtonProps}
             >
-              <span className="m-0 p-0">{loading ? "Saving..." : submitText}</span>
+              <span className="m-0 p-0">{saving ? "Saving..." : submitText}</span>
             </Button>
           )}
         </>
