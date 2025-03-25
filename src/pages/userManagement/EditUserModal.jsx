@@ -465,7 +465,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               setActiveTab={setActiveTab}
               tabs={tabs}
              
-              sidebarTitle="VIEW USER"
+              sidebarTitle="PROFILE"
             />
             <div className="w-full">
               <Header

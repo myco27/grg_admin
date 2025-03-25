@@ -139,7 +139,7 @@ content: (
                   setActiveTab={setActiveTab}
                   tabs={tabs}
                  
-                  sidebarTitle="PROFILE"
+                  sidebarTitle="VIEW USER"
                 />
                 <div className="w-full">
                   <Header
