@@ -5,12 +5,14 @@ import {
   Button,
   Dialog,
   DialogBody,
+  DialogFooter,
   DialogHeader,
   Input,
   Option,
   Select,
 } from "@material-tailwind/react";
 import { EyeIcon, EyeOff } from "lucide-react";
+import Loading from "../../components/layout/Loading";
 
 const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   const [saving, setSaving] = useState(false);
@@ -121,13 +123,14 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
   return (
     <Dialog open={editOpen} handler={editHandleOpen}>
       <DialogHeader>Edit Admin</DialogHeader>
-      <DialogBody>
+      <DialogBody className="flex flex-col gap-4">
+ 
         {loading ? (
-          <div className="flex h-[50vh] items-center justify-center">
-            <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Loading/>
+        ) : saving?(
+          <Loading/>
+        ):(
+       <>
             {/* Role Selection */}
             <Select
               id="role"
@@ -194,8 +197,11 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
                 </button>
               </div>
             ))}
-
-            <div className="flex justify-end gap-2">
+          </>
+        )}
+      </DialogBody>
+      <DialogFooter>
+      <div className="flex justify-end gap-2">
               <Button
                 variant="gradient"
                 color="gray"
@@ -204,13 +210,11 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
               >
                 <span className="m-0 p-0">Cancel</span>
               </Button>
-              <Button className="bg-primary" type="submit" disabled={saving}>
+              <Button onClick={handleSubmit} className="bg-primary" type="submit" disabled={saving}>
                 <span className="m-0 p-0">{saving ? "Saving..." : "Save"}</span>
               </Button>
             </div>
-          </form>
-        )}
-      </DialogBody>
+      </DialogFooter>
     </Dialog>
   );
 };

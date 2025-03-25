@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { EyeIcon, EyeOff } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
+import Loading from "../../components/layout/Loading";
 
 const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
     password_confirmation: "",
     role: "",
   });
-
+  const [submitting, setSubmitting] = useState(false);
   const [roles, setRoles] = useState([]);
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
@@ -69,7 +70,7 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     try {
       const response = await axios.post("/admin/users/add", formData);
 
@@ -89,7 +90,7 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
         showAlert("An error occurred. Please try again.", "error");
       }
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -100,9 +101,9 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
   return (
     <Dialog open={open} handler={handleOpen}>
       <DialogHeader>Add New Admin</DialogHeader>
-      <DialogBody>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Role Selection */}
+      <DialogBody className="flex flex-col gap-4">
+        {loading? (<Loading/>): submitting?(<Loading/>):(
+          <>
           <Select
             required
             label="Assign Role"
@@ -167,21 +168,26 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
             </div>
           ))}
 
-          <div className="flex justify-end gap-2">
-            <Button variant="gradient" color="gray" onClick={handleOpen}>
+       
+          </>
+        )}
+      </DialogBody>
+      <DialogFooter>
+      <div className="flex justify-end gap-2">
+            <Button variant="gradient" color="gray" onClick={handleOpen} disabled={submitting}>
               <span>Cancel</span>
             </Button>
             <Button
               type="submit"
-              variant="gradient"
-              color="purple"
-              disabled={loading}
+              className="bg-primary"
+              disabled={submitting}
+              onClick={handleSubmit}
+              
             >
-              <span>{loading ? "Saving..." : "Save"}</span>
+              <span>{submitting ? "Saving..." : "Save"}</span>
             </Button>
           </div>
-        </form>
-      </DialogBody>
+      </DialogFooter>
     </Dialog>
   );
 };

@@ -11,12 +11,13 @@ import {
   DialogHeader,
   Spinner,
   tabs,
+  Input,
   Typography,
 } from "@material-tailwind/react";
 import { Tabs } from "@material-tailwind/react";
 import { Body, Base, Footer, Header, Sidebar } from "../../components/Modal";
 import { UserRoundCog } from "lucide-react";
-const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
+const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -25,9 +26,8 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
     role: "",
     permissions: "",
   });
-  const [activeTab, setActiveTab] = useState("User Details")
+  const [activeTab, setActiveTab] = useState("User Details");
   const [loading, setLoading] = useState(false);
-
 
   const fetchRoles = async () => {
     setLoading(true);
@@ -37,7 +37,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -60,11 +60,10 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
           role: responseData.roles?.[0]?.name || "",
           permissions: responseData.all_permissions,
         });
-      
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -75,30 +74,42 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers}) => {
     }
   }, [viewOpen, adminId]);
 
-const tabs = [{
-value: "User Details",
-label: "User Details",
-icon: <UserRoundCog/>,
-content: (
-  <>
-
-  <div className="flex h-full w-full flex-col gap-5 overflow-auto">
+  const tabs = [
+    {
+      value: "User Details",
+      label: "User Details",
+      icon: <UserRoundCog />,
+      content: (
+        <>
+          <div className="flex h-full w-full flex-col gap-5 overflow-auto p-2">
             <div className="flex flex-col gap-x-20 sm:flex-row">
               <div className="flex flex-col">
-                <Typography variant="h6">First Name</Typography>
-                <Typography className="max-h-[50px] min-w-[200px] rounded-md border border-gray-500 bg-gray-300 p-3" >{formData.first_name}</Typography>
+                <Input
+                  readOnly={true}
+                  label="Email"
+                  value={formData.first_name}
+                  className="rounded-md border border-gray-500 bg-gray-300 p-3"
+                />
               </div>
               <div className="flex flex-col">
-                <Typography variant="h6">Last Name</Typography>
-                <Typography className="max-h-[50px] min-w-[200px] rounded-md border border-gray-500 bg-gray-300 p-3">{formData.last_name}</Typography>
+                <Input
+                  readOnly={true}
+                  label="Email"
+                  value={formData.last_name}
+                  className="rounded-md border border-gray-500 bg-gray-300 p-3"
+                />
               </div>
             </div>
             <div>
-              <Typography variant="h6">Email</Typography>
-              <Typography className="mr-2 rounded-md border border-gray-500 bg-gray-300 p-3">{formData.email}</Typography>
+              <Input
+                readOnly={true}
+                label="Email"
+                value={formData.email}
+                className="over bg-gray rounded-md border border-gray-500"
+              />
             </div>
             <div className="flex flex-wrap">
-              <Typography variant="h5">Roles:</Typography>
+              <Typography variant="h6">Roles:</Typography>
               <Chip
                 className="m-1 max-w-fit bg-purple-50 text-purple-900"
                 color="purple"
@@ -106,7 +117,7 @@ content: (
               ></Chip>
             </div>
             <div className="flex flex-wrap">
-              <Typography variant="h5">Permissions: </Typography>
+              <Typography variant="h6">Permissions: </Typography>
               {Object.entries(formData.permissions).map(([index, value]) => (
                 <div key={index}>
                   <Chip
@@ -117,60 +128,49 @@ content: (
                 </div>
               ))}
             </div>
-          </div> 
-  </>
-)
-}
-]
+          </div>
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
-        <form>
-          <Base open={viewOpen} handleOpen={viewHandleOpen} size="lg">
-            <Tabs
-              value={activeTab}
-              className="flex w-full rounded-lg"
-              orientation="horizontal"
-            >
-              <div className="flex w-full flex-col sm:flex-row">
-                <Sidebar
-                  className="py-5"
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
+      <form>
+        <Base open={viewOpen} handleOpen={viewHandleOpen} size="lg">
+          <Tabs
+            value={activeTab}
+            className="flex w-full rounded-lg"
+            orientation="horizontal"
+          >
+            <div className="flex w-full flex-col sm:flex-row">
+              <Sidebar
+                className="py-5"
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                tabs={tabs}
+                sidebarTitle="VIEW USER"
+              />
+              <div className="w-full">
+                <Header title={activeTab} onClose={viewHandleOpen} />
+                <Body
+                  className="flex"
                   tabs={tabs}
-                 
-                  sidebarTitle="VIEW USER"
+                  activeTab={activeTab}
+                  loading={loading}
                 />
-                <div className="w-full">
-                  <Header
-                    title={
-                     activeTab
-                    
-                    }
-                    onClose={viewHandleOpen}
-
-                  />
-                  <Body className="flex"
-                    tabs={tabs
-                    }
-                    activeTab={activeTab}
-                    loading={loading}
-                  />
-                  <Footer
-                    loading={loading}
-                    showSubmit={false}
-                    onCancel={viewHandleOpen}
-                  />
-                </div>
+                <Footer
+                  loading={loading}
+                  showSubmit={false}
+                  onCancel={viewHandleOpen}
+                />
               </div>
-            </Tabs>
-          </Base>
-        </form>
+            </div>
+          </Tabs>
+        </Base>
+      </form>
     </>
-
-  )
-    
-  
+  );
 };
 
 export default ViewAdminModal;
