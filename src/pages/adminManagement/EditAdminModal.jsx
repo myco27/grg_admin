@@ -121,8 +121,8 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
       <DialogHeader>Edit Admin</DialogHeader>
       <DialogBody>
         {loading ? (
-          <div className="flex justify-center items-center h-[50vh]">
-            <div className="border-8 border-gray-300 border-t-purple-500 rounded-full w-16 h-16 animate-spin mt-[-10vh]" />
+          <div className="flex h-[50vh] items-center justify-center">
+            <div className="mt-[-10vh] h-16 w-16 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">

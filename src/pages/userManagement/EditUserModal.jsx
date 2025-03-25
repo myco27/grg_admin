@@ -18,10 +18,11 @@ import {
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
-import { EyeIcon, X } from "lucide-react";
+import { EyeIcon, Info, X } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import Loading from "../../components/layout/Loading";
+import { PaperClipIcon } from "@heroicons/react/24/solid";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [previewImage, setPreviewImage] = useState("");
@@ -202,6 +203,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   useEffect(() => {
+    console.log("USE EFFECT TEST")
     setLoading(true);
 
     if (open && userId) {
@@ -241,7 +243,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: activeTab, // Remove curly braces
       label: "User Information",
-      icon: "",
+      icon: <Info/>,
       content: (
         <>
           <Input
@@ -324,7 +326,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: activeTab,
       label: "Customer",
-      icon: "",
+      icon: <Info/>,
       content: (
         <>
           <Input
@@ -407,7 +409,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: "info",
       label: "Information",
-      icon: "",
+      icon: <Info/>,
       content: (
         <div className="flex flex-col gap-5">
           <Input
@@ -488,7 +490,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: "riders_attachment",
       label: "Attachments",
-      icon: "",
+      icon: <PaperClipIcon/>,
       content: (
         <>
           {activeTab !== "info"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
@@ -589,7 +591,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: activeTab,
       label: "User Information",
-      icon: "",
+      icon: <Info/>,
       content: (
         <>
         
