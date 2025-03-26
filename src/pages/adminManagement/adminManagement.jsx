@@ -367,13 +367,15 @@ const AdminManagement = () => {
                       value: (
                         <div className=" items-center p-4">
                           {user.status && typeof user.status === "object" && (
-                            <Switch
-                              onChange={() =>
-                                handleSwitch(user.id, user.status_id)
-                              }
-                              checked={user.status.name === "active"}
-                              color="green"
-                            />
+                            <Tooltip className="text-xs" content={user.status.name.toUpperCase()}>
+                              <Switch
+                                onChange={() =>
+                                  handleSwitch(user.id, user.status_id)
+                                }
+                                checked={user.status.name === "active"}
+                                color="green"
+                              />
+                            </Tooltip>
                           )}
                         </div>
                       ),
