@@ -22,6 +22,7 @@ import {
   MenuHandler,
   MenuItem,
   MenuList,
+  Switch,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -33,18 +34,25 @@ import Pagination from "../../components/OrdersPage/Pagination";
 import AddAdminModal from "./AddAdminModal";
 import EditAdminModal from "./EditAdminModal";
 import ViewAdminModal from "./ViewAdminModal";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
+import { useAlert } from "../../contexts/alertContext";
 
 const AdminManagement = () => {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [openView, setOpenView] = useState(false);
   const [isColumnReversed, setisColumnReversed] = useState(false);
+  const { showAlert } = useAlert();
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -59,23 +67,26 @@ const AdminManagement = () => {
     "User Information",
     "Roles",
     "Permissions",
+    "Status",
     "Date Created",
     "Action",
   ];
 
   const reversedThead = isColumnReversed
-  ? (() => {
-      const reversedHead = [TABLE_HEAD[TABLE_HEAD.length-1], ...TABLE_HEAD.slice(0,-1)]
-      return reversedHead;
-    })()
-  : TABLE_HEAD;
-
+    ? (() => {
+        const reversedHead = [
+          TABLE_HEAD[TABLE_HEAD.length - 1],
+          ...TABLE_HEAD.slice(0, -1),
+        ];
+        return reversedHead;
+      })()
+    : TABLE_HEAD;
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setPagination({ ...pagination, isLoading: true });
-      
+
       const response = await axiosClient.get("/roles/users-with-roles", {
         params: {
           search: debounceSearch,
@@ -86,8 +97,6 @@ const AdminManagement = () => {
 
       if (response.status === 200) {
         const responseData = response.data.data;
-        console.log(responseData);
-
         const { current_page, last_page, total, links, per_page } =
           response.data.data;
 
@@ -105,7 +114,27 @@ const AdminManagement = () => {
     } catch (error) {
       // navigate("/notfound");
     } finally {
-      setLoading(false)
+      setLoading(false);
+    }
+  };
+
+  const confirmToggleStatus = async () => {
+    setConfirmationLoading(true);
+    try {
+      const response = await axiosClient.put(`/admin/status/${userId}/update`, {
+        status_id: status,
+      });
+
+      if (response.status === 200) {
+        showAlert(response.data.message, "success");
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Error toggling permission:", error);
+    } finally {
+      setOpenConfirmation(false);
+      setConfirmationLoading(false);
+      setOpen(false);
     }
   };
 
@@ -153,6 +182,12 @@ const AdminManagement = () => {
     });
   };
 
+  const handleSwitch = (userId, statusId) => {
+    setUserId(userId);
+    setStatus(statusId);
+    setOpenConfirmation(true);
+  };
+
   return (
     <>
       <Card className="h-full w-full">
@@ -179,7 +214,7 @@ const AdminManagement = () => {
           <div className="rounded-none md:flex-row">
             <div className="float-end m-1 flex flex-row gap-1 md:w-72">
               <button onClick={() => setisColumnReversed(!isColumnReversed)}>
-                <ArrowLeftRight className="text-gray-500 hover:text-gray-700"/>
+                <ArrowLeftRight className="text-gray-500 hover:text-gray-700" />
               </button>
               <Input
                 label="Search User"
@@ -328,6 +363,23 @@ const AdminManagement = () => {
                       className: "max-w-60",
                     },
                     {
+                      key: "status",
+                      value: (
+                        <div className=" items-center p-4">
+                          {user.status && typeof user.status === "object" && (
+                            <Switch
+                              onChange={() =>
+                                handleSwitch(user.id, user.status_id)
+                              }
+                              checked={user.status.name === "active"}
+                              color="green"
+                            />
+                          )}
+                        </div>
+                      ),
+                      className: "max-w-60",
+                    },
+                    {
                       key: "created_at",
                       value: (
                         <Typography
@@ -368,13 +420,16 @@ const AdminManagement = () => {
                       className: "p-4",
                     },
                   ];
-                  
+
                   const displayColumns = isColumnReversed
                     ? (() => {
-                      const reversedCol = [columns[columns.length-1], ...columns.slice(0,-1)]
-                      return reversedCol;
-                    })(): columns;
-              
+                        const reversedCol = [
+                          columns[columns.length - 1],
+                          ...columns.slice(0, -1),
+                        ];
+                        return reversedCol;
+                      })()
+                    : columns;
 
                   return (
                     <tr
@@ -406,6 +461,19 @@ const AdminManagement = () => {
           />
         </CardFooter>
       </Card>
+
+      {/* CONFIRMATION DIALOG BOX */}
+      <ConfirmationDialog
+        open={openConfirmation}
+        onClose={() => setOpenConfirmation(false)}
+        onConfirm={confirmToggleStatus}
+        isLoading={confirmationLoading}
+        message={
+          status == 1
+            ? `Are you sure you want to deactivate this user admin?`
+            : `Are you sure you want to activate this user admin?`
+        }
+      />
 
       {/* MODALS */}
       <AddAdminModal
