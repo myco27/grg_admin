@@ -3,27 +3,24 @@ import {
   Button,
   Input,
   Tabs,
-  TabsHeader,
-  Tab,
-  TabsBody,
-  TabPanel,
   Avatar,
   Typography,
   DialogBody,
   Dialog,
   DialogHeader,
-  DialogFooter,
   IconButton,
-  Spinner,
+  Chip,
+  Tooltip,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
+import { PencilIcon } from "@heroicons/react/24/solid";
 import { EyeIcon, X, UserRoundCog, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
-import Loading from "../../components/layout/Loading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
+  const [storeBranch, setStoreBranch] = useState([]);
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
@@ -140,9 +137,26 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     }
   };
 
+  const fetchStoreBranches = async () => {
+    setLoading(true);
+    try {
+      const response = await axiosClient.get(
+        `/admin/users/store-branches/${userId}`
+      );
+      if (response.status === 200) {
+        const userData = response.data.data;
+        setStoreBranch(userData);
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateUser = async () => {
     setSaving(true);
-    setLoading(true)
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("first_name", firstName);
@@ -188,7 +202,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       }
     } finally {
       setSaving(false);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -206,6 +220,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   useEffect(() => {
     if (open && userId) {
+      fetchStoreBranches();
       fetchUserDetails();
     } else {
       setFirstName("");
@@ -239,7 +254,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     {
       value: "User Details",
       label: "Details",
-      icon: <UserRoundCog/>,
+      icon: <UserRoundCog />,
       content: (
         <div className="flex flex-col gap-5">
           <Input
@@ -261,43 +276,43 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
-          
-       {userType === "rider" || userType === "customer" ?(
-       <Input
-       label="Mobile Number"
-       type="text"
-       value={mobileNumber}
-       onChange={(e) => setMobileNumber(e.target.value)}
-       autoComplete="tel"
-     />):
-     userType === "operator"? (
-      <Input
-      label="Local Support Number"
-      type="text"
-      value={localSupportNumber}
-      autoComplete="tel"
-      onChange={(e) => setLocalSupportNumber(e.target.value)}
-    />
-     ):
-     userType === "central" || userType === "restaurant" ?
-     (
-      <>
-     <Input
-     label="Business Landline Number"
-     type="text"
-     value={businessLandlineNumber}
-     onChange={(e) => setBusinessLandlineNumber(e.target.value)}
-     autoComplete="tel"
-   />
-   <Input
-     label="Business Contact Number"
-     type="text"
-     value={businessContactNumber}
-     onChange={(e) => setBusinessContactNumber(e.target.value)}
-     autoComplete="tel"
-   />
-   </>):(<div></div>)
-       }
+
+          {userType === "rider" || userType === "customer" ? (
+            <Input
+              label="Mobile Number"
+              type="text"
+              value={mobileNumber}
+              onChange={(e) => setMobileNumber(e.target.value)}
+              autoComplete="tel"
+            />
+          ) : userType === "operator" ? (
+            <Input
+              label="Local Support Number"
+              type="text"
+              value={localSupportNumber}
+              autoComplete="tel"
+              onChange={(e) => setLocalSupportNumber(e.target.value)}
+            />
+          ) : userType === "central" || userType === "restaurant" ? (
+            <>
+              <Input
+                label="Business Landline Number"
+                type="text"
+                value={businessLandlineNumber}
+                onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                autoComplete="tel"
+              />
+              <Input
+                label="Business Contact Number"
+                type="text"
+                value={businessContactNumber}
+                onChange={(e) => setBusinessContactNumber(e.target.value)}
+                autoComplete="tel"
+              />
+            </>
+          ) : (
+            <div></div>
+          )}
           {/* Password Field */}
           <div className="relative">
             <Input
@@ -346,155 +361,297 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         </div>
       ),
     },
-    
-    
-      ...(userType === "rider"?[{
-      value: "Attachments",
-      label: "Attachments",
-      icon: <PaperclipIcon></PaperclipIcon>,
-      content: (
-        <>
-          {activeTab !== "User Details"?(<div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
-            {Object.entries(ridersAttachments).map(([key, value]) => (
-              <div key={key} className="flex flex-col items-center gap-2">
-                <input
-                  type="file"
-                  id={key}
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, key)}
-                  className="hidden"
-                />
-                <label htmlFor={key}>
-                  <Typography className="text-nowrap text-sm font-semibold">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .trim()
-                      .toUpperCase()}{" "}
-                  </Typography>
-                </label>
 
-                {imagePreview[key] || value ? (
-                  <div className="flex">
-                    <div className="group relative">
-                      <Avatar
-                        src={
-                          imagePreview[key] ||
-                          `${
-                            import.meta.env.VITE_APP_IMAGE_PATH
-                          }/applicant/${value}`
-                        }
-                        alt={`${key} Preview`}
-                        className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                        variant="rounded"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <Button
-                          onClick={(e) => checkimagePreview(e, key, value)}
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          <span>View</span>
-                        </Button>
-                        <Button
-                           onClick={() =>
-                            document.getElementById(key).click()
-                          }
+    ...(userType === "rider"
+      ? [
+          {
+            value: "Attachments",
+            label: "Attachments",
+            icon: <PaperclipIcon></PaperclipIcon>,
+            content: (
+              <>
+                {activeTab !== "User Details" ? (
+                  <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
+                    {Object.entries(ridersAttachments).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex flex-col items-center gap-2"
+                      >
+                        <input
+                          type="file"
+                          id={key}
+                          accept="image/*"
+                          onChange={(e) => handleImageChange(e, key)}
+                          className="hidden"
+                        />
+                        <label htmlFor={key}>
+                          <Typography className="text-nowrap text-sm font-semibold">
+                            {key
+                              .replace(/([A-Z])/g, " $1")
+                              .trim()
+                              .toUpperCase()}{" "}
+                          </Typography>
+                        </label>
 
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          Upload
-                        </Button>
+                        {imagePreview[key] || value ? (
+                          <div className="flex">
+                            <div className="group relative">
+                              <Avatar
+                                src={
+                                  imagePreview[key] ||
+                                  `${
+                                    import.meta.env.VITE_APP_IMAGE_PATH
+                                  }/applicant/${value}`
+                                }
+                                alt={`${key} Preview`}
+                                className="h-48 w-48 border border-gray-300 object-cover shadow-md"
+                                variant="rounded"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                <Button
+                                  onClick={(e) =>
+                                    checkimagePreview(e, key, value)
+                                  }
+                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                >
+                                  <span>View</span>
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    document.getElementById(key).click()
+                                  }
+                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                                >
+                                  Upload
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
+                            <span className="text-center text-sm text-gray-500">
+                              Upload {key.replace(/([A-Z])/g, " $1").trim()}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    ))}
                   </div>
                 ) : (
-                  <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                    <span className="text-center text-sm text-gray-500">
-                      Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                    </span>
-                  </div>
+                  <div></div>
                 )}
-              </div>
-            ))}
-          </div>):(<div></div>)}
 
-          <Dialog
-          aria-hidden='true'
-            open={openImage}
-            handler={handleImageOpen}
-            className="flex h-full w-full flex-col items-center justify-center bg-transparent"
-          >
-            <div className="flex min-w-full items-end justify-end">
-              <DialogHeader className="flex flex-row">
-                <IconButton
-                  className="flex justify-end"
-                  variant="text"
-                  onClick={handleImageOpen}
+                <Dialog
+                  aria-hidden="true"
+                  open={openImage}
+                  handler={handleImageOpen}
+                  className="flex h-full w-full flex-col items-center justify-center bg-transparent"
                 >
-                  <X color="white" />
-                </IconButton>
-              </DialogHeader>
-            </div>
-            <DialogBody>
-              <img
-                src={previewImage}
-                alt="Full Preview"
-                className="min-w-[42rem] max-w-2xl"
-              />
-            </DialogBody>
-          </Dialog>
-        </>
-      ),
-    }]:[])
-    
-    
-  ];
+                  <div className="flex min-w-full items-end justify-end">
+                    <DialogHeader className="flex flex-row">
+                      <IconButton
+                        className="flex justify-end"
+                        variant="text"
+                        onClick={handleImageOpen}
+                      >
+                        <X color="white" />
+                      </IconButton>
+                    </DialogHeader>
+                  </div>
+                  <DialogBody>
+                    <img
+                      src={previewImage}
+                      alt="Full Preview"
+                      className="min-w-[42rem] max-w-2xl"
+                    />
+                  </DialogBody>
+                </Dialog>
+              </>
+            ),
+          },
+        ]
+      : []),
 
+    ...(userType === "central"
+      ? [
+          {
+            value: "Store Branches",
+            label: "Store Branches",
+            icon: <PaperclipIcon></PaperclipIcon>,
+            content: (
+              <>
+                {activeTab !== "User Details" ? (
+                  <div className="overflow-scroll">
+                    <table className="w-full min-w-max table-auto rounded-md text-left">
+                      <thead>
+                        <tr className="bg-gray-200">
+                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
+                            <Typography
+                              variant="small"
+                              color="black"
+                              className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                            >
+                              User Information
+                            </Typography>
+                          </th>
+                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
+                            <Typography
+                              variant="small"
+                              color="black"
+                              className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                            >
+                              Status
+                            </Typography>
+                          </th>
+                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
+                            <Typography
+                              variant="small"
+                              color="black"
+                              className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                            >
+                              Action
+                            </Typography>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {storeBranch.map((store, index) => (
+                          <tr
+                            key={index}
+                            className="border-b border-gray-300 hover:bg-gray-100"
+                          >
+                            <td className="p-4">
+                              <div className="flex items-center gap-3">
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {store?.users[0]?.first_name || ""}{" "}
+                                    {store?.users[0]?.last_name || ""}
+                                  </Typography>
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal opacity-70"
+                                  >
+                                    {store?.users[0]?.email || ""}
+                                  </Typography>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <div className="w-max">
+                                <Chip
+                                  variant="ghost"
+                                  size="sm"
+                                  value={
+                                    store?.users[0]?.is_active == 1
+                                      ? "Active"
+                                      : store?.users[0]?.is_active == 2
+                                      ? "Suspended"
+                                      : store?.users[0]?.is_active == 3
+                                      ? "Deleted"
+                                      : "Inactive"
+                                  }
+                                  color={
+                                    store?.users[0]?.is_active == 1
+                                      ? "green"
+                                      : store?.users[0]?.is_active == 2
+                                      ? "orange"
+                                      : store?.users[0]?.is_active == 3
+                                      ? "red"
+                                      : "blue-gray"
+                                  }
+                                />
+                              </div>
+                            </td>
+                            <td className="p-4">
+                              <Tooltip content="Edit User">
+                                <IconButton
+                                  variant="text"
+                                  onClick={() =>
+                                    handleEditOpen(user.id, user.user_type)
+                                  }
+                                >
+                                  <PencilIcon className="h-4 w-4" />
+                                </IconButton>
+                              </Tooltip>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
+
+                <Dialog
+                  aria-hidden="true"
+                  open={openImage}
+                  handler={handleImageOpen}
+                  className="flex h-full w-full flex-col items-center justify-center bg-transparent"
+                >
+                  <div className="flex min-w-full items-end justify-end">
+                    <DialogHeader className="flex flex-row">
+                      <IconButton
+                        className="flex justify-end"
+                        variant="text"
+                        onClick={handleImageOpen}
+                      >
+                        <X color="white" />
+                      </IconButton>
+                    </DialogHeader>
+                  </div>
+                  <DialogBody>
+                    <img
+                      src={previewImage}
+                      alt="Full Preview"
+                      className="min-w-[42rem] max-w-2xl"
+                    />
+                  </DialogBody>
+                </Dialog>
+              </>
+            ),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <>
-
-    <form onSubmit={handleSubmit}>
-      <Base open={open} handleOpen={handleOpen} size="lg">
-        <Tabs
-          value={activeTab}
-          className="flex w-full rounded-lg"
-          orientation="horizontal"
-        >
-          <div className="flex w-full flex-col sm:flex-row">
-            <Sidebar
-              className="py-5"
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              tabs={tabs}
-             
-              sidebarTitle="PROFILE"
-            />
-            <div className="w-full">
-              <Header
-                title={
-                 activeTab
-                }
-                onClose={handleOpen}
-              />
-              <Body
-                tabs={tabs
-                  
-                }
-                loading={loading}
+      <form onSubmit={handleSubmit}>
+        <Base open={open} handleOpen={handleOpen} size="lg">
+          <Tabs
+            value={activeTab}
+            className="flex w-full rounded-lg"
+            orientation="horizontal"
+          >
+            <div className="flex w-full flex-col sm:flex-row">
+              <Sidebar
+                className="py-5"
                 activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                tabs={tabs}
+                sidebarTitle="PROFILE"
               />
-              <Footer
-                loading={loading}
-                saving={saving}
-                onCancel={handleOpen}
-                onSubmit={handleSubmit}
-              />
+              <div className="w-full">
+                <Header title={activeTab} onClose={handleOpen} />
+                <Body tabs={tabs} loading={loading} activeTab={activeTab} />
+                <Footer
+                  loading={loading}
+                  saving={saving}
+                  onCancel={handleOpen}
+                  onSubmit={handleSubmit}
+                />
+              </div>
             </div>
-          </div>
-        </Tabs>
-      </Base>
-    </form>
-</>
+          </Tabs>
+        </Base>
+      </form>
+    </>
   );
 };
 
