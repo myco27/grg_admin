@@ -13,8 +13,9 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-
-  const [passwordError, setPasswordError] = useState(false);
+  const [currentPasswordError, setCurrentPasswordStatus] = useState(false);
+  const [newPasswordError, setNewPasswordStatus] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordStatus] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -28,6 +29,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   const { showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState("basic_setting");
   const { user, fetchUsers } = useStateContext();
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const changePassword = async (event) => {
     setLoading(true);
@@ -47,18 +49,44 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
       }
     } catch (error) {
       if (error.response?.data?.errors) {
-        if (typeof error.response.data.errors === "object") {
-          Object.values(error.response.data.errors)
-            .flat()
-            .forEach((errorMessage) => showAlert(errorMessage, "error"));
-        } else {
-          showAlert(error.response.data.errors, "error");
+        const errors = error.response.data.errors;
+    
+        if (errors.new_password) {
+          errors.new_password.forEach((msg) => showAlert(msg, "error"));
+          setNewPasswordStatus(true);
+          if (errors.new_password == 'The new password field confirmation does not match.') {
+            setConfirmPasswordStatus(true);
+            setNewPasswordStatus(false);
+          }
         }
+        
+        if (errors.old_password) {
+          errors.old_password.forEach((msg) => showAlert(msg, "error"));
+          setCurrentPasswordStatus(true);
+        }
+    
+        // Generic handling for any other errors
+        Object.entries(errors).forEach(([key, messages]) => {
+          if (key !== "new_password" && key !== "old_password") {
+            messages.forEach((msg) => showAlert(msg, "error"));
+          }
+        });
       } else {
         showAlert("An error occurred. Please try again.", "error");
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result); // Set the image preview
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -146,7 +174,15 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
               Photo
             </Typography>
             <div className="flex items-center py-4 gap-5">
-              <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center"></div>
+            <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center">
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Selected"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              )}
+            </div>
               <div>
                 <Typography
                   variant="small"
@@ -154,7 +190,14 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                 >
                   JPG or PNG. Max size of 800K
                 </Typography>
-                <button className="text-[10px] text-white py-1 px-2 bg-primary rounded">
+                <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                id="image-input"
+              />
+                <button className="text-[10px] text-white py-1 px-2 bg-primary rounded" onClick={() => document.getElementById('image-input').click()}>
                   Choose File
                 </button>
               </div>
@@ -208,13 +251,12 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  setPasswordError(false); // Reset error on change
-                  setPasswordErrorMessage("");
+                  setCurrentPasswordStatus(false); // Reset error on change
                 }}
                 label="Current Password"
                 type={passwordVisibility.password ? "text" : "password"}
                 id="current-password"
-                error={passwordError}
+                error={currentPasswordError}
                 className="pr-10"
                 autoComplete="new-password"
               />
@@ -230,23 +272,18 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                 )}
               </button>
             </div>
-            {passwordError && (
-              <Typography
-                id="current-password-error"
-                variant="small"
-                className="text-xs text-red-500 font-semibold pb-2"
-              >
-                {passwordErrorMessage}
-              </Typography>
-            )}
 
             <div className="py-2">
               <div className="relative">
                 <Input
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    setNewPasswordStatus(false);
+                  }}
                   label="New Password"
                   type={passwordVisibility.newPassword ? "text" : "password"}
+                  error={newPasswordError}
                   className="pr-10"
                   autoComplete="new-password"
                 />
@@ -274,9 +311,13 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
             <div className="relative py-2">
               <Input
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setConfirmPasswordStatus(false);
+                }}
                 label="Confirm Password"
                 type={passwordVisibility.confirmPassword ? "text" : "password"}
+                error={confirmPasswordError}
                 className="pr-10"
                 autoComplete="new-password"
               />
