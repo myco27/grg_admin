@@ -86,6 +86,7 @@ const AdminManagement = () => {
 
       if (response.status === 200) {
         const responseData = response.data.data;
+        console.log(responseData);
 
         const { current_page, last_page, total, links, per_page } =
           response.data.data;
