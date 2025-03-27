@@ -1,6 +1,5 @@
-import React from "react";
 import { Typography } from "@material-tailwind/react";
-
+import React,{ useEffect, useState } from "react";
 const Dashboard = () => {
   return (
     <div className="mx-auto flex h-[80dvh] flex-col items-center justify-center bg-gray-100 p-4 md:p-0">
