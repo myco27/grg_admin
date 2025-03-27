@@ -248,6 +248,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
+      setActiveTab(tabs[0]?.value || "")
   }, [open, userId]);
 
   const tabs = [
@@ -572,7 +573,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                                 <IconButton
                                   variant="text"
                                   onClick={() =>
-                                    handleEditOpen(user.id, user.user_type)
+                                    handleOpen(user.id, user.user_type)
                                   }
                                 >
                                   <PencilIcon className="h-4 w-4" />
