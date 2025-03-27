@@ -15,7 +15,7 @@ import {
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { EyeIcon, X, UserRoundCog, PaperclipIcon } from "lucide-react";
+import { EyeIcon, X, UserRoundCog, PaperclipIcon, Search, SearchIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import EditStoreBranchesModal from "./EditStoreBranchesModal";
@@ -38,6 +38,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
   const [address, setAddress] = useState({
     houseNumber: "",
     building: "",
@@ -48,6 +49,18 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     state: "",
   });
 
+  const filteredStores = storeBranch.filter(store => {
+    const cleanedSearchTerm = searchTerm.trim().toLowerCase();
+    
+    const fullName = `${store?.users[0]?.first_name} ${store?.users[0]?.last_name}`.toLowerCase();
+    const email = store?.users[0]?.email?.toLowerCase() || "";
+  
+    return cleanedSearchTerm.split(" ").every(term => 
+      fullName.includes(term) || email.includes(term)
+    );
+  });
+  
+  
   const handleImageOpen = () => {
     setOpenImage(!openImage);
   };
@@ -158,6 +171,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     }
   };
 
+
   const updateUser = async () => {
     setSaving(true);
     setLoading(true);
@@ -258,7 +272,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
-      setActiveTab(tabs[0]?.value || "")
+    setActiveTab(tabs[0]?.value || "");
   }, [open, userId]);
 
   const tabs = [
@@ -267,109 +281,111 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       label: "Details",
       icon: <UserRoundCog />,
       content: (
-        <div className="flex flex-col gap-5">
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            type="email"
-            autoComplete="username"
-          />
-          <Input
-            label="First Name"
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <Input
-            label="Last Name"
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
+        <form>
+          <div className="flex flex-col gap-5">
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              label="Email"
+              type="email"
+              autoComplete="username"
+            />
+            <Input
+              label="First Name"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <Input
+              label="Last Name"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
 
-          {userType === "rider" || userType === "customer" ? (
-            <Input
-              label="Mobile Number"
-              type="text"
-              value={mobileNumber}
-              onChange={(e) => setMobileNumber(e.target.value)}
-              autoComplete="tel"
-            />
-          ) : userType === "operator" ? (
-            <Input
-              label="Local Support Number"
-              type="text"
-              value={localSupportNumber}
-              autoComplete="tel"
-              onChange={(e) => setLocalSupportNumber(e.target.value)}
-            />
-          ) : userType === "central" || userType === "restaurant" ? (
-            <>
+            {userType === "rider" || userType === "customer" ? (
               <Input
-                label="Business Landline Number"
+                label="Mobile Number"
                 type="text"
-                value={businessLandlineNumber}
-                onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
                 autoComplete="tel"
               />
+            ) : userType === "operator" ? (
               <Input
-                label="Business Contact Number"
+                label="Local Support Number"
                 type="text"
-                value={businessContactNumber}
-                onChange={(e) => setBusinessContactNumber(e.target.value)}
+                value={localSupportNumber}
                 autoComplete="tel"
+                onChange={(e) => setLocalSupportNumber(e.target.value)}
               />
-            </>
-          ) : (
-            <div></div>
-          )}
-          {/* Password Field */}
-          <div className="relative">
-            <Input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Password"
-              type={passwordVisibility.password ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("password")}
-            >
-              {passwordVisibility.password ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
-          </div>
+            ) : userType === "central" || userType === "restaurant" ? (
+              <>
+                <Input
+                  label="Business Landline Number"
+                  type="text"
+                  value={businessLandlineNumber}
+                  onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                  autoComplete="tel"
+                />
+                <Input
+                  label="Business Contact Number"
+                  type="text"
+                  value={businessContactNumber}
+                  onChange={(e) => setBusinessContactNumber(e.target.value)}
+                  autoComplete="tel"
+                />
+              </>
+            ) : (
+              <div></div>
+            )}
+            {/* Password Field */}
+            <div className="relative">
+              <Input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                label="Password"
+                type={passwordVisibility.password ? "text" : "password"}
+                className="pr-10"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                onClick={() => toggleVisibility("password")}
+              >
+                {passwordVisibility.password ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
 
-          {/* Confirm Password Field */}
-          <div className="relative">
-            <Input
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              label="Confirm Password"
-              type={passwordVisibility.confirmPassword ? "text" : "password"}
-              className="pr-10"
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-              onClick={() => toggleVisibility("confirmPassword")}
-            >
-              {passwordVisibility.confirmPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
-              ) : (
-                <EyeIcon className="h-5 w-5" />
-              )}
-            </button>
+            {/* Confirm Password Field */}
+            <div className="relative">
+              <Input
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                label="Confirm Password"
+                type={passwordVisibility.confirmPassword ? "text" : "password"}
+                className="pr-10"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                onClick={() => toggleVisibility("confirmPassword")}
+              >
+                {passwordVisibility.confirmPassword ? (
+                  <EyeSlashIcon className="h-5 w-5" />
+                ) : (
+                  <EyeIcon className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       ),
     },
 
@@ -453,7 +469,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 )}
 
                 <Dialog
-                  inert={openImage?"true":undefined}
+                  inert={openImage ? "true" : undefined}
                   open={openImage}
                   handler={handleImageOpen}
                   className="flex h-full w-full flex-col items-center justify-center bg-transparent"
@@ -492,7 +508,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             content: (
               <>
                 {activeTab !== "User Details" ? (
-                  <div className="overflow-scroll">
+                  
+                 
+                  <div className="flex flex-col gap-5 overflow-scroll">
+                     <Input className='w-full'  value={searchTerm} onChange={(e)=>setSearchTerm(e.target.value)} label="Search Store" icon={<SearchIcon></SearchIcon>}></Input>
                     <table className="w-full min-w-max table-auto rounded-md text-left">
                       <thead>
                         <tr className="bg-gray-200">
@@ -526,75 +545,85 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {storeBranch.map((store, index) => (
-                          <tr
-                            key={index}
-                            className="border-b border-gray-300 hover:bg-gray-100"
-                          >
-                            <td className="p-4">
-                              <div className="flex items-center gap-3">
-                                <div className="flex flex-col">
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {store?.users[0]?.first_name || ""}{" "}
-                                    {store?.users[0]?.last_name || ""}
-                                  </Typography>
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal opacity-70"
-                                  >
-                                    {store?.users[0]?.email || ""}
-                                  </Typography>
+                        {filteredStores.length > 0 ? (
+                          filteredStores.map((store, index) => (
+                            <tr
+                              key={index}
+                              className="border-b border-gray-300 hover:bg-gray-100"
+                            >
+                              <td className="p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex flex-col">
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal"
+                                    >
+                                      {store?.users[0]?.first_name || ""}{" "}
+                                      {store?.users[0]?.last_name || ""}
+                                    </Typography>
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal opacity-70"
+                                    >
+                                      {store?.users[0]?.email || ""}
+                                    </Typography>
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                            <td className="p-4">
-                              <div className="w-max">
-                                <Chip
-                                  variant="ghost"
-                                  size="sm"
-                                  value={
-                                    store?.users[0]?.is_active == 1
-                                      ? "Active"
-                                      : store?.users[0]?.is_active == 2
-                                      ? "Suspended"
-                                      : store?.users[0]?.is_active == 3
-                                      ? "Deleted"
-                                      : "Inactive"
-                                  }
-                                  color={
-                                    store?.users[0]?.is_active == 1
-                                      ? "green"
-                                      : store?.users[0]?.is_active == 2
-                                      ? "orange"
-                                      : store?.users[0]?.is_active == 3
-                                      ? "red"
-                                      : "blue-gray"
-                                  }
-                                />
-                              </div>
-                            </td>
-                            <td className="p-4">
-                              <Tooltip className="z-[9999]" content="Edit User">
-                                <IconButton
-                                  variant="text"
-                                  onClick={() =>
-                                    handleStoreBranchesModal(
-                                      store?.users[0]?.id,
-                                      store?.users[0]?.user_type
-                                    )
-                                  }
+                              </td>
+                              <td className="p-4">
+                                <div className="w-max">
+                                  <Chip
+                                    variant="ghost"
+                                    size="sm"
+                                    value={
+                                      store?.users[0]?.is_active == 1
+                                        ? "Active"
+                                        : store?.users[0]?.is_active == 2
+                                        ? "Suspended"
+                                        : store?.users[0]?.is_active == 3
+                                        ? "Deleted"
+                                        : "Inactive"
+                                    }
+                                    color={
+                                      store?.users[0]?.is_active == 1
+                                        ? "green"
+                                        : store?.users[0]?.is_active == 2
+                                        ? "orange"
+                                        : store?.users[0]?.is_active == 3
+                                        ? "red"
+                                        : "blue-gray"
+                                    }
+                                  />
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <Tooltip
+                                  className="z-[9999]"
+                                  content="Edit User"
                                 >
-                                  <PencilIcon className="h-4 w-4" />
-                                </IconButton>
-                              </Tooltip>
-                            </td>
+                                  <IconButton
+                                    variant="text"
+                                    onClick={() =>
+                                      handleStoreBranchesModal(
+                                        store?.users[0]?.id,
+                                        store?.users[0]?.user_type
+                                      )
+                                    }
+                                  >
+                                    <PencilIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                 
+                          <tr >
+                            <td colSpan={3} className="text-center"><Typography variant="h4">No Stores Found</Typography></td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -603,7 +632,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 )}
 
                 <Dialog
-                  inert={openImage?"true":undefined}
+                  inert={openImage ? "true" : undefined}
                   open={openImage}
                   handler={handleImageOpen}
                   className="flex h-full w-full flex-col items-center justify-center bg-transparent"
