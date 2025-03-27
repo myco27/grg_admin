@@ -9,8 +9,7 @@ const Base = ({
   className
 }) => {
   return (
-    <Dialog 
-      aria-hidden='false'
+    <Dialog
       size={size} 
       open={open} 
       handler={handleOpen}

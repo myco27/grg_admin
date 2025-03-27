@@ -122,7 +122,7 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
 
   return (
     <form>
-    <Dialog className='aria-hidden:true'open={editOpen} handler={editHandleOpen}>
+    <Dialog inert={editOpen?"true":undefined}open={editOpen} handler={editHandleOpen}>
       <DialogHeader>Edit Admin</DialogHeader>
       <DialogBody className="flex flex-col gap-4">
  

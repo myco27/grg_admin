@@ -11,7 +11,7 @@ import { useAlert } from "../../contexts/alertContext";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "lucide-react";
 import axiosClient from "../../axiosClient";
-
+import Loading from "../../components/layout/Loading";
 const EditStoreBranchesModal = ({
   open,
   handleOpen,
@@ -56,6 +56,7 @@ const EditStoreBranchesModal = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSaving(true);
+    setLoading(true)
     try {
       const response = await axiosClient.post(`/admin/users/update/${userId}`, {
         first_name: firstName,
@@ -86,6 +87,7 @@ const EditStoreBranchesModal = ({
       }
     } finally {
       setSaving(false);
+      setLoading(false)
     }
   };
 
@@ -113,7 +115,7 @@ const EditStoreBranchesModal = ({
 
   return (
     <>
-      <Dialog
+   (<Dialog
         aria-hidden="true"
         size="md"
         open={open}
@@ -122,7 +124,7 @@ const EditStoreBranchesModal = ({
       >
         <DialogHeader>Edit Admin</DialogHeader>
         <form>
-          <DialogBody className="flex flex-col gap-4">
+        {loading?(<Loading/>):<DialogBody className="flex flex-col gap-4">
             <Input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -202,13 +204,13 @@ const EditStoreBranchesModal = ({
                 )}
               </button>
             </div>
-          </DialogBody>
+          </DialogBody>}
           <DialogFooter>
             <div className="flex justify-end gap-2">
               <Button
                 variant="gradient"
                 color="gray"
-                disabled={saving}
+                disabled={loading }
                 onClick={handleOpen}
               >
                 <span className="m-0 p-0">Cancel</span>
@@ -217,14 +219,14 @@ const EditStoreBranchesModal = ({
                 onClick={handleSubmit}
                 className="bg-primary"
                 type="submit"
-                disabled={saving}
+                disabled={loading}
               >
                 <span className="m-0 p-0">{saving ? "Saving..." : "Save"}</span>
               </Button>
             </div>
           </DialogFooter>
         </form>
-      </Dialog>
+      </Dialog>)
     </>
   );
 };

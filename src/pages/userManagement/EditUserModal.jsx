@@ -258,6 +258,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
+      setActiveTab(tabs[0]?.value || "")
   }, [open, userId]);
 
   const tabs = [
@@ -452,7 +453,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 )}
 
                 <Dialog
-                  aria-hidden="true"
+                  inert={openImage?"true":undefined}
                   open={openImage}
                   handler={handleImageOpen}
                   className="flex h-full w-full flex-col items-center justify-center bg-transparent"
@@ -602,7 +603,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 )}
 
                 <Dialog
-                  aria-hidden="true"
+                  inert={openImage?"true":undefined}
                   open={openImage}
                   handler={handleImageOpen}
                   className="flex h-full w-full flex-col items-center justify-center bg-transparent"
