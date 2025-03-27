@@ -169,11 +169,6 @@ const UserManagementPage = () => {
       icon: <Store className="h-4 w-4" />,
     },
     {
-      label: "Restaurant",
-      value: "restaurant",
-      icon: <Store className="h-4 w-4" />,
-    },
-    {
       label: "Rider",
       value: "rider",
       icon: <Bike className="h-4 w-4" />,
