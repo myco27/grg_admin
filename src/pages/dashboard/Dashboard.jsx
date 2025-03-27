@@ -8,14 +8,23 @@ const Dashboard = () => {
   const [totalCentral, setTotalCentral] = useState(0);
   const [totalRestaurants, setTotalRestaurants] = useState(0);
 
-  const fetchDashboardCardData = async () => {
-    const response = await axiosClient.get("/admin/dashboard/card-data");
+  const [loading, setLoading] = useState(false);
 
-    if (response.status === 200) {
-      setActiveCustomers(response.data.data.totalActiveCustomer);
-      setActiveRiders(response.data.data.totalActiveRider);
-      setTotalCentral(response.data.data.totalNumberOfCentral);
-      setTotalRestaurants(response.data.data.totalNumberOfRestaurant);
+  const fetchDashboardCardData = async () => {
+    setLoading(true);
+    try {
+      const response = await axiosClient.get("/admin/dashboard/card-data");
+
+      if (response.status === 200) {
+        setActiveCustomers(response.data.data.totalActiveCustomer);
+        setActiveRiders(response.data.data.totalActiveRider);
+        setTotalCentral(response.data.data.totalNumberOfCentral);
+        setTotalRestaurants(response.data.data.totalNumberOfRestaurant);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard card data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,9 +40,15 @@ const Dashboard = () => {
             <Typography variant="h5" className="mb-2 text-nowrap">
               Active Customers
             </Typography>
-            <Typography variant="h3" color="green">
-              {activeCustomers}
-            </Typography>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="border-8 border-gray-300 border-t-purple-500 rounded-full w-10 h-10 animate-spin" />
+              </div>
+            ) : (
+              <Typography variant="h3" color="green">
+                {activeCustomers}
+              </Typography>
+            )}
           </CardBody>
         </Card>
 
@@ -42,9 +57,15 @@ const Dashboard = () => {
             <Typography variant="h5" className="mb-2">
               Active Riders
             </Typography>
-            <Typography variant="h3" color="green">
-              {activeRiders}
-            </Typography>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="border-8 border-gray-300 border-t-purple-500 rounded-full w-10 h-10 animate-spin" />
+              </div>
+            ) : (
+              <Typography variant="h3" color="green">
+                {activeRiders}
+              </Typography>
+            )}
           </CardBody>
         </Card>
 
@@ -53,9 +74,15 @@ const Dashboard = () => {
             <Typography variant="h5" className="mb-2">
               Central
             </Typography>
-            <Typography variant="h3" color="green">
-              {totalCentral}
-            </Typography>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="border-8 border-gray-300 border-t-purple-500 rounded-full w-10 h-10 animate-spin" />
+              </div>
+            ) : (
+              <Typography variant="h3" color="green">
+                {totalCentral}
+              </Typography>
+            )}
           </CardBody>
         </Card>
 
@@ -64,9 +91,15 @@ const Dashboard = () => {
             <Typography variant="h5" className="mb-2">
               Restaurants
             </Typography>
-            <Typography variant="h3" color="green">
-              {totalRestaurants}
-            </Typography>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <div className="border-8 border-gray-300 border-t-purple-500 rounded-full w-10 h-10 animate-spin" />
+              </div>
+            ) : (
+              <Typography variant="h3" color="green">
+                {totalRestaurants}
+              </Typography>
+            )}
           </CardBody>
         </Card>
       </div>
