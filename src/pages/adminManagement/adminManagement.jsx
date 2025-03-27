@@ -330,7 +330,7 @@ const AdminManagement = () => {
                                   <span key={index}>
                                     <Chip
                                       color="purple"
-                                      variant="outlined"
+                                      variant="text"
                                       size="sm"
                                       className="m-1 max-w-fit bg-purple-50 text-purple-900"
                                       value={perm}
@@ -365,7 +365,7 @@ const AdminManagement = () => {
                     {
                       key: "status",
                       value: (
-                        <div className=" items-center p-4">
+                        <div className="items-center p-4">
                           {user.status && typeof user.status === "object" && (
                             <Tooltip className="text-xs" content={user.status.name.toUpperCase()}>
                               <Switch
