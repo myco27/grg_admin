@@ -9,7 +9,7 @@ const Base = ({
   className
 }) => {
   return (
-    <Dialog 
+    <Dialog
       size={size} 
       open={open} 
       handler={handleOpen}
