@@ -10,7 +10,6 @@ const Base = ({
 }) => {
   return (
     <Dialog 
-      inert={open?"true":undefined}
       size={size} 
       open={open} 
       handler={handleOpen}
