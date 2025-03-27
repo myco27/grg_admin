@@ -15,6 +15,7 @@ const Base = ({
       open={open} 
       handler={handleOpen}
       className={`flex flex-col ${className}`}
+      dismiss={{ outsidePress: false }}
     >
       {children}
     </Dialog>

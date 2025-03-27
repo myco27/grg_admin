@@ -18,9 +18,13 @@ import { PencilIcon } from "@heroicons/react/24/solid";
 import { EyeIcon, X, UserRoundCog, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
+import EditStoreBranchesModal from "./EditStoreBranchesModal";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [storeBranch, setStoreBranch] = useState([]);
+  const [storeBranchId, setStoreBranchId] = useState(0);
+  const [storeBranchDialogOpen, setStoreBranchDialogOpen] = useState(false);
+  const [storeUserType, setStoreUserType] = useState("");
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
@@ -216,6 +220,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     updateUser();
+  };
+
+  const handleStoreBranchesModal = (userId, userType) => {
+    setStoreBranchDialogOpen(!storeBranchDialogOpen);
+    setStoreBranchId(userId);
+    setStoreUserType(userType);
   };
 
   useEffect(() => {
@@ -568,11 +578,14 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                               </div>
                             </td>
                             <td className="p-4">
-                              <Tooltip content="Edit User">
+                              <Tooltip className="z-[9999]" content="Edit User">
                                 <IconButton
                                   variant="text"
                                   onClick={() =>
-                                    handleEditOpen(user.id, user.user_type)
+                                    handleStoreBranchesModal(
+                                      store?.users[0]?.id,
+                                      store?.users[0]?.user_type
+                                    )
                                   }
                                 >
                                   <PencilIcon className="h-4 w-4" />
@@ -651,6 +664,14 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           </Tabs>
         </Base>
       </form>
+
+      <EditStoreBranchesModal
+        open={storeBranchDialogOpen}
+        handleOpen={handleStoreBranchesModal}
+        userId={storeBranchId}
+        userType={storeUserType}
+        fetchStoreBranches={fetchStoreBranches}
+      />
     </>
   );
 };
