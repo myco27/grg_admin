@@ -82,10 +82,10 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       icon: <UserRoundCog />,
       content: (
         <>  
-          <div className="flex gap-2 pb-4 border-b border-gray-300">
+          <div className="flex flex-col gap-2 border-b border-gray-300 pb-4 sm:flex-row">
             <Input
               label="First Name"
-              type="text"
+              type="text" 
               value={firstName}
               readOnly
             />
@@ -96,7 +96,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               readOnly
             />
           </div>
-          <div className="flex gap-2 py-4 border-b border-gray-300">
+          <div className="flex gap-2 border-b border-gray-300 py-4">
             <Input
               value={email}
               readOnly
@@ -105,7 +105,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               
             />
           </div>
-          <div className="flex gap-2 py-4 border-b border-gray-300">
+          <div className="flex gap-2 border-b border-gray-300 py-4">
             <Input
               label="Mobile Number"
               type="text"
@@ -113,7 +113,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               readOnly
             />
           </div>
-          <div className="flex gap-2 py-4 border-b border-gray-300">
+          <div className="flex gap-2 border-b border-gray-300 py-4">
             <Input
               label="Applicant Type"
               className="capitalize"
@@ -186,7 +186,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               icon: <LockKeyhole />,
               content: (
                 <>
-                  <div className="flex gap-2 pb-4 border-b border-gray-300">
+                  <div className="flex flex-col gap-2 border-b border-gray-300 pb-4 sm:flex-row">
                     <Input
                       label="Plate Number"
                       type="text"
@@ -200,7 +200,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       readOnly
                     />
                   </div>
-                  <div className="flex gap-2 py-4 border-b border-gray-300">
+                  <div className="flex gap-2 border-b border-gray-300 py-4">
                     <Input
                       label="Color"
                       type="text"
@@ -226,8 +226,8 @@ const ProfileModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   return (
     <form onSubmit={handleSubmit}>
       <Base open={open} handleOpen={handleOpen} aria-hidden={!open} >
-        <Tabs value={activeTab} className="w-full flex rounded-lg" orientation="vertical">      
-          <div className="flex w-full">
+        <Tabs value={activeTab} className="flex w-full rounded-lg" orientation="vertical">      
+          <div className="flex w-full flex-col sm:flex-row">
             <Sidebar 
               activeTab={activeTab} 
               setActiveTab={setActiveTab} 
