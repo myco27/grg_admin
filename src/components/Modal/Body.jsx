@@ -19,13 +19,16 @@ const Body = ({
       <DialogBody className={`p-0 ${className}`}>
         <TabsBody className={`${maxHeight} overflow-auto px-2`}>
           {tabs.map((tab) => (
+            tab.value===activeTab?(
+            
             <TabPanel
               key={tab.value}
               value={tab.value}
               className="flex h-full flex-col gap-2 px-2"
             >
+              
               {tab.content}
-            </TabPanel>
+            </TabPanel>):null
           ))}
         </TabsBody>
       </DialogBody>

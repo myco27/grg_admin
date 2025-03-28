@@ -325,7 +325,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       content: (
         <>
         
-        {activeTab!=="User Details"?(<div></div>):(<form>
+      <form>
           <div className="flex flex-col gap-5">
             <Input
               value={email}
@@ -429,7 +429,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               </button>
             </div>
           </div>
-        </form>)}
+        </form>
         </>
       ),
     },
@@ -442,7 +442,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             icon: <PaperclipIcon></PaperclipIcon>,
             content: (
               <>
-                {activeTab !== "User Details" ? (
                   <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
                     {Object.entries(ridersAttachments).map(([key, value]) => (
                       <div
@@ -509,10 +508,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div></div>
-                )}
-
+                
                 <Dialog
                   inert={openImage ? "true" : undefined}
                   open={openImage}
@@ -552,9 +548,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             icon: <PaperclipIcon></PaperclipIcon>,
             content: (
               <>
-                {activeTab !== "User Details" ? (
+                 
                   <div className="flex flex-col gap-2 overflow-scroll">
-                    <div className="flex w-full justify-end pr-1 pt-2" >
+                    <div className="flex w-full justify-end pr-2 pt-2" >
                     <div className="relative">
                     <Input
                       label="Search User"
@@ -700,9 +696,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                       onPageSizeChange={handlePageSizeChange}
                     />
                   </div>
-                ) : (
-                  <div></div>
-                )}
+                
 
                 <Dialog
                   inert={openImage ? "true" : undefined}
