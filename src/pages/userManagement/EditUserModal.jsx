@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useDe } from "react";
 import {
   Button,
   Input,
@@ -11,16 +11,22 @@ import {
   IconButton,
   Chip,
   Tooltip,
+  Spinner,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { EyeIcon, X, UserRoundCog, PaperclipIcon, Search, SearchIcon } from "lucide-react";
+import { EyeIcon, X, UserRoundCog, PaperclipIcon, Search } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import EditStoreBranchesModal from "./EditStoreBranchesModal";
+import useDebounce from "../../components/UseDebounce";
+import Pagination from "../../components/OrdersPage/Pagination";
+import Loading from "../../components/layout/Loading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const debounceSearch = useDebounce  ({ value: searchTerm });
   const [storeBranch, setStoreBranch] = useState([]);
   const [storeBranchId, setStoreBranchId] = useState(0);
   const [storeBranchDialogOpen, setStoreBranchDialogOpen] = useState(false);
@@ -38,7 +44,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("")
   const [address, setAddress] = useState({
     houseNumber: "",
     building: "",
@@ -48,19 +53,15 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     city: "",
     state: "",
   });
-
-  const filteredStores = storeBranch.filter(store => {
-    const cleanedSearchTerm = searchTerm.trim().toLowerCase();
-    
-    const fullName = `${store?.users[0]?.first_name} ${store?.users[0]?.last_name}`.toLowerCase();
-    const email = store?.users[0]?.email?.toLowerCase() || "";
-  
-    return cleanedSearchTerm.split(" ").every(term => 
-      fullName.includes(term) || email.includes(term)
-    );
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    totalItems: 0,
+    links: [],
+    itemsPerPage: 10  ,
+    isLoading: false,
   });
-  
-  
+
   const handleImageOpen = () => {
     setOpenImage(!openImage);
   };
@@ -93,6 +94,21 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     certificateOfRegistration: null,
     vaccinationCard: null,
   });
+
+  const handlePageChange = (newPage) => {
+    setPagination({
+      ...pagination,
+      page: newPage,
+    });
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(newSize),
+    });
+  };
 
   const handleImageChange = (event, type) => {
     const file = event.target.files[0];
@@ -155,22 +171,34 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   };
 
   const fetchStoreBranches = async () => {
-    setLoading(true);
     try {
+      setPagination({...pagination, isLoading:true})
       const response = await axiosClient.get(
-        `/admin/users/store-branches/${userId}`
+        `/admin/users/store-branches/${userId}`,{
+          params: {
+            search: debounceSearch,
+            page: pagination.page,
+            page_size: pagination.itemsPerPage,
+          }}
       );
       if (response.status === 200) {
         const userData = response.data.data;
-        setStoreBranch(userData);
+        setStoreBranch(userData.data);
+        const newPagination = {
+          page: userData.current_page,
+          totalPages: userData.last_page,
+          totalItems: userData.total,
+          links: [],
+          itemsPerPage: userData.per_page,
+          isLoading:false
+        };
+
+        setPagination(newPagination);
       }
     } catch (error) {
       console.error("Error fetching branches:", error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
-
 
   const updateUser = async () => {
     setSaving(true);
@@ -207,7 +235,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
       if (response.status === 202) {
         showAlert("User updated successfully!", "success");
-        fetchUsers();
         handleOpen();
       }
     } catch (error) {
@@ -242,10 +269,21 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     setStoreUserType(userType);
   };
 
+  const handleSearchInput = (event) => {
+    const { value } = event.target;
+    setSearchTerm(value);
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: 10,
+    });
+  };
+
   useEffect(() => {
     if (open && userId) {
       fetchStoreBranches();
       fetchUserDetails();
+      
     } else {
       setFirstName("");
       setLastName("");
@@ -272,8 +310,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
-    setActiveTab(tabs[0]?.value || "");
+      setActiveTab("User Details")
   }, [open, userId]);
+
+  useEffect(() => {
+    fetchStoreBranches();
+  }, [debounceSearch,pagination.page, pagination.itemsPerPage])
 
   const tabs = [
     {
@@ -281,7 +323,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       label: "Details",
       icon: <UserRoundCog />,
       content: (
-        <form>
+        <>
+        
+        {activeTab!=="User Details"?(<div></div>):(<form>
           <div className="flex flex-col gap-5">
             <Input
               value={email}
@@ -385,7 +429,8 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               </button>
             </div>
           </div>
-        </form>
+        </form>)}
+        </>
       ),
     },
 
@@ -508,10 +553,25 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             content: (
               <>
                 {activeTab !== "User Details" ? (
-                  
-                 
-                  <div className="flex flex-col gap-5 overflow-scroll">
-                     <Input className='w-full'  value={searchTerm} onChange={(e)=>setSearchTerm(e.target.value)} label="Search Store" icon={<SearchIcon></SearchIcon>}></Input>
+                  <div className="flex flex-col gap-2 overflow-scroll">
+                    <div className="flex w-full justify-end pr-1 pt-2" >
+                    <div className="relative">
+                    <Input
+                      label="Search User"
+                      icon={
+                        pagination.isLoading ? (
+                          <Spinner className="h-5 w-5" />
+                        ) : (
+                          <Search className="h-5 w-5" />
+                        )
+                      }
+                      className="w-72 bg-white"
+                      value={searchTerm}
+                      onChange={(e) => handleSearchInput(e)}
+                    />
+                    </div>
+                    </div>
+                   
                     <table className="w-full min-w-max table-auto rounded-md text-left">
                       <thead>
                         <tr className="bg-gray-200">
@@ -544,9 +604,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                           </th>
                         </tr>
                       </thead>
+                      
                       <tbody>
-                        {filteredStores.length > 0 ? (
-                          filteredStores.map((store, index) => (
+                        {pagination.isLoading?<tr><td colSpan={3}><Loading></Loading></td></tr>:storeBranch.length > 0 ? (
+                          storeBranch.map((store, index) => (
                             <tr
                               key={index}
                               className="border-b border-gray-300 hover:bg-gray-100"
@@ -619,13 +680,25 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                             </tr>
                           ))
                         ) : (
-                 
-                          <tr >
-                            <td colSpan={3} className="text-center"><Typography variant="h4">No Stores Found</Typography></td>
+                          <tr>
+                            <td colSpan={3} className="text-center">
+                              <Typography variant="h4">
+                                No Stores Found
+                              </Typography>
+                            </td>
                           </tr>
                         )}
                       </tbody>
                     </table>
+                    <Pagination
+                      currentPage={pagination.page}
+                      totalItems={pagination.totalItems}
+                      itemsPerPage={pagination.itemsPerPage}
+                      totalPages={pagination.totalPages}
+                      onPageChange={(newPage) => handlePageChange(newPage)}
+                      isLoading={pagination.isLoading}
+                      onPageSizeChange={handlePageSizeChange}
+                    />
                   </div>
                 ) : (
                   <div></div>
@@ -666,10 +739,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Base open={open} handleOpen={handleOpen} size="lg">
+        <Base open={open} handleOpen={handleOpen} size="lg" >
           <Tabs
             value={activeTab}
-            className="flex w-full rounded-lg"
+            className="flex w-full overflow-hidden rounded-lg"
             orientation="horizontal"
           >
             <div className="flex w-full flex-col sm:flex-row">
