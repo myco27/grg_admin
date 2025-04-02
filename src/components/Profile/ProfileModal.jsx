@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Tabs, Typography } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
-import { EyeSlashIcon } from "@heroicons/react/24/outline";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeClosed } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { UserRoundCog, LockKeyhole } from "lucide-react";
 import { Base, Header, Body, Footer, Sidebar } from "../Modal";
@@ -129,7 +128,6 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
     if (open) {
       fetchUserDetails();
     }
-    
   }, [open, userId]);
 
   // Define tabs for the sidebar
@@ -224,9 +222,9 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                 onClick={() => toggleVisibility("password")}
               >
                 {passwordVisibility.password ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
                   <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeClosed className="h-5 w-5" />
                 )}
               </button>
             </div>
@@ -256,9 +254,9 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                   onClick={() => toggleVisibility("newPassword")}
                 >
                   {passwordVisibility.newPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
                     <EyeIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeClosed className="h-5 w-5" />
                   )}
                 </button>
               </div>
@@ -286,9 +284,9 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                 onClick={() => toggleVisibility("confirmPassword")}
               >
                 {passwordVisibility.confirmPassword ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
                   <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeClosed className="h-5 w-5" />
                 )}
               </button>
             </div>

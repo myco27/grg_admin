@@ -14,9 +14,8 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
-import { EyeSlashIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { EyeIcon, X, UserRoundCog, PaperclipIcon, Search } from "lucide-react";
+import { EyeIcon, EyeClosed, X, UserRoundCog, PaperclipIcon, Search } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import EditStoreBranchesModal from "./EditStoreBranchesModal";
@@ -399,9 +398,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 onClick={() => toggleVisibility("password")}
               >
                 {passwordVisibility.password ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
                   <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeClosed className="h-5 w-5" />
                 )}
               </button>
             </div>
@@ -422,9 +421,9 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 onClick={() => toggleVisibility("confirmPassword")}
               >
                 {passwordVisibility.confirmPassword ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
                   <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeClosed className="h-5 w-5" />
                 )}
               </button>
             </div>

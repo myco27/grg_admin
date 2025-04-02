@@ -8,10 +8,10 @@ import {
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import { useAlert } from "../../contexts/alertContext";
-import { EyeSlashIcon } from "@heroicons/react/24/outline";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, EyeClosed } from "lucide-react";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
+
 const EditStoreBranchesModal = ({
   open,
   handleOpen,
@@ -175,7 +175,7 @@ const EditStoreBranchesModal = ({
                 onClick={() => toggleVisibility("password")}
               >
                 {passwordVisibility.password ? (
-                  <EyeSlashIcon className="h-5 w-5" />
+                  <EyeClosed className="h-5 w-5" />
                 ) : (
                   <EyeIcon className="h-5 w-5" />
                 )}
@@ -198,7 +198,7 @@ const EditStoreBranchesModal = ({
                 onClick={() => toggleVisibility("confirmPassword")}
               >
                 {passwordVisibility.confirmPassword ? (
-                  <EyeSlashIcon className="h-5 w-5" />
+                  <EyeClosed className="h-5 w-5" />
                 ) : (
                   <EyeIcon className="h-5 w-5" />
                 )}
