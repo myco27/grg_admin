@@ -10,7 +10,7 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { EyeIcon, EyeOff } from "lucide-react";
+import { EyeIcon, EyeClosed } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import Loading from "../../components/layout/Loading";
 
@@ -102,91 +102,97 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
     <Dialog open={open} handler={handleOpen}>
       <DialogHeader>Add New Admin</DialogHeader>
       <DialogBody className="flex flex-col gap-4">
-        {loading? (<Loading/>): submitting?(<Loading/>):(
+        {loading ? (
+          <Loading />
+        ) : submitting ? (
+          <Loading />
+        ) : (
           <>
-          <Select
-            required
-            label="Assign Role"
-            // value={formData.role}
-            onChange={handleRoleChange}
-          >
-            {roles.map((role) => (
-              <Option key={role.id} value={role.name}>
-                {role.name.toUpperCase()}
-              </Option>
+            <Select
+              required
+              label="Assign Role"
+              // value={formData.role}
+              onChange={handleRoleChange}
+            >
+              {roles.map((role) => (
+                <Option key={role.id} value={role.name}>
+                  {role.name.toUpperCase()}
+                </Option>
+              ))}
+            </Select>
+
+            <Input
+              label="First Name"
+              name="first_name"
+              type="text"
+              required
+              value={formData.first_name}
+              onChange={handleInputChange}
+            />
+            <Input
+              label="Last Name"
+              name="last_name"
+              type="text"
+              required
+              value={formData.last_name}
+              onChange={handleInputChange}
+            />
+            <Input
+              label="Email"
+              name="email"
+              type="email"
+              required
+              autoComplete="username"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+
+            {/* Password Field */}
+            {["password", "password_confirmation"].map((field, index) => (
+              <div className="relative" key={index}>
+                <Input
+                  label={field === "password" ? "Password" : "Confirm Password"}
+                  name={field}
+                  type={passwordVisibility[field] ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={formData[field]}
+                  onChange={handleInputChange}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                  onClick={() => toggleVisibility(field)}
+                >
+                  {passwordVisibility[field] ? (
+                    <EyeIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeClosed className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             ))}
-          </Select>
-
-          <Input
-            label="First Name"
-            name="first_name"
-            type="text"
-            required
-            value={formData.first_name}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="Last Name"
-            name="last_name"
-            type="text"
-            required
-            value={formData.last_name}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            required
-            autoComplete="username"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-
-          {/* Password Field */}
-          {["password", "password_confirmation"].map((field, index) => (
-            <div className="relative" key={index}>
-              <Input
-                label={field === "password" ? "Password" : "Confirm Password"}
-                name={field}
-                type={passwordVisibility[field] ? "text" : "password"}
-                autoComplete="new-password"
-                value={formData[field]}
-                onChange={handleInputChange}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                onClick={() => toggleVisibility(field)}
-              >
-                {passwordVisibility[field] ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <EyeIcon className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-          ))}
-
-       
           </>
         )}
       </DialogBody>
       <DialogFooter>
-      <div className="flex justify-end gap-2">
-            <Button variant="gradient" color="gray" onClick={handleOpen} disabled={submitting}>
-              <span>Cancel</span>
-            </Button>
-            <Button
-              type="submit"
-              className="bg-primary"
-              disabled={submitting}
-              onClick={handleSubmit}
-              
-            >
-              <span>{submitting ? "Saving..." : "Save"}</span>
-            </Button>
-          </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="gradient"
+            color="gray"
+            onClick={handleOpen}
+            disabled={submitting}
+          >
+            <span>Cancel</span>
+          </Button>
+          <Button
+            type="submit"
+            className="bg-primary"
+            disabled={submitting}
+            onClick={handleSubmit}
+          >
+            <span>{submitting ? "Saving..." : "Save"}</span>
+          </Button>
+        </div>
       </DialogFooter>
     </Dialog>
   );
