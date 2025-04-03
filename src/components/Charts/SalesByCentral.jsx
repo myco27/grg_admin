@@ -18,8 +18,8 @@ const chartConfig = {
       name: "Sales",
       data: [
         { x: "GravyBaby", y: 80, fillColor: "#612B9B", strokeColor: "blue" },
-        { x: "GravyBaby", y: 40, fillColor: "#612B9B", strokeColor: "blue" },
-        { x: "GravyBaby", y: 60, fillColor: "#612B9B", strokeColor: "blue" },
+        { x: "SouthernRock", y: 40, fillColor: "#612B9B", strokeColor: "blue" },
+        { x: "Shucked", y: 60, fillColor: "#612B9B", strokeColor: "blue" },
       ]
     },
   ],
