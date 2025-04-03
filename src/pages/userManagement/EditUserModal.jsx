@@ -244,6 +244,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       if (response.status === 202) {
         showAlert("User updated successfully!", "success");
         handleOpen();
+        fetchUsers();
       }
     } catch (error) {
       if (error.response?.data?.errors) {
