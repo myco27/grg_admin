@@ -15,7 +15,15 @@ import {
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { EyeIcon, EyeClosed, X, UserRoundCog, PaperclipIcon, Search } from "lucide-react";
+import {
+  EyeIcon,
+  EyeClosed,
+  X,
+  UserRoundCog,
+  PaperclipIcon,
+  Search,
+  ArrowLeftRight,
+} from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import EditStoreBranchesModal from "./EditStoreBranchesModal";
@@ -25,7 +33,7 @@ import Loading from "../../components/layout/Loading";
 
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const debounceSearch = useDebounce  ({ value: searchTerm });
+  const debounceSearch = useDebounce({ value: searchTerm });
   const [storeBranch, setStoreBranch] = useState([]);
   const [storeBranchId, setStoreBranchId] = useState(0);
   const [storeBranchDialogOpen, setStoreBranchDialogOpen] = useState(false);
@@ -43,6 +51,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isColumnReversed, setisColumnReversed] = useState(false);
   const [address, setAddress] = useState({
     houseNumber: "",
     building: "",
@@ -57,9 +66,21 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 10  ,
+    itemsPerPage: 10,
     isLoading: false,
   });
+
+  const STORE_HEAD = ["User Information", "Status", "Action"];
+
+  const reversedStoreHead = isColumnReversed
+    ? (() => {
+        const reversedHead = [
+          STORE_HEAD[STORE_HEAD.length - 1],
+          ...STORE_HEAD.slice(0, -1),
+        ];
+        return reversedHead;
+      })()
+    : STORE_HEAD;
 
   const handleImageOpen = () => {
     setOpenImage(!openImage);
@@ -171,14 +192,16 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
 
   const fetchStoreBranches = async () => {
     try {
-      setPagination({...pagination, isLoading:true})
+      setPagination({ ...pagination, isLoading: true });
       const response = await axiosClient.get(
-        `/admin/users/store-branches/${userId}`,{
+        `/admin/users/store-branches/${userId}`,
+        {
           params: {
             search: debounceSearch,
             page: pagination.page,
             page_size: pagination.itemsPerPage,
-          }}
+          },
+        }
       );
       if (response.status === 200) {
         const userData = response.data.data;
@@ -189,14 +212,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           totalItems: userData.total,
           links: [],
           itemsPerPage: userData.per_page,
-          isLoading:false
+          isLoading: false,
         };
 
         setPagination(newPagination);
       }
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-    } 
+    } catch {}
   };
 
   const updateUser = async () => {
@@ -282,7 +303,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     if (open && userId) {
       fetchStoreBranches();
       fetchUserDetails();
-      
     } else {
       setFirstName("");
       setLastName("");
@@ -309,12 +329,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         vaccinationCard: null,
       });
     }
-      setActiveTab("User Details")
+    setActiveTab("User Details");
   }, [open, userId]);
 
   useEffect(() => {
     fetchStoreBranches();
-  }, [debounceSearch,pagination.page, pagination.itemsPerPage])
+  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   const tabs = [
     {
@@ -323,112 +343,113 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       icon: <UserRoundCog />,
       content: (
         <>
-        
-      <form>
-          <div className="flex flex-col gap-5">
-            <Input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              label="Email"
-              type="email"
-              autoComplete="username"
-            />
-            <Input
-              label="First Name"
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <Input
-              label="Last Name"
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+          <form>
+            <div className="flex flex-col gap-5">
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                label="Email"
+                type="email"
+                autoComplete="username"
+              />
+              <Input
+                label="First Name"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <Input
+                label="Last Name"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
 
-            {userType === "rider" || userType === "customer" ? (
-              <Input
-                label="Mobile Number"
-                type="text"
-                value={mobileNumber}
-                onChange={(e) => setMobileNumber(e.target.value)}
-                autoComplete="tel"
-              />
-            ) : userType === "operator" ? (
-              <Input
-                label="Local Support Number"
-                type="text"
-                value={localSupportNumber}
-                autoComplete="tel"
-                onChange={(e) => setLocalSupportNumber(e.target.value)}
-              />
-            ) : userType === "central" || userType === "restaurant" ? (
-              <>
+              {userType === "rider" || userType === "customer" ? (
                 <Input
-                  label="Business Landline Number"
+                  label="Mobile Number"
                   type="text"
-                  value={businessLandlineNumber}
-                  onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
                   autoComplete="tel"
                 />
+              ) : userType === "operator" ? (
                 <Input
-                  label="Business Contact Number"
+                  label="Local Support Number"
                   type="text"
-                  value={businessContactNumber}
-                  onChange={(e) => setBusinessContactNumber(e.target.value)}
+                  value={localSupportNumber}
                   autoComplete="tel"
+                  onChange={(e) => setLocalSupportNumber(e.target.value)}
                 />
-              </>
-            ) : (
-              <div></div>
-            )}
-            {/* Password Field */}
-            <div className="relative">
-              <Input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                label="Password"
-                type={passwordVisibility.password ? "text" : "password"}
-                className="pr-10"
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                onClick={() => toggleVisibility("password")}
-              >
-                {passwordVisibility.password ? (
-                  <EyeIcon className="h-5 w-5" />
-                ) : (
-                  <EyeClosed className="h-5 w-5" />
-                )}
-              </button>
-            </div>
+              ) : userType === "central" || userType === "restaurant" ? (
+                <>
+                  <Input
+                    label="Business Landline Number"
+                    type="text"
+                    value={businessLandlineNumber}
+                    onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+                  <Input
+                    label="Business Contact Number"
+                    type="text"
+                    value={businessContactNumber}
+                    onChange={(e) => setBusinessContactNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+                </>
+              ) : (
+                <div></div>
+              )}
+              {/* Password Field */}
+              <div className="relative">
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  label="Password"
+                  type={passwordVisibility.password ? "text" : "password"}
+                  className="pr-10"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                  onClick={() => toggleVisibility("password")}
+                >
+                  {passwordVisibility.password ? (
+                    <EyeIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeClosed className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
 
-            {/* Confirm Password Field */}
-            <div className="relative">
-              <Input
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                label="Confirm Password"
-                type={passwordVisibility.confirmPassword ? "text" : "password"}
-                className="pr-10"
-                autoComplete="new-password"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                onClick={() => toggleVisibility("confirmPassword")}
-              >
-                {passwordVisibility.confirmPassword ? (
-                  <EyeIcon className="h-5 w-5" />
-                ) : (
-                  <EyeClosed className="h-5 w-5" />
-                )}
-              </button>
+              {/* Confirm Password Field */}
+              <div className="relative">
+                <Input
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  label="Confirm Password"
+                  type={
+                    passwordVisibility.confirmPassword ? "text" : "password"
+                  }
+                  className="pr-10"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                  onClick={() => toggleVisibility("confirmPassword")}
+                >
+                  {passwordVisibility.confirmPassword ? (
+                    <EyeIcon className="h-5 w-5" />
+                  ) : (
+                    <EyeClosed className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
         </>
       ),
     },
@@ -441,73 +462,70 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             icon: <PaperclipIcon></PaperclipIcon>,
             content: (
               <>
-                  <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
-                    {Object.entries(ridersAttachments).map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="flex flex-col items-center gap-2"
-                      >
-                        <input
-                          type="file"
-                          id={key}
-                          accept="image/*"
-                          onChange={(e) => handleImageChange(e, key)}
-                          className="hidden"
-                        />
-                        <label htmlFor={key}>
-                          <Typography className="text-nowrap text-sm font-semibold">
-                            {key
-                              .replace(/([A-Z])/g, " $1")
-                              .trim()
-                              .toUpperCase()}{" "}
-                          </Typography>
-                        </label>
+                <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
+                  {Object.entries(ridersAttachments).map(([key, value]) => (
+                    <div key={key} className="flex flex-col items-center gap-2">
+                      <input
+                        type="file"
+                        id={key}
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, key)}
+                        className="hidden"
+                      />
+                      <label htmlFor={key}>
+                        <Typography className="text-nowrap text-sm font-semibold">
+                          {key
+                            .replace(/([A-Z])/g, " $1")
+                            .trim()
+                            .toUpperCase()}{" "}
+                        </Typography>
+                      </label>
 
-                        {imagePreview[key] || value ? (
-                          <div className="flex">
-                            <div className="group relative">
-                              <Avatar
-                                src={
-                                  imagePreview[key] ||
-                                  `${
-                                    import.meta.env.VITE_APP_IMAGE_PATH
-                                  }/applicant/${value}`
+                      {imagePreview[key] || value ? (
+                        <div className="flex">
+                          <div className="group relative">
+                            <Avatar
+                              src={
+                                imagePreview[key] ||
+                                `${
+                                  import.meta.env.VITE_APP_IMAGE_PATH
+                                }/applicant/${value}`
+                              }
+                              alt={`${key} Preview`}
+                              className="h-48 w-48 border border-gray-300 object-cover shadow-md"
+                              variant="rounded"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                              <Button
+                                onClick={(e) =>
+                                  checkimagePreview(e, key, value)
                                 }
-                                alt={`${key} Preview`}
-                                className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                                variant="rounded"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                                <Button
-                                  onClick={(e) =>
-                                    checkimagePreview(e, key, value)
-                                  }
-                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                                >
-                                  <span>View</span>
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    document.getElementById(key).click()
-                                  }
-                                  className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                                >
-                                  Upload
-                                </Button>
-                              </div>
+                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                              >
+                                <span>View</span>
+                              </Button>
+                              <Button
+                                onClick={() =>
+                                  document.getElementById(key).click()
+                                }
+                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                              >
+                                Upload
+                              </Button>
                             </div>
                           </div>
-                        ) : (
-                          <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                            <span className="text-center text-sm text-gray-500">
-                              Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                
+                        </div>
+                      ) : (
+                        <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
+                          <span className="text-center text-sm text-gray-500">
+                            Upload {key.replace(/([A-Z])/g, " $1").trim()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
                 <Dialog
                   inert={openImage ? "true" : undefined}
                   open={openImage}
@@ -547,62 +565,174 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
             icon: <PaperclipIcon></PaperclipIcon>,
             content: (
               <>
-                 
-                  <div className="flex flex-col gap-2 overflow-scroll">
-                    <div className="flex w-full justify-end pr-2 pt-2" >
-                    <div className="relative">
-                    <Input
-                      label="Search User"
-                      icon={
-                        pagination.isLoading ? (
-                          <Spinner className="h-5 w-5" />
-                        ) : (
-                          <Search className="h-5 w-5" />
-                        )
-                      }
-                      className="w-72 bg-white"
-                      value={searchTerm}
-                      onChange={(e) => handleSearchInput(e)}
-                    />
+                <div className="flex flex-col gap-2 overflow-scroll">
+                  <div className="flex w-full justify-end pr-2 pt-2">
+                    <div className="relative flex flex-row items-center gap-2">
+                      <IconButton
+                        variant="text"
+                        onClick={() => setisColumnReversed(!isColumnReversed)}
+                      >
+                        <ArrowLeftRight></ArrowLeftRight>
+                      </IconButton>
+
+                      <Input
+                        label="Search"
+                        icon={
+                          pagination.isLoading ? (
+                            <Spinner className="h-5 w-5" />
+                          ) : (
+                            <Search className="h-5 w-5" />
+                          )
+                        }
+                        className="w-72 bg-white"
+                        value={searchTerm}
+                        onChange={(e) => handleSearchInput(e)}
+                      />
                     </div>
-                    </div>
-                   
-                    <table className="w-full min-w-max table-auto rounded-md text-left">
-                      <thead>
-                        <tr className="bg-gray-200">
-                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
+                  </div>
+
+                  <table className="w-full min-w-max table-auto rounded-md text-left">
+                    <thead>
+                      <tr>
+                        {reversedStoreHead.map((head, index) => (
+                          <th
+                            key={head}
+                            className={`bg-tableHeaderBg p-4 ${
+                              index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                            } ${
+                              index === reversedStoreHead.length - 1
+                                ? "rounded-tr-md rounded-br-md"
+                                : ""
+                            }`}
+                          >
                             <Typography
                               variant="small"
                               color="black"
                               className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                             >
-                              User Information
+                              {head}
                             </Typography>
                           </th>
-                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
-                            <Typography
-                              variant="small"
-                              color="black"
-                              className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                            >
-                              Status
-                            </Typography>
-                          </th>
-                          <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
-                            <Typography
-                              variant="small"
-                              color="black"
-                              className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                            >
-                              Action
-                            </Typography>
-                          </th>
-                        </tr>
-                      </thead>
-                      
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {storeBranch.map((store, index) => {
+                        const columns = [
+                          {
+                            key: "store_name",
+                            value: (
+                              <td className="p-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex flex-col">
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal"
+                                    >
+                                      {store?.users[0]?.first_name || ""}{" "}
+                                      {store?.users[0]?.last_name || ""}
+                                    </Typography>
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal opacity-70"
+                                    >
+                                      {store?.users[0]?.email || ""}
+                                    </Typography>
+                                  </div>
+                                </div>
+                              </td>
+                            ),
+                            className: "flex p-4",
+                          },
+                          {
+                            key: "status",
+                            value: (
+                              <td className="p-4">
+                                <div className="w-max items-center justify-center">
+                                  <Chip
+                                    variant="ghost"
+                                    size="sm"
+                                    value={
+                                      store?.users[0]?.is_active == 1
+                                        ? "Active"
+                                        : store?.users[0]?.is_active == 2
+                                        ? "Suspended"
+                                        : store?.users[0]?.is_active == 3
+                                        ? "Deleted"
+                                        : "Inactive"
+                                    }
+                                    color={
+                                      store?.users[0]?.is_active == 1
+                                        ? "green"
+                                        : store?.users[0]?.is_active == 2
+                                        ? "orange"
+                                        : store?.users[0]?.is_active == 3
+                                        ? "red"
+                                        : "blue-gray"
+                                    }
+                                  />
+                                </div>
+                              </td>
+                            ),
+                    
+                          },
+                          {
+                            key: "edit",
+                            value: (
+                              <>
+                                <Tooltip
+                                  className="z-[9999]"
+                                  content="Edit User"
+                                >
+                                  <IconButton
+                                    variant="text"
+                                    onClick={() =>
+                                      handleStoreBranchesModal(
+                                        store?.users[0]?.id,
+                                        store?.users[0]?.user_type
+                                      )
+                                    }
+                                  >
+                                    <PencilIcon className="h-4 w-4" />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            ),
+                            className: "p-4",
+                          },
+                        ];
+                        const displayColumns = isColumnReversed
+                          ? (() => {
+                              const reversedCol = [
+                                columns[columns.length - 1],
+                                ...columns.slice(0, -1),
+                              ];
+                              return reversedCol;
+                            })()
+                          : columns;
+
+                        return (
+                          <tr
+                            key={index}
+                            className="border-b border-gray-300 hover:bg-gray-100"
+                          >
+                            {displayColumns.map((col) => (
+                              <td key={col.key} className={col.className}>
+                                {col.value}
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    {/*}
                       <tbody>
+                        {console.log(storeBranch)}
                         {pagination.isLoading?<tr><td colSpan={3}><Loading></Loading></td></tr>:storeBranch.length > 0 ? (
                           storeBranch.map((store, index) => (
+                            
                             <tr
                               key={index}
                               className="border-b border-gray-300 hover:bg-gray-100"
@@ -684,18 +814,18 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                           </tr>
                         )}
                       </tbody>
-                    </table>
-                    <Pagination
-                      currentPage={pagination.page}
-                      totalItems={pagination.totalItems}
-                      itemsPerPage={pagination.itemsPerPage}
-                      totalPages={pagination.totalPages}
-                      onPageChange={(newPage) => handlePageChange(newPage)}
-                      isLoading={pagination.isLoading}
-                      onPageSizeChange={handlePageSizeChange}
-                    />
-                  </div>
-                
+                      */}
+                  </table>
+                  <Pagination
+                    currentPage={pagination.page}
+                    totalItems={pagination.totalItems}
+                    itemsPerPage={pagination.itemsPerPage}
+                    totalPages={pagination.totalPages}
+                    onPageChange={(newPage) => handlePageChange(newPage)}
+                    isLoading={pagination.isLoading}
+                    onPageSizeChange={handlePageSizeChange}
+                  />
+                </div>
 
                 <Dialog
                   inert={openImage ? "true" : undefined}
@@ -732,7 +862,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <Base open={open} handleOpen={handleOpen} size="lg" >
+        <Base open={open} handleOpen={handleOpen} size="lg">
           <Tabs
             value={activeTab}
             className="flex w-full overflow-hidden rounded-lg"
