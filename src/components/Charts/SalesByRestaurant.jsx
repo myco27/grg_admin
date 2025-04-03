@@ -14,18 +14,30 @@ const chartConfig = {
         {
             name: "Actual",
             data: [
-                { x: "Bangsar", y: 10, goals: [{ name: "Expected", value: 10, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "KLCC", y: 44, goals: [{ name: "Expected", value: 44, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Changkat", y: 54, goals: [{ name: "Expected", value: 54, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Damansara", y: 66, goals: [{ name: "Expected", value: 66, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Ramlee", y: 81, goals: [{ name: "Expected", value: 81, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Melaka", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Sunway", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Queens bay", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Auto City", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Chulia", y: 81, goals: [{ name: "Expected", value: 81, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Gurney", y: 92, goals: [{ name: "Expected", value: 92, strokeWidth: 15, strokeColor: "purple" }] },
-                { x: "Batu", y: 48, goals: [{ name: "Expected", value: 48, strokeWidth: 15, strokeColor: "purple" }] },
+                { x: "Bangsar", y: 10, goals: [{ name: "Expected", value: 10, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "KLCC", y: 44, goals: [{ name: "Expected", value: 44, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Changkat", y: 54, goals: [{ name: "Expected", value: 54, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Damansara", y: 66, goals: [{ name: "Expected", value: 66, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Ramlee", y: 81, goals: [{ name: "Expected", value: 81, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Melaka", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Sunway", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Queens bay", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Auto City", y: 67, goals: [{ name: "Expected", value: 67, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Chulia", y: 81, goals: [{ name: "Expected", value: 81, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Gurney", y: 92, goals: [{ name: "Expected", value: 92, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
+                { x: "Batu", y: 48, goals: [{ name: "Expected", value: 48, strokeWidth: 15, strokeColor: "#612B9B4D"
+ }] },
             ],
         },
     ],

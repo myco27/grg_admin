@@ -53,7 +53,7 @@ const chartConfig = {
     yaxis: {
       labels: {
         style: {
-          colors: "#616161",
+          colors: "#612B9B",
           fontSize: "12px",
           fontFamily: "inherit",
           fontWeight: 400,
