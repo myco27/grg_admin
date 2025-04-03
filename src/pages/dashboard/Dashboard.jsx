@@ -44,7 +44,7 @@ const Dashboard = () => {
 
   return (
     <div className="m-5 flex flex-col justify-center gap-5">
-      <div id="row1" className="flex flex-col gap-1 sm:flex-row">
+      <div id="row1" className="flex flex-grow flex-col justify-evenly gap-1 sm:flex-row">
         <Card className="item-center flex min-w-[360px] justify-center">
         <div id="div1" className="grid grid-cols-2 grid-rows-2 gap-2 px-5">
           <div className="flex items-center justify-center rounded-md border">
