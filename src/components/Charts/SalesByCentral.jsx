@@ -15,7 +15,7 @@ const chartConfig = {
   height: 240,
   series: [
     {
-      name: "Sales",
+      name: "Branchs",
       data: [
         { x: "GravyBaby", y: 80, fillColor: "#612B9B", strokeColor: "blue" },
         { x: "SouthernRock", y: 40, fillColor: "#612B9B", strokeColor: "blue" },
