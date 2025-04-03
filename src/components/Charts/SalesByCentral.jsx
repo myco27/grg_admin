@@ -75,7 +75,7 @@ const chartConfig = {
 // Component
 export default function SalesByCentral() {
   return (
-    <Card className="min-w-[412px]">
+    <Card className="min-w-[370px]">
       <CardHeader
         floated={false}
         shadow={false}

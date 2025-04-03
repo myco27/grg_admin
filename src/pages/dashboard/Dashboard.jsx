@@ -119,7 +119,7 @@ const Dashboard = () => {
           <SalesByRestaurant/>
         </div>
       </div>
-      <div className="flex flex-col gap-1 sm:flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div className="flex">
             <SalesByCentral/>
         </div>
