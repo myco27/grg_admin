@@ -34,7 +34,6 @@ import Loading from "../../components/layout/Loading";
 const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
-  const debounceSearch = useDebounce({ value: searchTerm });
   const [storeBranch, setStoreBranch] = useState([]);
   const [storeBranchId, setStoreBranchId] = useState(0);
   const [storeBranchDialogOpen, setStoreBranchDialogOpen] = useState(false);
@@ -67,7 +66,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
     totalPages: 1,
     totalItems: 0,
     links: [],
-    itemsPerPage: 10,
     itemsPerPage: 10,
     isLoading: false,
   });
@@ -195,18 +193,13 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const fetchStoreBranches = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
-      setPagination({ ...pagination, isLoading: true });
       const response = await axiosClient.get(
-        `/admin/users/store-branches/${userId}`,
-        {
         `/admin/users/store-branches/${userId}`,
         {
           params: {
             search: debounceSearch,
             page: pagination.page,
             page_size: pagination.itemsPerPage,
-          },
-        }
           },
         }
       );
@@ -220,14 +213,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
           links: [],
           itemsPerPage: userData.per_page,
           isLoading: false,
-          isLoading: false,
         };
 
         setPagination(newPagination);
       }
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-    }
     } catch {}
   };
 
@@ -267,7 +256,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       if (response.status === 202) {
         showAlert("User updated successfully!", "success");
         handleOpen();
-        fetchUsers();
       }
     } catch (error) {
       if (error.response?.data?.errors) {
@@ -342,12 +330,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       });
     }
     setActiveTab("User Details");
-    setActiveTab("User Details");
   }, [open, userId]);
 
   useEffect(() => {
     fetchStoreBranches();
-  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
   }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   const tabs = [
@@ -378,27 +364,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
               />
-          <form>
-            <div className="flex flex-col gap-5">
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                label="Email"
-                type="email"
-                autoComplete="username"
-              />
-              <Input
-                label="First Name"
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <Input
-                label="Last Name"
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
 
               {userType === "rider" || userType === "customer" ? (
                 <Input
@@ -458,91 +423,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                   )}
                 </button>
               </div>
-              {userType === "rider" || userType === "customer" ? (
-                <Input
-                  label="Mobile Number"
-                  type="text"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  autoComplete="tel"
-                />
-              ) : userType === "operator" ? (
-                <Input
-                  label="Local Support Number"
-                  type="text"
-                  value={localSupportNumber}
-                  autoComplete="tel"
-                  onChange={(e) => setLocalSupportNumber(e.target.value)}
-                />
-              ) : userType === "central" || userType === "restaurant" ? (
-                <>
-                  <Input
-                    label="Business Landline Number"
-                    type="text"
-                    value={businessLandlineNumber}
-                    onChange={(e) => setBusinessLandlineNumber(e.target.value)}
-                    autoComplete="tel"
-                  />
-                  <Input
-                    label="Business Contact Number"
-                    type="text"
-                    value={businessContactNumber}
-                    onChange={(e) => setBusinessContactNumber(e.target.value)}
-                    autoComplete="tel"
-                  />
-                </>
-              ) : (
-                <div></div>
-              )}
-              {/* Password Field */}
-              <div className="relative">
-                <Input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  type={passwordVisibility.password ? "text" : "password"}
-                  className="pr-10"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                  onClick={() => toggleVisibility("password")}
-                >
-                  {passwordVisibility.password ? (
-                    <EyeIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeClosed className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
 
-              {/* Confirm Password Field */}
-              <div className="relative">
-                <Input
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  label="Confirm Password"
-                  type={
-                    passwordVisibility.confirmPassword ? "text" : "password"
-                  }
-                  className="pr-10"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                  onClick={() => toggleVisibility("confirmPassword")}
-                >
-                  {passwordVisibility.confirmPassword ? (
-                    <EyeIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeClosed className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
               {/* Confirm Password Field */}
               <div className="relative">
                 <Input
@@ -599,186 +480,6 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                             .toUpperCase()}{" "}
                         </Typography>
                       </label>
-
-                      {imagePreview[key] || value ? (
-                        <div className="flex">
-                          <div className="group relative">
-                            <Avatar
-                              src={
-                                imagePreview[key] ||
-                                `${
-                                  import.meta.env.VITE_APP_IMAGE_PATH
-                                }/applicant/${value}`
-                              }
-                              alt={`${key} Preview`}
-                              className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                              variant="rounded"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                              <Button
-                                onClick={(e) =>
-                                  checkimagePreview(e, key, value)
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                <span>View</span>
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  document.getElementById(key).click()
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                Upload
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                          <span className="text-center text-sm text-gray-500">
-                            Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                      {imagePreview[key] || value ? (
-                        <div className="flex">
-                          <div className="group relative">
-                            <Avatar
-                              src={
-                                imagePreview[key] ||
-                                `${
-                                  import.meta.env.VITE_APP_IMAGE_PATH
-                                }/applicant/${value}`
-                              }
-                              alt={`${key} Preview`}
-                              className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                              variant="rounded"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                              <Button
-                                onClick={(e) =>
-                                  checkimagePreview(e, key, value)
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                <span>View</span>
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  document.getElementById(key).click()
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                Upload
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                          <span className="text-center text-sm text-gray-500">
-                            Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                      {imagePreview[key] || value ? (
-                        <div className="flex">
-                          <div className="group relative">
-                            <Avatar
-                              src={
-                                imagePreview[key] ||
-                                `${
-                                  import.meta.env.VITE_APP_IMAGE_PATH
-                                }/applicant/${value}`
-                              }
-                              alt={`${key} Preview`}
-                              className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                              variant="rounded"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                              <Button
-                                onClick={(e) =>
-                                  checkimagePreview(e, key, value)
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                <span>View</span>
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  document.getElementById(key).click()
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                Upload
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                          <span className="text-center text-sm text-gray-500">
-                            Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                      {imagePreview[key] || value ? (
-                        <div className="flex">
-                          <div className="group relative">
-                            <Avatar
-                              src={
-                                imagePreview[key] ||
-                                `${
-                                  import.meta.env.VITE_APP_IMAGE_PATH
-                                }/applicant/${value}`
-                              }
-                              alt={`${key} Preview`}
-                              className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                              variant="rounded"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                              <Button
-                                onClick={(e) =>
-                                  checkimagePreview(e, key, value)
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                <span>View</span>
-                              </Button>
-                              <Button
-                                onClick={() =>
-                                  document.getElementById(key).click()
-                                }
-                                className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                              >
-                                Upload
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                          <span className="text-center text-sm text-gray-500">
-                            Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
 
                       {imagePreview[key] || value ? (
                         <div className="flex">
@@ -949,7 +650,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                             key: "status",
                             value: (
                               <td className="p-4">
-                                <div className="w-max items-center justify-center">
+                                <div className="w-max">
                                   <Chip
                                     variant="ghost"
                                     size="sm"
@@ -975,7 +676,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                                 </div>
                               </td>
                             ),
-                    
+                            className: "max-w-60 p-4", 
                           },
                           {
                             key: "edit",
