@@ -52,7 +52,7 @@ const chartConfig = {
                 horizontal: false,
             },
         },
-        colors: ["violet"],
+        colors: ["#612B9B4D"],
         xaxis: {
             labels: {
                 style: {

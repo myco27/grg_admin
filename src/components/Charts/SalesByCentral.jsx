@@ -7,9 +7,6 @@ import {
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-
-
-
 const chartConfig = {
   type: "bar",
   height: 240,
@@ -31,6 +28,10 @@ const chartConfig = {
     dataLabels: {
       enabled: true,
       position: "inside",
+      formatter: (val, { dataPointIndex }) => {
+        const branchNames = ["GravyBaby", "SouthernRock", "Shucked"];
+        return `${branchNames[dataPointIndex]}: ${val}`;
+      },
       style: {
         fontSize: "14px",
         fontWeight: "bold",
