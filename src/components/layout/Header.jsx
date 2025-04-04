@@ -156,8 +156,8 @@ export default function Header() {
                 <Typography color="white" className="font-medium">
                   {user?.first_name} {user?.last_name}
                 </Typography>
-                <Typography className="text-gray-300 mt-[-6px]">
-                  Admin
+                <Typography className="text-gray-300 mt-[-6px] text-sm">
+                  {user.roles[0].name.toUpperCase()}
                 </Typography>
               </div>
               <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
