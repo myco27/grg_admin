@@ -9,12 +9,12 @@ const Base = ({
   className
 }) => {
   return (
-    <Dialog 
-      aria-hidden='false'
+    <Dialog
       size={size} 
       open={open} 
       handler={handleOpen}
       className={`flex flex-col ${className}`}
+      dismiss={{ outsidePress: false }}
     >
       {children}
     </Dialog>

@@ -11,7 +11,7 @@ import {
   Option,
   Select,
 } from "@material-tailwind/react";
-import { EyeIcon, EyeOff } from "lucide-react";
+import { EyeIcon, EyeClosed } from "lucide-react";
 import Loading from "../../components/layout/Loading";
 
 const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
@@ -122,102 +122,107 @@ const EditAdminModal = ({ editOpen, editHandleOpen, adminId, fetchUsers }) => {
 
   return (
     <form>
-    <Dialog className='aria-hidden:true'open={editOpen} handler={editHandleOpen}>
-      <DialogHeader>Edit Admin</DialogHeader>
-      <DialogBody className="flex flex-col gap-4">
- 
-        {loading ? (
-          <Loading/>
-        ) : saving?(
-          <Loading/>
-        ):(
-       <>
-            {/* Role Selection */}
-            
-            <Select
-              id="role"
-              required
-              label="Assign Role"
-              value={formData.role}
-              onChange={handleRoleChange}
-            >
-              {roles.map((role) => (
-                <Option key={role.id} value={role.name}>
-                  {role.name.toUpperCase()}
-                </Option>
-              ))}
-            </Select>
+      <Dialog open={editOpen} handler={editHandleOpen}>
+        <DialogHeader>Edit Admin</DialogHeader>
+        <DialogBody className="flex flex-col gap-4">
+          {loading ? (
+            <Loading />
+          ) : saving ? (
+            <Loading />
+          ) : (
+            <>
+              {/* Role Selection */}
 
-            <Input
-              label="First Name"
-              name="first_name"
-              type="text"
-              required
-              value={formData.first_name}
-              onChange={handleInputChange}
-            />
-            <Input
-              label="Last Name"
-              name="last_name"
-              type="text"
-              required
-              value={formData.last_name}
-              onChange={handleInputChange}
-            />
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              required
-              autoComplete="username"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-
-            {/* Password Fields */}
-            {["password", "password_confirmation"].map((field, index) => (
-              <div className="relative" key={index}>
-                <Input
-                  label={field === "password" ? "Password" : "Confirm Password"}
-                  name={field}
-                  type={passwordVisibility[field] ? "text" : "password"}
-                  autoComplete="new-password"
-                  value={formData[field]}
-                  onChange={handleInputChange}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
-                  onClick={() => toggleVisibility(field)}
-                  disabled={true}
-                >
-                  {passwordVisibility[field] ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            ))}
-          </>
-        )}
-      </DialogBody>
-      <DialogFooter>
-      <div className="flex justify-end gap-2">
-              <Button
-                variant="gradient"
-                color="gray"
-                disabled={saving}
-                onClick={editHandleOpen}
+              <Select
+                id="role"
+                required
+                label="Assign Role"
+                value={formData.role}
+                onChange={handleRoleChange}
               >
-                <span className="m-0 p-0">Cancel</span>
-              </Button>
-              <Button onClick={handleSubmit} className="bg-primary" type="submit" disabled={saving}>
-                <span className="m-0 p-0">{saving ? "Saving..." : "Save"}</span>
-              </Button>
-            </div>
-      </DialogFooter>
-    </Dialog>
+                {roles.map((role) => (
+                  <Option key={role.id} value={role.name}>
+                    {role.name.toUpperCase()}
+                  </Option>
+                ))}
+              </Select>
+
+              <Input
+                label="First Name"
+                name="first_name"
+                type="text"
+                required
+                value={formData.first_name}
+                onChange={handleInputChange}
+              />
+              <Input
+                label="Last Name"
+                name="last_name"
+                type="text"
+                required
+                value={formData.last_name}
+                onChange={handleInputChange}
+              />
+              <Input
+                label="Email"
+                name="email"
+                type="email"
+                required
+                autoComplete="username"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+
+              {/* Password Fields */}
+              {["password", "password_confirmation"].map((field, index) => (
+                <div className="relative" key={index}>
+                  <Input
+                    label={
+                      field === "password" ? "Password" : "Confirm Password"
+                    }
+                    name={field}
+                    type={passwordVisibility[field] ? "text" : "password"}
+                    autoComplete="new-password"
+                    value={formData[field]}
+                    onChange={handleInputChange}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+                    onClick={() => toggleVisibility(field)}
+                  >
+                    {passwordVisibility[field] ? (
+                      <EyeIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeClosed className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </>
+          )}
+        </DialogBody>
+        <DialogFooter>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="gradient"
+              color="gray"
+              disabled={saving}
+              onClick={editHandleOpen}
+            >
+              <span className="m-0 p-0">Cancel</span>
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              className="bg-primary"
+              type="submit"
+              disabled={saving}
+            >
+              <span className="m-0 p-0">{saving ? "Saving..." : "Save"}</span>
+            </Button>
+          </div>
+        </DialogFooter>
+      </Dialog>
     </form>
   );
 };
