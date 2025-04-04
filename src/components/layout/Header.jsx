@@ -9,13 +9,15 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
-import { ChevronDown, LogOut, Menu as MenuIcon, User } from "lucide-react";
+import { ChevronDown, LogOut, Menu as MenuIcon, Settings, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
 import ProfileModal from "../Profile/ProfileModal";
 import ConfirmationDialog from "../ConfirmationDialog";
+import SettingsModal from "../Settings Modal/SettingsModal";
+
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +27,8 @@ export default function Header() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [settingOpen, setSettingOpen] = useState(false);
+  
   const {
     user,
     setUser,
@@ -44,6 +48,13 @@ export default function Header() {
     setSelectedUser(userType);
     setProfileOpen(!profileOpen);
   };
+
+  const handleSettingOpen = (userId, userType) => {
+    setSelectedUserId(userId);
+    setSelectedUser(userType);
+    setSettingOpen(!settingOpen);
+    console.log(settingOpen)
+  }
 
   useEffect(() => {
     if (!user) {
@@ -116,7 +127,7 @@ export default function Header() {
   };
 
   return (
-    <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm py-1 flex flex-row justify-between items-center">
+    <div className="flex flex-row items-center justify-between border-b border-purple-600 bg-[#612B9B] py-1 shadow-sm">
       <div className="flex items-center gap-2">
         <IconButton
           variant="text"
@@ -126,30 +137,30 @@ export default function Header() {
         >
           <MenuIcon className="h-6 w-6 text-white" />
         </IconButton>
-        <Typography color="white" className="font-medium text-nowrap">
+        <Typography color="white" className="text-nowrap font-medium">
           {getPageTitle()}
         </Typography>
       </div>
 
-      <div className="flex justify-end items-end w-full">
+      <div className="flex w-full items-end justify-end">
         <Menu placement="bottom-end">
           <MenuHandler>
             <Button
               variant="text"
               className="flex items-center gap-2 p-2 normal-case"
             >
-              <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
+                <span className="text-lg font-bold text-blue-600">
                   {" "}
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
                 </span>
               </div>
-              <div className="hidden sm:flex flex-col items-start">
+              <div className="hidden flex-col items-start sm:flex">
                 <Typography color="white" className="font-medium">
                   {user?.first_name} {user?.last_name}
                 </Typography>
-                <Typography className="text-gray-300 mt-[-6px]">
+                <Typography className="mt-[-6px] text-gray-300">
                   Admin
                 </Typography>
               </div>
@@ -176,6 +187,11 @@ export default function Header() {
             >
               <LogOut className="h-4 w-4" /> Sign Out
             </MenuItem>
+
+            <MenuItem className="flex items-center gap-2"
+            onClick={handleSettingOpen}>
+     <Settings className="h-4 w-4"/>Settings
+            </MenuItem>
           </MenuList>
         </Menu>
       </div>
@@ -194,6 +210,15 @@ export default function Header() {
         isLoading={loading}
         message={"Are you sure you want to log out?"}
       />
+
+      <SettingsModal
+      openSetting={settingOpen}
+      settingHandler={handleSettingOpen}
+      userId={selectedUserId}
+      userType={selectedUser}
+      isLoading={loading}
+      />
+      
     </div>
   );
 }
