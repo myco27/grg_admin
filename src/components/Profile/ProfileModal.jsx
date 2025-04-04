@@ -218,7 +218,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                   variant="small"
                   className="text-[10px] text-gray-500"
                 >
-                  JPG or PNG. Max size of 800K
+                  JPG or PNG. Max size of 2048kb
                 </Typography>
                 <input
                 type="file"
