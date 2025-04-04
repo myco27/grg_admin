@@ -25,6 +25,7 @@ export default function Header() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
   const {
     user,
     setUser,
@@ -86,6 +87,7 @@ export default function Header() {
 
   const openProfileModal = () => {
     handleProfileOpen(user.id, user.user_type);
+    setProfilePicture(user.profile_picture);
   };
 
   const toggleSidebar = () => {
@@ -139,11 +141,16 @@ export default function Header() {
               className="flex items-center gap-2 p-2 normal-case"
             >
               <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">
+                <img
+                  src={user?.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user?.profile_picture}` : ''}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                />
+                {/* <span className="text-blue-600 font-bold text-lg">
                   {" "}
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
-                </span>
+                </span> */}
               </div>
               <div className="hidden sm:flex flex-col items-start">
                 <Typography color="white" className="font-medium">

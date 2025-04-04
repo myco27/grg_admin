@@ -12,6 +12,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
   const [currentPasswordError, setCurrentPasswordStatus] = useState(false);
   const [newPasswordError, setNewPasswordStatus] = useState(false);
   const [confirmPasswordError, setConfirmPasswordStatus] = useState(false);
@@ -27,7 +28,8 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   });
   const { showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState("basic_setting");
-  const { user, fetchUsers } = useStateContext();
+  const { user, setUser } = useStateContext();
+  const [selectedFile, setSelectedFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
   const changePassword = async (event) => {
@@ -81,13 +83,21 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result); // Set the image preview
-      };
-      reader.readAsDataURL(file);
+      setSelectedFile(file);
+      // Create a preview URL for the selected file
+      const previewUrl = URL.createObjectURL(file);
+      setSelectedImage(previewUrl);
     }
   };
+
+  // Cleanup function to revoke object URLs
+  useEffect(() => {
+    return () => {
+      if (selectedImage && selectedImage.startsWith('blob:')) {
+        URL.revokeObjectURL(selectedImage);
+      }
+    };
+  }, [selectedImage]);
 
   const fetchUserDetails = async () => {
     try {
@@ -98,6 +108,12 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
         setLastName(response.data.user.last_name);
         setEmail(response.data.user.email);
         setMobileNumber(response.data.user.mobile_number);
+        
+        // If there's an existing profile picture, set it for preview
+        if (response.data.user.profile_picture) {
+          // Use the environment variable for the base URL
+          setSelectedImage(`${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${response.data.user.profile_picture}`);
+        }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -108,19 +124,35 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
     event.preventDefault();
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append('first_name', firstName);
+      formData.append('last_name', lastName);
+      formData.append('email', email);
+      formData.append('mobile_number', mobileNumber);
+      if (selectedFile) {
+        formData.append('profile_picture', selectedFile);
+      }
+
       const response = await axiosClient.post(
         `/admin/users/update-profile/${userId}`,
+        formData,
         {
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          mobile_number: mobileNumber,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
       );
 
       if (response.status === 200) {
         showAlert(response.data.message, "success");
         handleOpen();
+        
+        // Cleanup the object URL after successful upload
+        if (selectedImage && selectedImage.startsWith('blob:')) {
+          URL.revokeObjectURL(selectedImage);
+        }
+      
+        setUser(response.data.user);
       }
     } catch (error) {
       if (error.response?.data?.errors) {
