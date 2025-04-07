@@ -259,7 +259,9 @@ export default function SalesByRestaurant() {
       </CardHeader>
       <CardBody className="px-2 pb-0">
         {loading ? (
-          <Loading />
+          <div className="min-h-[50px]">
+          <Loading height={'min-h-[265px]'} />
+          </div>
         ) : (
           <Chart
             type="bar"
