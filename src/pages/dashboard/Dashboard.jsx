@@ -65,15 +65,15 @@ const Dashboard = () => {
 
   return (
     <Card className="rounded-none shadow-none">
-      <div className="m-5 flex flex-col justify-center gap-5">
+      <div className="m-5 flex flex-col gap-5">
         <div
           id="row1"
-          className="flex flex-grow flex-col justify-evenly gap-1 sm:flex-row"
+          className="flex flex-grow flex-col justify-center gap-1 sm:flex-row"
         >
-          <Card className="item-center flex max-w-[370px] justify-center">
-            <div id="div1" className="grid grid-cols-2 grid-rows-2 gap-2 px-5">
-              <div className="flex items-center justify-center rounded-md border">
-                <CardBody className="text-center">
+          <Card className="item-center flex max-w-[370px] justify-around rounded-none shadow-none">
+            <div id="div1" className="grid min-w-full grid-cols-2 grid-rows-2 gap-2 p-0">
+              <div className="flex items-center justify-center rounded-none border">
+                <CardBody className="flex min-h-[175px] flex-col justify-center text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row gap-1">
                     <Building2 className="rounded" /> Central
                   </Typography>
@@ -88,7 +88,7 @@ const Dashboard = () => {
                   )}
                 </CardBody>
               </div>
-              <div className="flex min-w-fit items-center justify-center rounded-md border">
+              <div className="flex min-w-fit items-center justify-center rounded-none border">
                 <CardBody className="text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row">
                     <UserRound />
@@ -117,7 +117,7 @@ const Dashboard = () => {
                   )}
                 </CardBody>
               </div>
-              <div className="flex items-center justify-center rounded-md border">
+              <div className="flex items-center justify-center rounded-none border">
                 <CardBody className="text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row gap-1">
                     <Hotel />
@@ -135,7 +135,7 @@ const Dashboard = () => {
                   )}
                 </CardBody>
               </div>
-              <div className="flex min-w-fit items-center justify-center rounded-md border">
+              <div className="flex min-w-fit items-center justify-center rounded-none border">
                 <CardBody className="text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row gap-1">
                     <Bike /> Riders

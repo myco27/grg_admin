@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
   Input,
-  Menu,
-  MenuHandler,
-  MenuItem,
-  MenuList,
   Typography,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import Chart from "react-apexcharts";
 import Loading from "../layout/Loading";
-import { MenuIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function SalesByRestaurant() {
   const [storeData, setStoreData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStore, setSelectedStore] = useState("All");
   const [chartSeries, setChartSeries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filteredList, setFilteredList] = useState([])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
+  
   const [chartOptions, setChartOptions] = useState({
     chart: {
       type: "bar",
@@ -85,6 +83,7 @@ export default function SalesByRestaurant() {
     },
   });
   
+  // Filter stores based on search term
   const filteredStores = storeData.filter(store => 
     (store.central_store_name + store.store_name)
       .toLowerCase()
@@ -92,16 +91,41 @@ export default function SalesByRestaurant() {
       .includes(searchTerm.toLowerCase().replace(/\s/g, ""))  
   );
   
-  
-  
-  
-
-  const getStoreId = (userId,storeName) => {
-    console.log("The ID:", userId);
-    setSelectedStore(storeName)
+  const selectStore = (userId, storeName) => {
+    setSelectedStore(storeName);
+    setSearchTerm("");
+    setIsDropdownOpen(false);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    // Keep dropdown open while typing
+    if (!isDropdownOpen) {
+      setIsDropdownOpen(true);
+    }
+  };
 
+  const handleInputClick = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   const fetchStoreMonthly = async () => {
     try {
@@ -111,11 +135,9 @@ export default function SalesByRestaurant() {
       );
       if (response.status === 200) {
         const array = Object.values(response.data.data);
-
+        setStoreData(array);
         const sortedData = array.sort((a, b) => b.totalSales - a.totalSales);
-
         const top10Stores = sortedData.slice(0, 10);
-
         const months = [
           "January",
           "February",
@@ -143,10 +165,7 @@ export default function SalesByRestaurant() {
             },
           ],
         }));
-
-        setStoreData(array);
-        setFilteredList(array)
-        console.log(array);
+        
         setChartSeries([{ name: "Actual", data: formattedData }]);
       }
     } catch (e) {
@@ -164,42 +183,67 @@ export default function SalesByRestaurant() {
   }, []);
 
   return (
-    <Card>
+    <Card className="rounded-none border shadow-none">
       <CardHeader
         floated={false}
         shadow={false}
         color="transparent"
-        className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
+        className="overflow flex flex-col gap-4 overflow-visible rounded-none md:flex-row md:items-center"
       >
-        <div className="flex-grow">
-          <Typography  color="black" variant="h5">
+        <div className="flex-grow overflow-visible">
+          <Typography color="black" variant="h5" className="min-w-[350px]">
             Sales by Restaurant
           </Typography>
           <Typography>{selectedStore}</Typography>
         </div>
-        <Menu placement="bottom-start" dismiss={{itemPress:false}}>
-          <MenuHandler>
-            <Button variant="text" className="text-primary">Menu</Button>
-          </MenuHandler>
-          <MenuList className="max-h-72">
-            <Input value={searchTerm} onChange={(e)=>setSearchTerm(e.target.value)}label='Search'/>
-            <hr className="my-3"></hr>
-            <MenuItem onClick={()=>getStoreId("All", "All")}>All</MenuItem>
-            <hr className="my-3"></hr>
-            {filteredStores.map((store) => (
-                
-              <MenuItem onClick={() => getStoreId(store.id,store.store_name)} key={store.id}>
-                {store.central_store_name +":"+ store.store_name}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
+      
+        <div className="relative" ref={dropdownRef}>
+          <Input 
+            inputRef={inputRef}
+            label={selectedStore}
+            icon={<ChevronDown onClick={handleInputClick} className="cursor-pointer" />}
+            placeholder={selectedStore} 
+            value={searchTerm} 
+            onChange={handleSearchChange}
+            onFocus={() => setIsDropdownOpen(true)}
+            className="cursor-pointer"
+          />
+          
+          {isDropdownOpen && (
+            <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+                <div 
+                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                  onClick={() => selectStore("All", "All")}
+                >
+                  All
+                </div>
+                <hr className="my-1" />
+                {filteredStores.length > 0 ? (
+                  filteredStores.map((store) => (
+                    <div 
+                      key={store.id}
+                      className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => selectStore(store.id, store.store_name)}
+                    >
+                      {store.central_store_name + ":" + store.store_name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-sm text-gray-500">No matching stores found</div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      
       </CardHeader>
       <CardBody className="px-2 pb-0">
         {loading ? (
-          <Loading></Loading>
+          <Loading />
         ) : (
           <Chart
+            
             type="bar"
             height={250}
             series={chartSeries}
