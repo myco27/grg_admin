@@ -99,7 +99,6 @@ export default function SalesByRestaurant() {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    // Keep dropdown open while typing
     if (!isDropdownOpen) {
       setIsDropdownOpen(true);
     }
