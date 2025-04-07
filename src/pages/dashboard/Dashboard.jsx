@@ -17,6 +17,7 @@ import {
   TrendingUp,
   UserRound,
 } from "lucide-react";
+import Loading from "../../components/layout/Loading";
 
 const Dashboard = () => {
   const [activeCustomers, setActiveCustomers] = useState(0);
@@ -65,10 +66,10 @@ const Dashboard = () => {
 
   return (
     <Card className="rounded-none shadow-none">
-      <div className="m-5 flex flex-col gap-5">
+      <div className="m-5 flex flex-col gap-1">
         <div
           id="row1"
-          className="flex flex-grow flex-col justify-center gap-1 sm:flex-row"
+          className="flex flex-grow flex-col justify-center gap-1 border-red-100 sm:flex-row md:flex-col lg:flex-col xl:flex-row"
         >
           <Card className="item-center flex max-w-[370px] justify-around rounded-none shadow-none">
             <div id="div1" className="grid min-w-full grid-cols-2 grid-rows-2 gap-2 p-0">
@@ -89,14 +90,14 @@ const Dashboard = () => {
                 </CardBody>
               </div>
               <div className="flex min-w-fit items-center justify-center rounded-none border">
-                <CardBody className="text-center">
+                <CardBody className="min-w-1 text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row">
                     <UserRound />
                     Customer
                   </Typography>
                   {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="h-10 w-10 animate-spin rounded-full border-t-purple-500" />
+                      <div className="flex items-center justify-center">
+                      <div className="h-10 w-10 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
                     </div>
                   ) : (
                     <div className="flex flex-row items-center justify-center gap-2">
@@ -125,8 +126,8 @@ const Dashboard = () => {
                   </Typography>
 
                   {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="h-10 w-10 animate-spin rounded-full" />
+                      <div className="flex items-center justify-center">
+                      <div className="h-10 w-10 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
                     </div>
                   ) : (
                     <Typography variant="h3" className="text-primary">
@@ -169,7 +170,7 @@ const Dashboard = () => {
             <SalesByRestaurant />
           </div>
         </div>
-        <div className="flex flex-col gap-1 sm:flex-row">
+        <div className="flex flex-col gap-1 md:flex-col lg:flex-row">
           <div className="flex">
             <SalesByCentral />
           </div>

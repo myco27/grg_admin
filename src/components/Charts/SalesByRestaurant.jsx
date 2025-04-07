@@ -200,8 +200,8 @@ export default function SalesByRestaurant() {
       <CardHeader
         floated={false}
         shadow={false}
-        color="transparent"
-        className="overflow flex flex-col gap-4 overflow-visible rounded-none md:flex-row md:items-center"
+        color="transparent" flex-
+        className="overflow flex flex-col gap-4 overflow-visible rounded-none sm:flex-col md:flex-col md:items-center lg:flex-row"
       >
         <div className="flex-grow overflow-visible">
           <Typography color="black" variant="h5" className="min-w-[350px]">
@@ -260,7 +260,7 @@ export default function SalesByRestaurant() {
       <CardBody className="px-2 pb-0">
         {loading ? (
           <div className="min-h-[50px]">
-          <Loading height={'min-h-[265px]'} />
+          <Loading height={"min-h-[271px]"} />
           </div>
         ) : (
           <Chart
