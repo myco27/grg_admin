@@ -81,7 +81,7 @@ const chartConfig = {
 // Component
 export default function OrderRate() {
   return (
-    <Card>
+    <Card className="rounded-none border shadow-none">
       <CardHeader
         floated={false}
         shadow={false}
