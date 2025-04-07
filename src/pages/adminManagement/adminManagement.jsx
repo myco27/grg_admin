@@ -316,51 +316,97 @@ const AdminManagement = () => {
                       className: "p-4",
                     },
                     {
+                      // key: "permissions",
+                      // value: (
+                      //   <div
+                      //     className="flex cursor-pointer flex-wrap rounded font-normal"
+                      //     onClick={() => handleOpenView(user.id)}
+                      //   >
+                      //     {user.all_permissions?.length > 0 ? (
+                      //       <>
+                      //         {user.all_permissions
+                      //           .slice(0, 3)
+                      //           .map((perm, index) => (
+                      //             <span key={index}>
+                      //               <Chip
+                      //                 color="purple"
+                      //                 variant="text"
+                      //                 size="sm"
+                      //                 className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                      //                 value={perm}
+                      //               />
+                      //               {index !== 2 &&
+                      //                 index !==
+                      //                   user.all_permissions.length - 1 &&
+                      //                 " "}
+                      //             </span>
+                      //           ))}
+                      //         {user.all_permissions.length > 3 && (
+                      //           <Tooltip
+                      //             content="View more"
+                      //             placement="right-end"
+                      //           >
+                      //             <Typography
+                      //               variant="h4"
+                      //               className="text-gray-400 hover:text-gray-600"
+                      //             >
+                      //               ...
+                      //             </Typography>
+                      //           </Tooltip>
+                      //         )}
+                      //       </>
+                      //     ) : (
+                      //       "No Permissions"
+                      //     )}
+                      //   </div>
+                      // ),
+                      // className: "max-w-60",
                       key: "permissions",
                       value: (
                         <div
-                          className="flex cursor-pointer flex-wrap rounded font-normal"
+                          className="flex cursor-pointer flex-col rounded font-normal"
                           onClick={() => handleOpenView(user.id)}
                         >
                           {user.all_permissions?.length > 0 ? (
                             <>
-                              {user.all_permissions
-                                .slice(0, 3)
-                                .map((perm, index) => (
-                                  <span key={index}>
-                                    <Chip
-                                      color="purple"
-                                      variant="text"
-                                      size="sm"
-                                      className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                                      value={perm}
-                                    />
-                                    {index !== 2 &&
-                                      index !==
-                                        user.all_permissions.length - 1 &&
-                                      " "}
-                                  </span>
-                                ))}
-                              {user.all_permissions.length > 3 && (
-                                <Tooltip
-                                  content="View more"
-                                  placement="right-end"
-                                >
-                                  <Typography
-                                    variant="h4"
-                                    className="text-gray-400 hover:text-gray-600"
-                                  >
-                                    ...
-                                  </Typography>
-                                </Tooltip>
-                              )}
+                              {user.all_permissions.slice(0, 2).map((perm, index) => (
+                                <Chip
+                                  key={index}
+                                  color="purple"
+                                  variant="text"
+                                  size="sm"
+                                  className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                  value={perm}
+                                />
+                              ))}
+
+                              {/* Last chip + "..." in a row */}
+                              <div className="flex items-center">
+                                <Chip
+                                  color="purple"
+                                  variant="text"
+                                  size="sm"
+                                  className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                  value={user.all_permissions[2]}
+                                />
+                                {user.all_permissions.length > 3 && (
+                                  <Tooltip content="View more" placement="right-end">
+                                    <Typography
+                                      variant="h4"
+                                      className="ml-1 text-gray-400 hover:text-gray-600"
+                                    >
+                                      ...
+                                    </Typography>
+                                  </Tooltip>
+                                )}
+                              </div>
                             </>
                           ) : (
                             "No Permissions"
                           )}
                         </div>
                       ),
-                      className: "max-w-60",
+                      className: "w-auto max-w-full",
                     },
                     {
                       key: "status",
