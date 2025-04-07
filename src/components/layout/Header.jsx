@@ -110,6 +110,10 @@ export default function Header() {
         return "User Management";
       case "/admin-management":
         return "Admin Management";
+      case "/applications":
+        return "Applications";
+      case "/settings":
+        return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
       default:
@@ -142,7 +146,13 @@ export default function Header() {
             >
               <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
                 <img
-                  src={user?.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user?.profile_picture}` : ''}
+                  src={
+                    user?.profile_picture
+                      ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${
+                          user?.profile_picture
+                        }`
+                      : ""
+                  }
                   alt="Profile"
                   className="w-full h-full object-cover rounded-full"
                 />

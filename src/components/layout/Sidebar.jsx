@@ -11,6 +11,7 @@ import {
   LockKeyhole,
   LayoutDashboard,
   Newspaper,
+  Settings,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -32,6 +33,8 @@ const Sidebar = () => {
     false;
   const canViewApplicationsModule =
     user?.all_permissions?.includes("view application module") || false;
+  const canViewSettingsModule =
+    user?.all_permissions?.includes("view settings module") || false;
 
   return (
     <>
@@ -216,6 +219,82 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {/* Applications */}
+              {canViewApplicationsModule && (
+                <Link to="/applications">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/applications"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Newspaper
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/applications" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Applications
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Settings */}
+              {canViewSettingsModule && (
+                <Link to="/settings">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/settings" ? "!bg-[#3A1066]" : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Settings
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/settings" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Settings
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+
               {/* Roles and Permissions */}
               {canViewRolesAndPermissionsModule && (
                 <Link to="/roles-and-permissions">
@@ -251,45 +330,6 @@ const Sidebar = () => {
                         className="font-normal text-sm whitespace-nowrap"
                       >
                         Roles And Permissions
-                      </Typography>
-                    </div>
-                  </ListItem>
-                </Link>
-              )}
-
-              {/* Applications */}
-              {canViewApplicationsModule && (
-                <Link to="/applications">
-                  <ListItem
-                    className={`hover:bg-[#3A1066] ${
-                      sidebarCollapsed && !sidebarHovered
-                        ? "w-[40px] px-2"
-                        : "w-[220px]"
-                    } ${
-                      location.pathname === "/applications"
-                        ? "!bg-[#3A1066]"
-                        : ""
-                    }`}
-                  >
-                    <ListItemPrefix className="min-w-[24px]">
-                      <Newspaper
-                        className={`h-5 w-5 text-white ${
-                          location.pathname === "/applications" ? "" : ""
-                        }`}
-                      />
-                    </ListItemPrefix>
-                    <div
-                      className={`${
-                        sidebarCollapsed && !sidebarHovered
-                          ? "absolute left-[-9999px]"
-                          : ""
-                      } transition-all duration-300`}
-                    >
-                      <Typography
-                        color="white"
-                        className="font-normal text-sm whitespace-nowrap"
-                      >
-                        Applications
                       </Typography>
                     </div>
                   </ListItem>
@@ -332,7 +372,6 @@ const Sidebar = () => {
           </div>
 
           <div className="mx-5 border-b-2 border-white border-opacity-30 py-2">
-            test
             <List className="p-0">
               {/* Dashboard */}
               {canViewDashboardModule && (
@@ -414,6 +453,55 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {/* Applications */}
+              {canViewApplicationsModule && (
+                <Link
+                  to="/applications"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ListItem
+                    className={`hover:bg-[#3A1066] w-[220px] ${
+                      location.pathname === "/applications"
+                        ? "bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Newspaper
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/applications" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <Typography color="white" className="font-normal text-sm">
+                      Applications
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Settings */}
+              {canViewSettingsModule && (
+                <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem
+                    className={`hover:bg-[#3A1066] w-[220px] ${
+                      location.pathname === "/settings" ? "bg-[#3A1066]" : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Settings
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/settings" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <Typography color="white" className="font-normal text-sm">
+                      Settings
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
               {/* Roles and Permissions */}
               {canViewRolesAndPermissionsModule && (
                 <Link
@@ -442,27 +530,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
-              {/* Applications */}
-
-              <Link to="/applications" onClick={() => setMobileMenuOpen(false)}>
-                <ListItem
-                  className={`hover:bg-[#3A1066] w-[220px] ${
-                    location.pathname === "/applications" ? "bg-[#3A1066]" : ""
-                  }`}
-                >
-                  <ListItemPrefix className="min-w-[24px]">
-                    <Newspaper
-                      className={`h-5 w-5 text-white ${
-                        location.pathname === "/applications" ? "" : ""
-                      }`}
-                    />
-                  </ListItemPrefix>
-                  <Typography color="white" className="font-normal text-sm">
-                    Applications
-                  </Typography>
-                </ListItem>
-              </Link>
             </List>
           </div>
         </div>
