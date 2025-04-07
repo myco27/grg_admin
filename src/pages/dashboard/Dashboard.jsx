@@ -27,8 +27,20 @@ const Dashboard = () => {
   const [riderTrend, setRiderTrend] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const fetchStoreMontly = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get("/admin/dashboard/card-data");
 
-  
+      if (response === 200) {
+      }
+    } catch (e) {
+      console.log(e.error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchDashboardCardData = async () => {
     setLoading(true);
     try {
@@ -170,8 +182,4 @@ const Dashboard = () => {
   );
 };
 
-{
-  /*
-   */
-}
 export default Dashboard;

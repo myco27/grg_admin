@@ -28,6 +28,7 @@ export default function Header() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
   
   const {
     user,
@@ -97,6 +98,7 @@ export default function Header() {
 
   const openProfileModal = () => {
     handleProfileOpen(user.id, user.user_type);
+    setProfilePicture(user.profile_picture);
   };
 
   const toggleSidebar = () => {
@@ -150,18 +152,23 @@ export default function Header() {
               className="flex items-center gap-2 p-2 normal-case"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-lg font-bold text-blue-600">
+                <img
+                  src={user?.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user?.profile_picture}` : ''}
+                  alt="Profile"
+                  className="h-full w-full rounded-full object-cover"
+                />
+                {/* <span className="text-lg font-bold text-blue-600">
                   {" "}
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
-                </span>
+                </span> */}
               </div>
               <div className="hidden flex-col items-start sm:flex">
                 <Typography color="white" className="font-medium">
                   {user?.first_name} {user?.last_name}
                 </Typography>
-                <Typography className="mt-[-6px] text-gray-300">
-                  Admin
+                <Typography className="mt-[-6px] text-sm text-gray-300">
+                  {user.roles[0].name.toUpperCase()}
                 </Typography>
               </div>
               <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
