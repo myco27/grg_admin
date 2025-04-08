@@ -20,6 +20,7 @@ import ProtectedRoute from "./pages/ProtectedRoute";
 import UnauthorizedPage from "./components/Views/UnauthorizedPage";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ApplicationsPage from "./pages/applicationsManagement/ApplicationsPage";
+import Settings from "./pages/settingsTable/settings";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -101,6 +102,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view application module">
             <ApplicationsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <ProtectedRoute requiredPermission="view settings module">
+            <Settings />
           </ProtectedRoute>
         ),
       },

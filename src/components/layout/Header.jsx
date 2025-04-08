@@ -9,7 +9,13 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
-import { ChevronDown, LogOut, Menu as MenuIcon, Settings, User } from "lucide-react";
+import {
+  ChevronDown,
+  LogOut,
+  Menu as MenuIcon,
+  Settings,
+  User,
+} from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
@@ -29,7 +35,7 @@ export default function Header() {
   const [loading, setLoading] = useState(false);
   const [settingOpen, setSettingOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
-  
+
   const {
     user,
     setUser,
@@ -54,8 +60,8 @@ export default function Header() {
     setSelectedUserId(userId);
     setSelectedUser(userType);
     setSettingOpen(!settingOpen);
-    console.log(settingOpen)
-  }
+    console.log(settingOpen);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -121,6 +127,10 @@ export default function Header() {
         return "User Management";
       case "/admin-management":
         return "Admin Management";
+      case "/applications":
+        return "Applications";
+      case "/settings":
+        return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
       default:
@@ -153,7 +163,13 @@ export default function Header() {
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
                 <img
-                  src={user?.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user?.profile_picture}` : ''}
+                  src={
+                    user?.profile_picture
+                      ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${
+                          user?.profile_picture
+                        }`
+                      : ""
+                  }
                   alt="Profile"
                   className="h-full w-full rounded-full object-cover"
                 />
@@ -194,11 +210,6 @@ export default function Header() {
             >
               <LogOut className="h-4 w-4" /> Sign Out
             </MenuItem>
-
-            <MenuItem className="flex items-center gap-2"
-            onClick={handleSettingOpen}>
-     <Settings className="h-4 w-4"/>Settings
-            </MenuItem>
           </MenuList>
         </Menu>
       </div>
@@ -219,13 +230,12 @@ export default function Header() {
       />
 
       <SettingsModal
-      openSetting={settingOpen}
-      settingHandler={handleSettingOpen}
-      userId={selectedUserId}
-      userType={selectedUser}
-      isLoading={loading}
+        openSetting={settingOpen}
+        settingHandler={handleSettingOpen}
+        userId={selectedUserId}
+        userType={selectedUser}
+        isLoading={loading}
       />
-      
     </div>
   );
 }
