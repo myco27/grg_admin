@@ -27,6 +27,7 @@ const Dashboard = () => {
   const [customerTrend, setCustomerTrend] = useState(true);
   const [riderTrend, setRiderTrend] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isOrder, setIsOrder] = useState([])
 
   const fetchStoreMontly = async () => {
     try {
@@ -60,8 +61,28 @@ const Dashboard = () => {
     }
   };
 
+
+    const getOrdersData = async() => {
+      try{
+        console.log('21321312');
+        const response = await axiosClient.get("/admin/orders/rate")
+        console.log('sadsadsa');
+        if (response.status === 200){
+          const orderData =  (response.data)
+          console.log(orderData)
+          setIsOrder(orderData)   
+        }
+      }catch (error){
+        console.error(error)
+      }
+      finally{
+        console.log("Success")
+      }
+    }
+
   useEffect(() => {
     fetchDashboardCardData();
+    getOrdersData();
   }, []);
 
   return (
@@ -175,7 +196,7 @@ const Dashboard = () => {
             <SalesByCentral />
           </div>
           <div className="flex-grow">
-            <OrderRate></OrderRate>
+            <OrderRate orderData={isOrder}></OrderRate>
           </div>
         </div>
       </div>

@@ -92,7 +92,6 @@ export default function SalesByRestaurant() {
 
   const selectStore = (userId, storeName) => {
     setSelectedStore(storeName);
-    console.log(selectedStore)
     setSearchTerm("");
     setIsDropdownOpen(false);
   };
@@ -164,9 +163,8 @@ export default function SalesByRestaurant() {
             },
           ],
         }));
-        console.log(arrayStore)
         const formattedDataStore = arrayStore.map((store) => ({
-          x: store.store_name,
+          x: store.store_branch +":"+ store.store_name,
           y: Math.floor(store.totalSales),
           goals: [
             {
@@ -179,7 +177,7 @@ export default function SalesByRestaurant() {
         }));
 
         setChartSeries([{ name: "Actual", data:selectedStore === "All"?formattedDataStore:formattedData }]);
-        console.log(selectedStore)
+
       }
     } catch (e) {
       console.error(
