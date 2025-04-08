@@ -160,24 +160,24 @@ const ApplicationsPage = () => {
     },
     {
       label: "Central",
-      value: "central",
-      icon: <Store className="w-4 h-4" />,
-    },
-    {
-      label: "Restaurant",
       value: "restaurant",
       icon: <Store className="w-4 h-4" />,
     },
+    // {
+    //   label: "Restaurant",
+    //   value: "restaurant",
+    //   icon: <Store className="w-4 h-4" />,
+    // },
     {
       label: "Rider",
       value: "rider",
       icon: <Bike className="w-4 h-4" />,
     },
-    {
-      label: "Customer",
-      value: "customer",
-      icon: <UserRound className="w-4 h-4" />,
-    },
+    // {
+    //   label: "Customer",
+    //   value: "customer",
+    //   icon: <UserRound className="w-4 h-4" />,
+    // },
   ];
 
   const TABLE_HEAD = [
@@ -342,7 +342,11 @@ const ApplicationsPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {user.type ? user.type.toUpperCase() : ""}
+                                  {user.type
+                                    ? user.type === "restaurant"
+                                      ? "CENTRAL"
+                                      : user.type.toUpperCase()
+                                    : ""}
                                 </Typography>
                               </div>
                             </td>
@@ -437,7 +441,9 @@ const ApplicationsPage = () => {
                                     {user.status == "pending" && (
                                       <>
                                         <MenuItem>Accept</MenuItem>
-                                        <MenuItem className="text-red-500">Reject</MenuItem>
+                                        <MenuItem className="text-red-500">
+                                          Reject
+                                        </MenuItem>
                                       </>
                                     )}
                                   </MenuList>

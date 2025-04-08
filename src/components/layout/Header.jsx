@@ -9,13 +9,21 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
-import { ChevronDown, LogOut, Menu as MenuIcon, User } from "lucide-react";
+import {
+  ChevronDown,
+  LogOut,
+  Menu as MenuIcon,
+  Settings,
+  User,
+} from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAlert } from "../../contexts/alertContext";
 import axiosClient from "../../axiosClient";
 import { useStateContext } from "../../contexts/contextProvider";
 import ProfileModal from "../Profile/ProfileModal";
 import ConfirmationDialog from "../ConfirmationDialog";
+import SettingsModal from "../Settings Modal/SettingsModal";
+
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +33,9 @@ export default function Header() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [settingOpen, setSettingOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+
   const {
     user,
     setUser,
@@ -43,6 +54,13 @@ export default function Header() {
     setSelectedUserId(userId);
     setSelectedUser(userType);
     setProfileOpen(!profileOpen);
+  };
+
+  const handleSettingOpen = (userId, userType) => {
+    setSelectedUserId(userId);
+    setSelectedUser(userType);
+    setSettingOpen(!settingOpen);
+    console.log(settingOpen);
   };
 
   useEffect(() => {
@@ -86,6 +104,7 @@ export default function Header() {
 
   const openProfileModal = () => {
     handleProfileOpen(user.id, user.user_type);
+    setProfilePicture(user.profile_picture);
   };
 
   const toggleSidebar = () => {
@@ -108,6 +127,10 @@ export default function Header() {
         return "User Management";
       case "/admin-management":
         return "Admin Management";
+      case "/applications":
+        return "Applications";
+      case "/settings":
+        return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
       default:
@@ -116,7 +139,7 @@ export default function Header() {
   };
 
   return (
-    <div className="bg-[#612B9B] border-b border-purple-600 shadow-sm py-1 flex flex-row justify-between items-center">
+    <div className="flex flex-row items-center justify-between border-b border-purple-600 bg-[#612B9B] py-1 shadow-sm">
       <div className="flex items-center gap-2">
         <IconButton
           variant="text"
@@ -126,31 +149,42 @@ export default function Header() {
         >
           <MenuIcon className="h-6 w-6 text-white" />
         </IconButton>
-        <Typography color="white" className="font-medium text-nowrap">
+        <Typography color="white" className="text-nowrap font-medium">
           {getPageTitle()}
         </Typography>
       </div>
 
-      <div className="flex justify-end items-end w-full">
+      <div className="flex w-full items-end justify-end">
         <Menu placement="bottom-end">
           <MenuHandler>
             <Button
               variant="text"
               className="flex items-center gap-2 p-2 normal-case"
             >
-              <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-lg">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
+                <img
+                  src={
+                    user?.profile_picture
+                      ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${
+                          user?.profile_picture
+                        }`
+                      : ""
+                  }
+                  alt="Profile"
+                  className="h-full w-full rounded-full object-cover"
+                />
+                {/* <span className="text-lg font-bold text-blue-600">
                   {" "}
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
-                </span>
+                </span> */}
               </div>
-              <div className="hidden sm:flex flex-col items-start">
+              <div className="hidden flex-col items-start sm:flex">
                 <Typography color="white" className="font-medium">
                   {user?.first_name} {user?.last_name}
                 </Typography>
-                <Typography className="text-gray-300 mt-[-6px]">
-                  Admin
+                <Typography className="mt-[-6px] text-sm text-gray-300">
+                  {user.roles[0].name.toUpperCase()}
                 </Typography>
               </div>
               <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
@@ -193,6 +227,14 @@ export default function Header() {
         onConfirm={handleLogout}
         isLoading={loading}
         message={"Are you sure you want to log out?"}
+      />
+
+      <SettingsModal
+        openSetting={settingOpen}
+        settingHandler={handleSettingOpen}
+        userId={selectedUserId}
+        userType={selectedUser}
+        isLoading={loading}
       />
     </div>
   );
