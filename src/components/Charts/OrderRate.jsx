@@ -7,7 +7,7 @@ const chartConfig = {
   type: "line",
   height: 240,
   series: [
-    {
+    { 
       name: "Sales",
       data: orderData.map((order)=>{
         return [order.date, order.order_count]
