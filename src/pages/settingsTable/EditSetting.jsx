@@ -5,6 +5,7 @@ import {
   DialogFooter,
   DialogHeader,
   Input,
+  Textarea,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import Loading from "../../components/layout/Loading";
@@ -103,19 +104,16 @@ const EditSetting = ({
               value={formData.setting_name}
               onChange={handleInputChange}
             />
-            <Input
+            <Textarea
               label="Setting Value 1"
               name="setting_value1"
-              type="text"
               required
               value={formData.setting_value1}
               onChange={handleInputChange}
             />
-            <Input
+            <Textarea
               label="Setting Value 2"
               name="setting_value2"
-              type="text"
-              required
               value={formData.setting_value2}
               onChange={handleInputChange}
             />
