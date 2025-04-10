@@ -23,6 +23,7 @@ import {
   PaperclipIcon,
   Search,
   ArrowLeftRight,
+  Medal,
 } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
@@ -45,6 +46,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [points, setPoints] = useState(0);
   const [localSupportNumber, setLocalSupportNumber] = useState("");
   const [businessLandlineNumber, setBusinessLandlineNumber] = useState("");
   const [businessContactNumber, setBusinessContactNumber] = useState("");
@@ -158,6 +160,10 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
         setLocalSupportNumber(response.data.data.local_support_number);
         setBusinessLandlineNumber(response.data.data.mobile_number ?? "");
         setBusinessContactNumber(response.data.data.store?.phone ?? "");
+
+        if (response.data.data.rewards) {
+          setPoints(response.data.data.rewards.order_amount);
+        }
 
         if (response.data.data.address) {
           setAddress({
@@ -366,13 +372,15 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               />
 
               {userType === "rider" || userType === "customer" ? (
-                <Input
-                  label="Mobile Number"
-                  type="text"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  autoComplete="tel"
-                />
+                <>
+                  <Input
+                    label="Mobile Number"
+                    type="text"
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                    autoComplete="tel"
+                  />
+                </>
               ) : userType === "operator" ? (
                 <Input
                   label="Local Support Number"
@@ -676,7 +684,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                                 </div>
                               </td>
                             ),
-                            className: "max-w-60 p-4", 
+                            className: "max-w-60 p-4",
                           },
                           {
                             key: "edit",
@@ -764,6 +772,29 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     />
                   </DialogBody>
                 </Dialog>
+              </>
+            ),
+          },
+        ]
+      : []),
+
+    ...(userType === "customer"
+      ? [
+          {
+            value: "Points",
+            label: "Points",
+            icon: <Medal />,
+            content: (
+              <>
+                <div className="flex flex-col gap-5">
+                  <Input
+                  className="!bg-gray-100"
+                    label="Order Points"
+                    type="text"
+                    value={points}
+                    readOnly
+                  />
+                </div>
               </>
             ),
           },

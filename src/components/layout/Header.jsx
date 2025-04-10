@@ -172,6 +172,12 @@ export default function Header() {
                   }
                   alt="Profile"
                   className="h-full w-full rounded-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.src = '/rockygo_logo.png';
+                    e.target.onerror = null;
+                  }}
                 />
                 {/* <span className="text-lg font-bold text-blue-600">
                   {" "}

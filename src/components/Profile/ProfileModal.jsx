@@ -80,13 +80,62 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
     }
   };
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedFile(file);
       // Create a preview URL for the selected file
       const previewUrl = URL.createObjectURL(file);
       setSelectedImage(previewUrl);
+
+      // Create a canvas to resize the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // Set maximum dimensions
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        
+        // Calculate new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to compressed JPEG
+        const compressedFile = canvas.toDataURL('image/jpeg', 0.7);
+        
+        // Convert base64 to blob
+        fetch(compressedFile)
+          .then(res => res.blob())
+          .then(blob => {
+            const compressedImageFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            setSelectedFile(compressedImageFile);
+          });
+      };
+      
+      img.src = previewUrl;
     }
   };
 
@@ -210,6 +259,12 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                   src={selectedImage}
                   alt="Selected"
                   className="w-full h-full rounded-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.src = '/rockygo_logo.png';
+                    e.target.onerror = null;
+                  }}
                 />
               )}
             </div>
