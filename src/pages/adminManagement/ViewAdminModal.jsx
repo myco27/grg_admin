@@ -86,7 +86,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
               <div className="flex flex-col">
                 <Input
                   readOnly={true}
-                  label="Email"
+                  label="First Name"
                   value={formData.first_name}
                   className="rounded-md border border-gray-500 bg-gray-300 p-3"
                 />
@@ -94,7 +94,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
               <div className="flex flex-col">
                 <Input
                   readOnly={true}
-                  label="Email"
+                  label="Last Name"
                   value={formData.last_name}
                   className="rounded-md border border-gray-500 bg-gray-300 p-3"
                 />
