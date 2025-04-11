@@ -95,7 +95,7 @@ const AdminManagement = () => {
           page_size: pagination.itemsPerPage,
         },
       });
-      console.log(response.data.data);
+      console.log(response.data.data, "response");
       if (response.status === 200) {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
@@ -284,29 +284,43 @@ const AdminManagement = () => {
                     {
                       key: "name",
                       value: (
-                        <>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex items-center justify-center">
+                            <img
+                              src={user.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user.profile_picture}` : ''}
+                              alt="profile"
+                              className="h-[50px] w-[50px] rounded-full object-cover"
+                              onError={(e) => {
+                                e.target.src = '/rocky_go_logo.png';
+                                e.target.onerror = null;
+                              }}
+                            />
+                            <Badge
+                              color={
+                                user.personal_access_tokens?.length > 0
+                                  ? "green"
+                                  : "red"
+                              }
+                              className="absolute h-[15px] w-[15px] top-4 right-1.5 border-2 border-white"
+                            />
+                          </div>
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
                             className="font-normal"
-                          >
-                            {user.first_name} {user.last_name}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.email}
-                          </Typography>
-                          <Badge
-                            color={
-                              user.personal_access_tokens?.length > 0
-                                ? "green"
-                                : "red"
-                            }
-                          />
-                        </>
+                            >
+                              {user.first_name} {user.last_name}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {user.email}
+                            </Typography>
+                          </div>
+                        </div>
                       ),
                       className: "p-4",
                     },

@@ -175,7 +175,7 @@ export default function Header() {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    e.target.src = '/rockygo_logo.png';
+                    e.target.src = '/rocky_go_logo.png';
                     e.target.onerror = null;
                   }}
                 />

@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   Option,
+  Typography,
 } from "@material-tailwind/react";
 import { EyeIcon, EyeClosed } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
@@ -23,6 +24,8 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
     password_confirmation: "",
     role: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [roles, setRoles] = useState([]);
   const [passwordVisibility, setPasswordVisibility] = useState({
@@ -43,6 +46,8 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
         password_confirmation: "",
         role: "",
       });
+      setSelectedFile(null);
+      setSelectedImage(null);
       setPasswordVisibility({ password: false, confirmPassword: false });
       fetchRoles();
     }
@@ -68,11 +73,45 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create a preview URL for the selected file
+      const previewUrl = URL.createObjectURL(file);
+      setSelectedImage(previewUrl);
+    }
+  };
+
+  // Cleanup function to revoke object URLs
+  useEffect(() => {
+    return () => {
+      if (selectedImage && selectedImage.startsWith('blob:')) {
+        URL.revokeObjectURL(selectedImage);
+      }
+    };
+  }, [selectedImage]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
     try {
-      const response = await axios.post("/admin/users/add", formData);
+      const formDataToSend = new FormData();
+      formDataToSend.append('first_name', formData.first_name);
+      formDataToSend.append('last_name', formData.last_name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('password_confirmation', formData.password_confirmation);
+      formDataToSend.append('role', formData.role);
+      if (selectedFile) {
+        formDataToSend.append('profile_picture', selectedFile);
+      }
+
+      const response = await axios.post("/admin/users/add", formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 201) {
         fetchUsers();
@@ -108,6 +147,50 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
           <Loading />
         ) : (
           <>
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-5 px-4">
+                <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center">
+                  {selectedImage && (
+                    <img
+                      src={selectedImage}
+                      alt="Selected"
+                      className="w-full h-full rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.target.src = '/rocky_go_logo.png';
+                        e.target.onerror = null;
+                      }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <Typography variant="small" className="text-xs font-semibold text-blue-gray-700">Profile Picture</Typography>
+                  <Typography
+                    variant="small"
+                    className="text-[10px] text-gray-500"
+                  >
+                    JPG or PNG. Max size of 2048kb
+                  </Typography>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="image-input"
+                    name="profile_picture"
+                  />
+                  <button 
+                    className="text-[10px] text-white py-1 px-2 bg-primary rounded" 
+                    onClick={() => document.getElementById('image-input').click()}
+                    type="button"
+                  >
+                    Choose File
+                  </button>
+                </div>
+              </div>
+              
+            </div>
             <Select
               required
               label="Assign Role"
@@ -121,6 +204,13 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
               ))}
             </Select>
 
+            {/* <Input
+              label="Profile Picture"
+              name="profile_picture"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            /> */}
             <Input
               label="First Name"
               name="first_name"
@@ -133,7 +223,6 @@ const AddAdminModal = ({ open, handleOpen, fetchUsers }) => {
               label="Last Name"
               name="last_name"
               type="text"
-              required
               value={formData.last_name}
               onChange={handleInputChange}
             />
