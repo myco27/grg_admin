@@ -12,15 +12,16 @@ import Loading from "../layout/Loading";
 import { ChevronDown } from "lucide-react";
 
 export default function SalesByRestaurant() {
-  const [storeData, setStoreData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedStore, setSelectedStore] = useState("All");
-  const [chartSeries, setChartSeries] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
-
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [storeData, setStoreData] = useState([]);
+  const [monthlySalesPerStore, setMonthlySalesPerStore] = useState([]);
+  const [selectedStore, setSelectedStore] = useState("All");
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
   const [chartOptions, setChartOptions] = useState({
     chart: {
       type: "bar",
@@ -82,27 +83,43 @@ export default function SalesByRestaurant() {
       },
     },
   });
+  const [chartSeries, setChartSeries] = useState( [
+    {
+      name: 'Sales by Month', 
+      data: monthlyData.map((entry) => ({
+        x: entry.month, 
+        y: Math.trunc(entry.total_sales), 
+        fillColor: "#612B9B", 
+        strokeColor: "blue", 
+      }))
+    }
+  ]);
 
+  const selectStore = (storeId, storeName) => {
+    setSelectedStoreId(storeId);
+    setSelectedStore(storeName);
+    setSearchTerm("");
+    setIsDropdownOpen(false);
+  
+    if (storeId === "All") {
+      fetchMonthlyData(); 
+    } else {
+      fetchMonthlyPerStore(storeId); 
+    }
+  };
+  
   const filteredStores = storeData.filter((store) =>
     (store.central_store_name + store.store_name)
       .toLowerCase()
       .replace(/[:\s]/g, "")
       .includes(searchTerm.toLowerCase().replace(/\s/g, ""))
   );
-
-  const selectStore = (userId, storeName) => {
-    setSelectedStore(storeName);
-    setSearchTerm("");
-    setIsDropdownOpen(false);
-  };
-
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     if (!isDropdownOpen) {
       setIsDropdownOpen(true);
     }
   };
-
   const handleInputClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
     setTimeout(() => {
@@ -112,18 +129,37 @@ export default function SalesByRestaurant() {
     }, 0);
   };
 
+
+  useEffect(() => {
+    const dataToMap = selectedStore === "All" ? monthlyData : monthlySalesPerStore;
+    setChartSeries([
+      {
+        name: "Sales by Month",
+        data: dataToMap.map((entry) => ({
+          x: entry.month,
+          y: Math.trunc(entry.total_sales),
+        })),
+      },
+    ]);
+  }, [monthlyData, monthlySalesPerStore, selectedStore]);
+  
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
+
+  
+  useEffect(()=>{
+    fetchStoreMonthly();
+    fetchMonthlyData();
+  },[selectedStoreId,selectedStore])
 
   const fetchStoreMonthly = async () => {
     try {
@@ -134,50 +170,6 @@ export default function SalesByRestaurant() {
       if (response.status === 200) {
         const arrayStore = Object.values(response.data.data);
         setStoreData(arrayStore);
-        const sortedData = arrayStore.sort((a, b) => b.totalSales - a.totalSales);
-        const top10Stores = sortedData.slice(0, 12);
-        const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-
-        const formattedData = top10Stores.map((store, index) => ({
-          x: months[index % months.length],
-          y: Math.floor(store.totalSales),
-          goals: [
-            {
-              name: "Expected",
-              value: store.totalNetSales,
-              strokeWidth: 15,
-              strokeColor: "#612B9B4D",
-            },
-          ],
-        }));
-        const formattedDataStore = arrayStore.map((store) => ({
-          x: store.store_branch +":"+ store.store_name,
-          y: Math.floor(store.totalSales),
-          goals: [
-            {
-              name: "Expected",
-              value: Math.floor(store.totalNetSales),
-              strokeWidth: 15,
-              strokeColor: "#612B9B4D",
-            },
-          ],
-        }));
-
-        setChartSeries([{ name: "Actual", data:selectedStore === "All"?formattedDataStore:formattedData }]);
-
       }
     } catch (e) {
       console.error(
@@ -189,16 +181,31 @@ export default function SalesByRestaurant() {
     }
   };
 
-  useEffect(() => {
-    fetchStoreMonthly();
-  }, [selectedStore]);
+  const fetchMonthlyPerStore = async (selectedStoreId) => {
+    const response = await axiosClient.get(
+      `admin/dashboard/montlySalesPerStore?store_id=${selectedStoreId}`
+    );
+    setMonthlySalesPerStore(response.data);
+    console.log('Per Store',monthlySalesPerStore)
+  };
+  
+  const fetchMonthlyData = async () => {
+    try {
+      const response = await axiosClient.get("admin/dashboard/allStoreSales");
+      setMonthlyData(response.data);
+      console.log(response.data)
+    } catch (e) {
+      e.error;
+    }
+  };
 
   return (
     <Card className="rounded-none border shadow-none">
       <CardHeader
         floated={false}
         shadow={false}
-        color="transparent" flex-
+        color="transparent"
+        flex-
         className="overflow flex flex-col gap-4 overflow-visible rounded-none sm:flex-col md:flex-col md:items-center lg:flex-row"
       >
         <div className="flex-grow overflow-visible">
@@ -230,7 +237,7 @@ export default function SalesByRestaurant() {
               <div className="py-1">
                 <div
                   className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => selectStore("All", "All")}
+                 onClick={()=>selectStore("All", "All")}
                 >
                   All
                 </div>
@@ -240,9 +247,12 @@ export default function SalesByRestaurant() {
                     <div
                       key={store.id}
                       className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => selectStore(store.id, store.store_name)}
+                      onClick={() => {
+                        selectStore(store.id, store.store_name);
+                        
+                      }}
                     >
-                      {store.central_store_name + ":" + store.store_name}
+                      {store.store_branch + ":" + store.store_name}
                     </div>
                   ))
                 ) : (
@@ -258,7 +268,7 @@ export default function SalesByRestaurant() {
       <CardBody className="px-2 pb-0">
         {loading ? (
           <div className="min-h-[50px]">
-          <Loading height={"min-h-[271px]"} />
+            <Loading height={"min-h-[271px]"} />
           </div>
         ) : (
           <Chart

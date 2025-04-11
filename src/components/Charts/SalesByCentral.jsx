@@ -7,73 +7,74 @@ import {
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-const chartConfig = {
-  type: "bar",
-  height: 240,
-  series: [
-    {
-      name: "Branchs",
-      data: [
-        { x: "GravyBaby", y: 80, fillColor: "#612B9B", strokeColor: "blue" },
-        { x: "SouthernRock", y: 40, fillColor: "#612B9B", strokeColor: "blue" },
-        { x: "Shucked", y: 60, fillColor: "#612B9B", strokeColor: "blue" },
-      ]
-    },
-  ],
-  options: {
-    chart: {
-      toolbar: { show: false },
-    },
-    title: { show: false },
-    dataLabels: {
-      enabled: true,
-      position: "inside",
-      formatter: (val, { dataPointIndex }) => {
-        const branchNames = ["GravyBaby", "SouthernRock", "Shucked"];
-        return `${branchNames[dataPointIndex]}: ${val}`;
+export default function SalesByCentral({centralData}) {
+
+
+  const sortedData = centralData.sort((a, b) => b.total_sales - a.total_sales)
+  const top3data = sortedData.slice(0,3)
+
+  const chartConfig = {
+    type: "bar",
+    height: 240,
+    series: [
+      {
+        name: top3data.map((store)=>store.store_name),
+        data: top3data.map((store) => ({
+          x: store.store_name,
+          y: Math.trunc(store.total_sales),
+          fillColor: "#612B9B",
+          strokeColor: "blue"
+        }))
       },
-      style: {
-        fontSize: "14px",
-        fontWeight: "bold",
+    ],
+    options: {
+      chart: {
+        toolbar: { show: false },
       },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        columnWidth: "40%",
-        borderRadius: 2,
-        distributed: true,
-      },
-    },
-    xaxis: {
-      max: 100,
-      axisTicks: { show: false },
-      axisBorder: { show: false },
-      labels: {
+      title: { show: false },
+      dataLabels: {
+        enabled: true,
+        position: "inside",
+        formatter: (val, { dataPointIndex }) => {
+          const branchNames = centralData.map((store)=>store.store_name);
+          return `${branchNames[dataPointIndex]}: ${val}`;
+        },
         style: {
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
+          fontSize: "14px",
+          fontWeight: "bold",
         },
       },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          columnWidth: "10",
+          borderRadius: 2,
+          distributed: true,
+        },
+      },
+      xaxis: {
+        max: 700000,
+        axisTicks: { show: false },
+        axisBorder: { show: false },
+        labels: {
+        show:false
+        },
+      },
+      yaxis: {
+        labels: { show: false },
+      },
+      grid: {
+        show: true,
+        borderColor: "#dddddd",
+        strokeDashArray: 0,
+        xaxis: { lines: { show: true } },
+        padding: { top: 5, right: 20 },
+      },
+      fill: { opacity: 0.8 },
+      tooltip: { theme: "dark" },
     },
-    yaxis: {
-      labels: { show: false },
-    },
-    grid: {
-      show: true,
-      borderColor: "#dddddd",
-      strokeDashArray: 0,
-      xaxis: { lines: { show: true } },
-      padding: { top: 5, right: 20 },
-    },
-    fill: { opacity: 0.8 },
-    tooltip: { theme: "dark" },
-  },
-};
-
-
-export default function SalesByCentral() {
+  };
+  
   return (
     <Card className="flex-grow rounded-none border shadow-none sm:min-w-[370px]">
       <CardHeader
@@ -92,3 +93,5 @@ export default function SalesByCentral() {
     </Card>
   );
 }
+
+
