@@ -151,13 +151,13 @@ const settings = () => {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 rounded-md sm:flex-row">
-              <Button
+              {/* <Button
                 className="flex items-center gap-3 rounded-md"
                 size="sm"
                 onClick={handleOpen}
               >
                 <UserPlusIcon strokeWidth={2} className="w-5" /> Add setting
-              </Button>
+              </Button> */}
             </div>
           </div>
           <div className="rounded-none md:flex-row">

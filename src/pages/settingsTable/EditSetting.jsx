@@ -97,10 +97,11 @@ const EditSetting = ({
         ) : (
           <>
             <Input
+              className="!bg-gray-100"
               label="Setting Name"
               name="setting_name"
               type="text"
-              required
+              readOnly
               value={formData.setting_name}
               onChange={handleInputChange}
             />
