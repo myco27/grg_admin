@@ -132,6 +132,7 @@ export default function SalesByRestaurant() {
 
   useEffect(() => {
     const dataToMap = selectedStore === "All" ? monthlyData : monthlySalesPerStore;
+  
     setChartSeries([
       {
         name: "Sales by Month",
@@ -142,6 +143,7 @@ export default function SalesByRestaurant() {
       },
     ]);
   }, [monthlyData, monthlySalesPerStore, selectedStore]);
+
   
   useEffect(() => {
     function handleClickOutside(event) {
@@ -159,6 +161,7 @@ export default function SalesByRestaurant() {
   useEffect(()=>{
     fetchStoreMonthly();
     fetchMonthlyData();
+
   },[selectedStoreId,selectedStore])
 
   const fetchStoreMonthly = async () => {
@@ -186,7 +189,6 @@ export default function SalesByRestaurant() {
       `admin/dashboard/montlySalesPerStore?store_id=${selectedStoreId}`
     );
     setMonthlySalesPerStore(response.data);
-    console.log('Per Store',monthlySalesPerStore)
   };
   
   const fetchMonthlyData = async () => {

@@ -31,13 +31,6 @@ const Dashboard = () => {
   const [monthlyData, setMonthlyData] = useState([]);
   const [storeData, setStoreData] = useState([]);
   const [monthlySalesPerStore, setMonthlySalesPerStore] = useState([]);
-  const [_selectedStore, setSelectedStore] = useState("All");
-  const [selectedStoreId, setSelectedStoreId] = useState(null);
-
- 
-
-
-
 
   const fetchDashboardCardData = async () => {
     setLoading(true);
@@ -85,9 +78,6 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchMonthlyPerStore();
-    fetchStoreMonthly();
-    fetchMonthlyData();
     fetchDashboardCardData();
     getOrdersData();
     salesByCentral();
@@ -200,11 +190,6 @@ const Dashboard = () => {
           </Card>
           <div className="flex-grow">
             <SalesByRestaurant
-              selectStore={selectedStore}
-              monthlyPerStore={monthlySalesPerStore}
-              storeData={storeData}
-              monthlySalesData={monthlyData}
-              selectedStore={_selectedStore}
             />
           </div>
         </div>
