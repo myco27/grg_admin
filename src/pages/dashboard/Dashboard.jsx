@@ -65,7 +65,7 @@ const Dashboard = () => {
     const getOrdersData = async() => {
       try{
         console.log('21321312');
-        const response = await axiosClient.get("/admin/orders/rate")
+        const response = await axiosClient.get("/admin/orders/rate/list")
         console.log('sadsadsa');
         if (response.status === 200){
           const orderData =  (response.data)
