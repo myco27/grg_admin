@@ -23,6 +23,7 @@ import {
   MenuItem,
   MenuList,
   Switch,
+  Badge,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -94,7 +95,7 @@ const AdminManagement = () => {
           page_size: pagination.itemsPerPage,
         },
       });
-
+      console.log(response.data.data);
       if (response.status === 200) {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
@@ -298,6 +299,13 @@ const AdminManagement = () => {
                           >
                             {user.email}
                           </Typography>
+                          <Badge
+                            color={
+                              user.personal_access_tokens?.length > 0
+                                ? "green"
+                                : "red"
+                            }
+                          />
                         </>
                       ),
                       className: "p-4",
@@ -369,16 +377,18 @@ const AdminManagement = () => {
                         >
                           {user.all_permissions?.length > 0 ? (
                             <>
-                              {user.all_permissions.slice(0, 2).map((perm, index) => (
-                                <Chip
-                                  key={index}
-                                  color="purple"
-                                  variant="text"
-                                  size="sm"
-                                  className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                                  value={perm}
-                                />
-                              ))}
+                              {user.all_permissions
+                                .slice(0, 2)
+                                .map((perm, index) => (
+                                  <Chip
+                                    key={index}
+                                    color="purple"
+                                    variant="text"
+                                    size="sm"
+                                    className="m-1 max-w-fit bg-purple-50 text-purple-900"
+                                    value={perm}
+                                  />
+                                ))}
 
                               {/* Last chip + "..." in a row */}
                               <div className="flex items-center">
@@ -390,7 +400,10 @@ const AdminManagement = () => {
                                   value={user.all_permissions[2]}
                                 />
                                 {user.all_permissions.length > 3 && (
-                                  <Tooltip content="View more" placement="right-end">
+                                  <Tooltip
+                                    content="View more"
+                                    placement="right-end"
+                                  >
                                     <Typography
                                       variant="h4"
                                       className="ml-1 text-gray-400 hover:text-gray-600"
@@ -413,7 +426,10 @@ const AdminManagement = () => {
                       value: (
                         <div className="items-center p-4">
                           {user.status && typeof user.status === "object" && (
-                            <Tooltip className="text-xs" content={user.status.name.toUpperCase()}>
+                            <Tooltip
+                              className="text-xs"
+                              content={user.status.name.toUpperCase()}
+                            >
                               <Switch
                                 onChange={() =>
                                   handleSwitch(user.id, user.status_id)

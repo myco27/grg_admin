@@ -250,7 +250,7 @@ const settings = () => {
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-normal"
+                          className="font-normal max-w-[500px]"
                         >
                           {setting.setting_value2 || "None"}
                         </Typography>

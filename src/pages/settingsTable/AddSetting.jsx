@@ -6,6 +6,7 @@ import {
   DialogHeader,
   Input,
   Select,
+  Textarea,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import Loading from "../../components/layout/Loading";
@@ -32,7 +33,7 @@ const AddSetting = ({ open, handleOpen, fetchSettings }) => {
     try {
       const response = await axiosClient.post("/admin/settings/add", formData);
 
-      if (response.status) {
+      if (response.status == 200) {
         fetchSettings();
         handleOpen();
         showAlert("Setting created successfully!", "success");
@@ -81,20 +82,18 @@ const AddSetting = ({ open, handleOpen, fetchSettings }) => {
               required
               value={formData.setting_name}
               onChange={handleInputChange}
+              className="[&>input]:whitespace-normal [&>input]:break-words [&>input]:h-auto [&>input]:min-h-[40px]"
             />
-            <Input
+            <Textarea
               label="Setting Value 1"
               name="setting_value1"
-              type="text"
               required
               value={formData.setting_value1}
               onChange={handleInputChange}
             />
-            <Input
+            <Textarea
               label="Setting Value 2"
               name="setting_value2"
-              type="text"
-              required
               value={formData.setting_value2}
               onChange={handleInputChange}
             />
