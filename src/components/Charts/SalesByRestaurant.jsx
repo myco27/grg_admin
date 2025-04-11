@@ -20,7 +20,7 @@ export default function SalesByRestaurant() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
-  
+
   const [chartOptions, setChartOptions] = useState({
     chart: {
       type: "bar",
@@ -82,15 +82,14 @@ export default function SalesByRestaurant() {
       },
     },
   });
-  
-  // Filter stores based on search term
-  const filteredStores = storeData.filter(store => 
+
+  const filteredStores = storeData.filter((store) =>
     (store.central_store_name + store.store_name)
       .toLowerCase()
-      .replace(/[:\s]/g, "")  
-      .includes(searchTerm.toLowerCase().replace(/\s/g, ""))  
+      .replace(/[:\s]/g, "")
+      .includes(searchTerm.toLowerCase().replace(/\s/g, ""))
   );
-  
+
   const selectStore = (userId, storeName) => {
     setSelectedStore(storeName);
     setSearchTerm("");
@@ -119,7 +118,7 @@ export default function SalesByRestaurant() {
         setIsDropdownOpen(false);
       }
     }
-    
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -133,10 +132,10 @@ export default function SalesByRestaurant() {
         "admin/dashboard/sales-by-restaurant"
       );
       if (response.status === 200) {
-        const array = Object.values(response.data.data);
-        setStoreData(array);
-        const sortedData = array.sort((a, b) => b.totalSales - a.totalSales);
-        const top10Stores = sortedData.slice(0, 10);
+        const arrayStore = Object.values(response.data.data);
+        setStoreData(arrayStore);
+        const sortedData = arrayStore.sort((a, b) => b.totalSales - a.totalSales);
+        const top10Stores = sortedData.slice(0, 12);
         const months = [
           "January",
           "February",
@@ -153,7 +152,7 @@ export default function SalesByRestaurant() {
         ];
 
         const formattedData = top10Stores.map((store, index) => ({
-          x: months[index % months.length], // This will cycle through months
+          x: months[index % months.length],
           y: Math.floor(store.totalSales),
           goals: [
             {
@@ -164,8 +163,21 @@ export default function SalesByRestaurant() {
             },
           ],
         }));
-        
-        setChartSeries([{ name: "Actual", data: formattedData }]);
+        const formattedDataStore = arrayStore.map((store) => ({
+          x: store.store_branch +":"+ store.store_name,
+          y: Math.floor(store.totalSales),
+          goals: [
+            {
+              name: "Expected",
+              value: Math.floor(store.totalNetSales),
+              strokeWidth: 15,
+              strokeColor: "#612B9B4D",
+            },
+          ],
+        }));
+
+        setChartSeries([{ name: "Actual", data:selectedStore === "All"?formattedDataStore:formattedData }]);
+
       }
     } catch (e) {
       console.error(
@@ -176,18 +188,18 @@ export default function SalesByRestaurant() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchStoreMonthly();
-  }, []);
+  }, [selectedStore]);
 
   return (
     <Card className="rounded-none border shadow-none">
       <CardHeader
         floated={false}
         shadow={false}
-        color="transparent"
-        className="overflow flex flex-col gap-4 overflow-visible rounded-none md:flex-row md:items-center"
+        color="transparent" flex-
+        className="overflow flex flex-col gap-4 overflow-visible rounded-none sm:flex-col md:flex-col md:items-center lg:flex-row"
       >
         <div className="flex-grow overflow-visible">
           <Typography color="black" variant="h5" className="min-w-[350px]">
@@ -195,24 +207,29 @@ export default function SalesByRestaurant() {
           </Typography>
           <Typography>{selectedStore}</Typography>
         </div>
-      
+
         <div className="relative" ref={dropdownRef}>
-          <Input 
+          <Input
             inputRef={inputRef}
             label={selectedStore}
-            icon={<ChevronDown onClick={handleInputClick} className="cursor-pointer" />}
-            placeholder={selectedStore} 
-            value={searchTerm} 
+            icon={
+              <ChevronDown
+                onClick={handleInputClick}
+                className="cursor-pointer"
+              />
+            }
+            placeholder={selectedStore}
+            value={searchTerm}
             onChange={handleSearchChange}
             onFocus={() => setIsDropdownOpen(true)}
             className="cursor-pointer"
           />
-          
+
           {isDropdownOpen && (
-            <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+            <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto overflow-x-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="py-1">
-                <div 
-                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                <div
+                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => selectStore("All", "All")}
                 >
                   All
@@ -220,7 +237,7 @@ export default function SalesByRestaurant() {
                 <hr className="my-1" />
                 {filteredStores.length > 0 ? (
                   filteredStores.map((store) => (
-                    <div 
+                    <div
                       key={store.id}
                       className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => selectStore(store.id, store.store_name)}
@@ -229,20 +246,22 @@ export default function SalesByRestaurant() {
                     </div>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500">No matching stores found</div>
+                  <div className="px-4 py-2 text-sm text-gray-500">
+                    No matching stores found
+                  </div>
                 )}
               </div>
             </div>
           )}
         </div>
-      
       </CardHeader>
       <CardBody className="px-2 pb-0">
         {loading ? (
-          <Loading />
+          <div className="min-h-[50px]">
+          <Loading height={"min-h-[271px]"} />
+          </div>
         ) : (
           <Chart
-            
             type="bar"
             height={250}
             series={chartSeries}

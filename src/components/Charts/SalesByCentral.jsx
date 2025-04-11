@@ -72,7 +72,7 @@ const chartConfig = {
   },
 };
 
-// Component
+
 export default function SalesByCentral() {
   return (
     <Card className="flex-grow rounded-none border shadow-none sm:min-w-[370px]">
