@@ -130,7 +130,7 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <Typography variant="h3" className="text-primary">
-                      {totalCentral}
+                      {totalRestaurants}
                     </Typography>
                   )}
                 </CardBody>
