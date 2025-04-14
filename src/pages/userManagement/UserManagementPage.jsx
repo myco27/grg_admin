@@ -32,9 +32,7 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import EditUserModal from "./EditUserModal";
 import { useStateContext } from "../../contexts/contextProvider";
-import {  ArrowLeftRight } from 'lucide-react';
-
-
+import { ArrowLeftRight } from "lucide-react";
 
 const UserManagementPage = () => {
   const navigate = useNavigate();
@@ -54,7 +52,7 @@ const UserManagementPage = () => {
     itemsPerPage: 10,
     isLoading: false,
   });
-  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5]);
+  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5, 6]);
   const [isRotated, setIsRotated] = useState(false);
 
   const { user } = useStateContext();
@@ -138,13 +136,16 @@ const UserManagementPage = () => {
   };
 
   const rotateColumns = () => {
-    setTableHeadOrder(prevOrder => {
+    setTableHeadOrder((prevOrder) => {
       if (isRotated) {
         // If already rotated, revert to original order
-        return [0, 1, 2, 3, 4, 5];
+        return [0, 1, 2, 3, 4, 5, 6];
       } else {
         // Rotate: move last to first, shift others right
-        const newOrder = [prevOrder[prevOrder.length - 1], ...prevOrder.slice(0, -1)];
+        const newOrder = [
+          prevOrder[prevOrder.length - 1],
+          ...prevOrder.slice(0, -1),
+        ];
         return newOrder;
       }
     });
@@ -184,12 +185,12 @@ const UserManagementPage = () => {
     "User ID",
     "User Information",
     "User Type",
+    "Social Type",
     "Status",
     "Date Created",
     "Action",
   ];
 
-  
   return (
     <>
       {canViewUserModule && (
@@ -236,8 +237,8 @@ const UserManagementPage = () => {
                       <Search className="h-5 w-5" />
                     )
                   }
-                    size="md"
-              className="bg-white"
+                  size="md"
+                  className="bg-white"
                   value={searchTerm}
                   onChange={(e) => handleSearchInput(e)}
                 />
@@ -289,7 +290,7 @@ const UserManagementPage = () => {
                     >
                       {tableHeadOrder.map((colIndex) => {
                         // Return the appropriate cell based on column index
-                        switch(colIndex) {
+                        switch (colIndex) {
                           case 0: // User ID
                             return (
                               <td className="p-4" key={`col-${colIndex}`}>
@@ -336,12 +337,30 @@ const UserManagementPage = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {user.user_type ? user.user_type.toUpperCase() : ""}
+                                    {user.user_type
+                                      ? user.user_type.toUpperCase()
+                                      : ""}
                                   </Typography>
                                 </div>
                               </td>
                             );
-                          case 3: // Status
+                          case 3: // Social Type
+                            return (
+                              <td className="p-4" key={`col-${colIndex}`}>
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {user.social_type
+                                      ? user.social_type.toUpperCase()
+                                      : "ROCKYGO"}
+                                  </Typography>
+                                </div>
+                              </td>
+                            );
+                          case 4: // Status
                             return (
                               <td className="p-4" key={`col-${colIndex}`}>
                                 <div className="w-max">
@@ -370,7 +389,7 @@ const UserManagementPage = () => {
                                 </div>
                               </td>
                             );
-                          case 4: // Date Created
+                          case 5: // Date Created
                             return (
                               <td className="p-4" key={`col-${colIndex}`}>
                                 <div className="flex flex-col">
@@ -379,22 +398,27 @@ const UserManagementPage = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {new Date(user.created_at).toLocaleString("en-US", {
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    })}
+                                    {new Date(user.created_at).toLocaleString(
+                                      "en-US",
+                                      {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                      }
+                                    )}
                                   </Typography>
                                 </div>
                               </td>
                             );
-                          case 5: // Action
+                          case 6: // Action
                             return (
                               <td className="p-4" key={`col-${colIndex}`}>
                                 <Tooltip content="Edit User">
                                   <IconButton
                                     variant="text"
-                                    onClick={() => handleEditOpen(user.id, user.user_type)}
+                                    onClick={() =>
+                                      handleEditOpen(user.id, user.user_type)
+                                    }
                                   >
                                     <PencilIcon className="h-4 w-4" />
                                   </IconButton>
