@@ -21,6 +21,7 @@ import UnauthorizedPage from "./components/Views/UnauthorizedPage";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ApplicationsPage from "./pages/applicationsManagement/ApplicationsPage";
 import Settings from "./pages/settingsTable/settings";
+import RestaurantManagement from "./pages/restaurantManagement/RestaurantManagementPage";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -110,6 +111,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view settings module">
             <Settings />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "restaurant-management",
+        element: (
+          <ProtectedRoute requiredPermission="view restaurant module">
+            <RestaurantManagement />
           </ProtectedRoute>
         ),
       },

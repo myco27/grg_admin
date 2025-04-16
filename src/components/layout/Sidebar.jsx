@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Newspaper,
   Settings,
+  Utensils,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -35,6 +36,8 @@ const Sidebar = () => {
     user?.all_permissions?.includes("view application module") || false;
   const canViewSettingsModule =
     user?.all_permissions?.includes("view settings module") || false;
+  const canViewRestaurantModule =
+    user?.all_permissions?.includes("view restaurant module") || false;
 
   return (
     <>
@@ -174,6 +177,47 @@ const Sidebar = () => {
                         className="font-normal text-sm whitespace-nowrap"
                       >
                         User Management
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Restaurant Management */}
+              {canViewRestaurantModule && (
+                <Link to="/restaurant-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/restaurant-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Utensils
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/restaurant-management"
+                            ? ""
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Restaurant Management
                       </Typography>
                     </div>
                   </ListItem>
@@ -422,6 +466,47 @@ const Sidebar = () => {
                     <Typography color="white" className="font-normal text-sm">
                       User Management
                     </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Restaurant Management */}
+              {canViewRestaurantModule && (
+                <Link to="/restaurant-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/restaurant-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Utensils
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/restaurant-management"
+                            ? ""
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="font-normal text-sm whitespace-nowrap"
+                      >
+                        Restaurant Management
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
