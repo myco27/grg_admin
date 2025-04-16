@@ -203,7 +203,7 @@ const RestaurantManagementPage = () => {
                 <ArrowLeftRight className="h-5 w-5" />
               </button>
               <Input
-                label="Search User"
+                label="Search Store"
                 icon={
                   pagination.isLoading ? (
                     <Spinner className="h-5 w-5" />
