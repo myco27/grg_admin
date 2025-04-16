@@ -161,7 +161,9 @@ const RolePermissionTable = () => {
         fetchRoles();
       }
     } catch (error) {
-      console.error("Error toggling permission:", error);
+      if (error.response.data.errors) {
+        showAlert(error.response.data.errors, "error");
+      }
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -249,7 +251,6 @@ const RolePermissionTable = () => {
                   </th>
                   {permissions.map((perm, index) => {
                     // console.log(index);
-
                     return (
                       <th
                         key={perm.id}
@@ -294,7 +295,15 @@ const RolePermissionTable = () => {
                         permissions.length > 0 ? (
                           permissions.map((perm) => (
                             <td key={perm.id} className="p-4">
-                              <div className="flex items-center justify-center">
+                              <div
+                                className={`flex items-center justify-center ${
+                                  role.name === "developer" &&
+                                  perm.name ===
+                                    "view roles and permissions module"
+                                    ? "pointer-events-none opacity-50"
+                                    : ""
+                                }`}
+                              >
                                 <Switch
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
