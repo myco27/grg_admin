@@ -209,20 +209,6 @@ const RolePermissionTable = () => {
           <div className="flex justify-end w-full">
             <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-x-4">
               <Input
-                label="Search Permissions"
-                icon={
-                  pagination.isLoading ? (
-                    <Spinner className="h-5 w-5" />
-                  ) : (
-                    <Search className="h-5 w-5" />
-                  )
-                }
-                value={permissionSearch}
-                onChange={(e) => setPermissionSeach(e.target.value)}
-                size="md"
-                className="bg-white md:w-72"
-              />
-              <Input
                 label="Search Role"
                 icon={
                   pagination.isLoading ? (
@@ -235,6 +221,20 @@ const RolePermissionTable = () => {
                 className="bg-white md:w-72"
                 value={searchTerm}
                 onChange={(e) => handleSearchInput(e)}
+              />
+              <Input
+                label="Search Permissions"
+                icon={
+                  pagination.isLoading ? (
+                    <Spinner className="h-5 w-5" />
+                  ) : (
+                    <Search className="h-5 w-5" />
+                  )
+                }
+                value={permissionSearch}
+                onChange={(e) => setPermissionSeach(e.target.value)}
+                size="md"
+                className="bg-white md:w-72"
               />
             </div>
           </div>
