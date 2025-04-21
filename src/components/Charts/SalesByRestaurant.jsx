@@ -12,6 +12,11 @@ import Loading from "../layout/Loading";
 import { ChevronDown } from "lucide-react";
 
 export default function SalesByRestaurant() {
+  const allMonths = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -84,6 +89,8 @@ export default function SalesByRestaurant() {
     },
   });
   const [chartSeries, setChartSeries] = useState( [
+
+    
     {
       name: 'Sales by Month', 
       data: monthlyData.map((entry) => ({
@@ -130,19 +137,49 @@ export default function SalesByRestaurant() {
   };
 
 
+  
+
   useEffect(() => {
+    const allMonths = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+  
     const dataToMap = selectedStore === "All" ? monthlyData : monthlySalesPerStore;
+  
+    const currentYear = new Date().getFullYear();
+  
+    const filtered = dataToMap.filter(entry => {
+      const date = new Date(entry.date || entry.month);
+      return date.getFullYear() === currentYear;
+    });
+  
+
+    const monthlyTotals = Array(12).fill(0);
+  
+    filtered.forEach(entry => {
+      const date = new Date(entry.date || entry.month);
+      const monthIndex = date.getMonth(); // 0-based
+      monthlyTotals[monthIndex] += Math.trunc(entry.total_sales);
+    });
+  
+    const chartData = allMonths.map((month, i) => ({
+      x: month,
+      y: monthlyTotals[i] ?? 0,
+      fillColor: "#612B9B",
+      strokeColor: "blue",
+    }));
   
     setChartSeries([
       {
         name: "Sales by Month",
-        data: dataToMap.map((entry) => ({
-          x: entry.month,
-          y: Math.trunc(entry.total_sales),
-        })),
+        data: chartData,
       },
     ]);
   }, [monthlyData, monthlySalesPerStore, selectedStore]);
+  
+  
+  
 
   
   useEffect(() => {
