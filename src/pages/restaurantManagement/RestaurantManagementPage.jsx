@@ -227,26 +227,32 @@ const RestaurantManagementPage = () => {
             <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
                 <tr>
-                  {tableHeadOrder.map((colIndex, index) => (
-                    <th
-                      key={TABLE_HEAD[colIndex]}
-                      className={`bg-tableHeaderBg p-4 ${
-                        index === 0 ? "rounded-tl-md rounded-bl-md" : ""
-                      } ${
-                        index === TABLE_HEAD.length - 1
-                          ? "rounded-tr-md rounded-br-md"
-                          : ""
-                      }`}
-                    >
-                      <Typography
-                        variant="small"
-                        color="black"
-                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                  {tableHeadOrder.map((colIndex, index) => {
+                    const columnLabel = TABLE_HEAD[colIndex];
+
+                    return (
+                      <th
+                        key={`${colIndex}-${index}`}
+                        className={`bg-tableHeaderBg p-4 ${
+                          index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                        } ${
+                          index === TABLE_HEAD.length - 1
+                            ? "rounded-tr-md rounded-br-md"
+                            : ""
+                        }`}
                       >
-                        {TABLE_HEAD[colIndex]}
-                      </Typography>
-                    </th>
-                  ))}
+                        {columnLabel && (
+                          <Typography
+                            variant="small"
+                            color="black"
+                            className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                          >
+                            {columnLabel}
+                          </Typography>
+                        )}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
 
