@@ -139,6 +139,7 @@ function Configuration() {
     } catch (e) {
       console.error(e.error);
     } finally {
+      fetchTerms();
       handleOpen();
     }
   };
