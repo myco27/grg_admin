@@ -15,7 +15,7 @@ import {
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
-import { PencilIcon } from "lucide-react";
+import { ArrowLeftRight, PencilIcon } from "lucide-react";
 import axios from "axios";
 
 function Configuration() {
@@ -33,7 +33,7 @@ function Configuration() {
   const TABLE_HEAD = [
     "ID",
     "CONTENT",
-    "STATUS",
+    "STATUS_ID",
     "CREATED_AT",
     "UPDATED_AT",
     "ACTION",
@@ -158,7 +158,13 @@ function Configuration() {
               See information about all Cofigurations
             </Typography>
           </div>
-          <div>
+          <div className="flex flex-row items-center justify-center gap-2">
+            <IconButton
+              variant="text"
+              onClick={() => setisColumnReversed(!isColumnReversed)}
+            >
+              <ArrowLeftRight></ArrowLeftRight>
+            </IconButton>
             <Button
               variant="filled"
               className="bg-primary"
@@ -196,24 +202,28 @@ function Configuration() {
             </tr>
           </thead>
           <tbody>
-            {tableData.map((data) => (
-              <tr key={data.id}>
-                <td className="p-4">{data.id}</td>
-                <td className="p-4">{data.content}</td>
-                <td className="p-4">
+            {tableData.map((data) => {
+              const cells = [
+                <td key="id" className="p-4">
+                  {data.id}
+                </td>,
+                <td key="content" className="p-4">
+                  {data.content}
+                </td>,
+                <td key="status" className="p-4">
                   <Switch
                     color="green"
                     checked={!!data.status}
                     onChange={() => handleStatusToggle(data.id, data.status)}
                   />
-                </td>
-                <td className="p-4">
+                </td>,
+                <td key="created" className="p-4">
                   {new Date(data.created_at).toLocaleString()}
-                </td>
-                <td className="p-4">
+                </td>,
+                <td key="updated" className="p-4">
                   {new Date(data.updated_at).toLocaleString()}
-                </td>
-                <td>
+                </td>,
+                <td key="action" className="p-4">
                   <IconButton
                     variant="text"
                     onClick={() => {
@@ -221,11 +231,17 @@ function Configuration() {
                       handleEditRow(data.id);
                     }}
                   >
-                    <PencilIcon className="h-4 w-4"></PencilIcon>
+                    <PencilIcon className="h-4 w-4" />
                   </IconButton>
-                </td>
-              </tr>
-            ))}
+                </td>,
+              ];
+
+              const reorderedCells = isColumnReversed
+                ? [cells[5], ...cells.slice(0, 5)] // Move ACTION to the front
+                : cells;
+
+              return <tr key={data.id}>{reorderedCells}</tr>;
+            })}
           </tbody>
         </table>
       </CardBody>
