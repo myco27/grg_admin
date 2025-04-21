@@ -66,7 +66,7 @@ const Dashboard = () => {
 
   const getOrdersData = async () => {
     try {
-      const response = await axiosClient.get("/admin/orders/rate");
+      const response = await axiosClient.get("/admin/orders/rate/list");
       if (response.status === 200) {
         const orderData = response.data;
         setIsOrder(orderData);
@@ -88,7 +88,7 @@ const Dashboard = () => {
       <div className="m-5 flex flex-col gap-1">
         <div
           id="row1"
-          className="flex flex-row flex-wrap justify-center gap-1 border-red-100 sm:flex-row lg:flex-row xl:flex-row"
+          className="flex flex-row flex-wrap justify-center gap-1 border-red-100 sm:flex-row md:flex-row lg:flex-row xl:flex-row xl:flex-nowrap"
         >
           <Card className="item-center mx-auto flex max-w-[370px] justify-around rounded-none shadow-none">
             <div

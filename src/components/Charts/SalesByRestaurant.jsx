@@ -104,7 +104,7 @@ export default function SalesByRestaurant() {
 
   const selectStore = (storeId, storeName, storeBranch) => {
     setSelectedStoreId(storeId);
-    setSelectedStore(`${storeBranch} ${storeName} `);
+    storeName === "All"?setSelectedStore(storeName):setSelectedStore(`${storeBranch} ${storeName}`)
     setSearchTerm("");
     setIsDropdownOpen(false);
   
@@ -113,6 +113,7 @@ export default function SalesByRestaurant() {
     } else {
       fetchMonthlyPerStore(storeId); 
     }
+
   };
   
   const filteredStores = storeData.filter((store) =>
@@ -227,7 +228,6 @@ export default function SalesByRestaurant() {
     try {
       const response = await axiosClient.get("admin/dashboard/allStoreSales");
       setMonthlyData(response.data);
-      console.log(response.data)
     } catch (e) {
       e.error;
     }
@@ -265,7 +265,6 @@ export default function SalesByRestaurant() {
             onFocus={() => setIsDropdownOpen(true)}
             className="cursor-pointer"
           />
-
           {isDropdownOpen && (
             <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto overflow-x-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="py-1">
