@@ -9,14 +9,12 @@ import {
   DialogHeader,
   IconButton,
   Switch,
-  textarea,
   Textarea,
   Typography,
 } from "@material-tailwind/react";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import { ArrowLeftRight, PencilIcon } from "lucide-react";
-import axios from "axios";
 
 function Configuration() {
   const [textArea, setTextAreaVal] = useState("");
@@ -87,7 +85,6 @@ function Configuration() {
   const handleEditRow = (id) => {
     const targetRow = tableData.find((item) => item.id === id);
     if (!targetRow) return;
-
     setTextAreaVal(targetRow.content);
     setSelectedRow(id);
     handleEditModal();
@@ -235,11 +232,9 @@ function Configuration() {
                   </IconButton>
                 </td>,
               ];
-
               const reorderedCells = isColumnReversed
-                ? [cells[5], ...cells.slice(0, 5)] // Move ACTION to the front
+                ? [cells[5], ...cells.slice(0, 5)] 
                 : cells;
-
               return <tr key={data.id}>{reorderedCells}</tr>;
             })}
           </tbody>
