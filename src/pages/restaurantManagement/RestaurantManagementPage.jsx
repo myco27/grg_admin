@@ -29,6 +29,7 @@ import {
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import { ArrowLeftRight } from "lucide-react";
+import EditRestaurantModal from "./EditRestaurantModal";
 
 const RestaurantManagementPage = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const RestaurantManagementPage = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -112,8 +113,8 @@ const RestaurantManagementPage = () => {
     });
   };
 
-  const handleEditOpen = (userId) => {
-    setSelectedUserId(userId);
+  const handleEditOpen = (storeId) => {
+    setSelectedStoreId(storeId);
     setEditOpen(!editOpen);
   };
 
@@ -421,6 +422,15 @@ const RestaurantManagementPage = () => {
           />
         </CardFooter>
       </Card>
+
+      {/* MODALS */}
+      <EditRestaurantModal
+        open={editOpen}
+        handleOpen={handleEditOpen}
+        userId={selectedStoreId}
+        userType={selectedUser}
+        fetchStores={fetchStores}
+      />
     </>
   );
 };
