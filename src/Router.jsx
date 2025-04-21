@@ -13,7 +13,6 @@ import AdminManagement from "./pages/adminManagement/AdminManagement";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import EmailCode from "./pages/ForgotPassword/EmailCode";
 import ResetPassword from "./pages/ForgotPassword/ResetPassword";
-
 import { useStateContext } from "./contexts/contextProvider";
 import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -22,6 +21,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import ApplicationsPage from "./pages/applicationsManagement/ApplicationsPage";
 import Settings from "./pages/settingsTable/settings";
 import RestaurantManagement from "./pages/restaurantManagement/RestaurantManagementPage";
+import Configuration from "./pages/Configuration/Configuration";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -119,6 +119,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view restaurant module">
             <RestaurantManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "configuration",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <Configuration/>
           </ProtectedRoute>
         ),
       },
