@@ -102,9 +102,9 @@ export default function SalesByRestaurant() {
     }
   ]);
 
-  const selectStore = (storeId, storeName) => {
+  const selectStore = (storeId, storeName, storeBranch) => {
     setSelectedStoreId(storeId);
-    setSelectedStore(storeName);
+    setSelectedStore(`${storeBranch} ${storeName} `);
     setSearchTerm("");
     setIsDropdownOpen(false);
   
@@ -154,12 +154,11 @@ export default function SalesByRestaurant() {
       return date.getFullYear() === currentYear;
     });
   
-
     const monthlyTotals = Array(12).fill(0);
   
     filtered.forEach(entry => {
       const date = new Date(entry.date || entry.month);
-      const monthIndex = date.getMonth(); // 0-based
+      const monthIndex = date.getMonth(); 
       monthlyTotals[monthIndex] += Math.trunc(entry.total_sales);
     });
   
@@ -177,10 +176,6 @@ export default function SalesByRestaurant() {
       },
     ]);
   }, [monthlyData, monthlySalesPerStore, selectedStore]);
-  
-  
-  
-
   
   useEffect(() => {
     function handleClickOutside(event) {
@@ -239,7 +234,7 @@ export default function SalesByRestaurant() {
   };
 
   return (
-    <Card className="rounded-none border shadow-none">
+    <Card className="max-w-[375px] rounded-none border shadow-none sm:max-w-none">
       <CardHeader
         floated={false}
         shadow={false}
@@ -287,7 +282,7 @@ export default function SalesByRestaurant() {
                       key={store.id}
                       className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => {
-                        selectStore(store.id, store.store_name);
+                        selectStore(store.id, store.store_name, store.store_branch);
                         
                       }}
                     >

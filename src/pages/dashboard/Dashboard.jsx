@@ -88,9 +88,9 @@ const Dashboard = () => {
       <div className="m-5 flex flex-col gap-1">
         <div
           id="row1"
-          className="flex flex-grow flex-col justify-center gap-1 border-red-100 sm:flex-row md:flex-col lg:flex-col xl:flex-row"
+          className="flex flex-row flex-wrap justify-center gap-1 border-red-100 sm:flex-row lg:flex-row xl:flex-row"
         >
-          <Card className="item-center flex max-w-[370px] justify-around rounded-none shadow-none">
+          <Card className="item-center mx-auto flex max-w-[370px] justify-around rounded-none shadow-none">
             <div
               id="div1"
               className="grid min-w-full grid-cols-2 grid-rows-2 gap-2 p-0"

@@ -22,8 +22,7 @@ export default function SalesByCentral({centralData}) {
         data: top3data.map((store) => ({
           x: store.store_name,
           y: Math.trunc(store.total_sales),
-          fillColor: "#612B9B",
-          strokeColor: "blue"
+          color: "#612B9B"
         }))
       },
     ],
@@ -40,8 +39,9 @@ export default function SalesByCentral({centralData}) {
           return `${branchNames[dataPointIndex]}: ${val}`;
         },
         style: {
-          fontSize: "14px",
-          fontWeight: "bold",
+          fontSize: "11px",
+          fontWeight: "italic",
+          colors: "black",
         },
       },
       plotOptions: {
