@@ -254,7 +254,7 @@ function Configuration() {
               ADD T&C
             </Button>
           <Input
-                  label="Search User"
+                  label="Search Content"
                   icon={
                     pagination.isLoading ? (
                       <Spinner className="h-5 w-5" />
@@ -367,7 +367,7 @@ function Configuration() {
           <Typography variant="h5">ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
         <DialogBody className="flex min-w-fit flex-col gap-2 overflow-auto">
-          <TextEditor onChange={(val) => setContent(val)} />
+        <TextEditor value={content} onChange={(val) => setContent(val)} />
           <Typography>Status?</Typography>
           <Switch checked={status} onChange={handleSwitchChange} />
         </DialogBody>
@@ -384,7 +384,8 @@ function Configuration() {
       <Dialog open={editModal} handler={setEditModal}>
         <DialogHeader>Edit Content</DialogHeader>
         <DialogBody>
-          <TextEditor onChange={(val) => setTextAreaVal(val)} />
+        <TextEditor value={textArea} onChange={(val) => setTextAreaVal(val)} className="min-h-max" />
+
         </DialogBody>
         <DialogFooter className="flex gap-2">
           <Button
