@@ -24,6 +24,21 @@ function Configuration() {
   const [status, setStatus] = useState(false);
   const [isColumnReversed, setisColumnReversed] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmRow, setConfirmRow] = useState(null);
+
+  const handleConfirmModal = (row = null) => {
+    setConfirmModal(!confirmModal);
+    setConfirmRow(row);
+  };
+
+  const handleConfirm = () => {
+    if (confirmRow) {
+      handleStatusToggle(confirmRow.id, confirmRow.status_id);
+      console.log(confirmRow.status_id, confirmRow.id);
+    }
+    handleConfirmModal();
+  };
 
   const handleEditModal = () => {
     setEditModal(!editModal);
@@ -31,7 +46,7 @@ function Configuration() {
   const TABLE_HEAD = [
     "ID",
     "CONTENT",
-    "STATUS_ID",
+    "STATUS",
     "CREATED_AT",
     "UPDATED_AT",
     "ACTION",
@@ -56,10 +71,9 @@ function Configuration() {
 
   const handleSaveContent = async (id) => {
     if (!id) {
-      console.warn("No ID passed to handleSaveContent");
+      console.log("No ID passed to handleSaveContent");
       return;
     }
-
     const targetRow = tableData.find((item) => item.id === id);
     if (!targetRow) return;
 
@@ -67,12 +81,12 @@ function Configuration() {
       console.log("Saving content:", {
         id,
         content: textArea,
-        status: targetRow.status,
+        status: targetRow.status_id,
       });
 
       await axiosClient.put(`admin/terms-and-conditions/${id}`, {
         content: textArea,
-        status: targetRow.status,
+        status_id: targetRow.status_id,
       });
 
       await fetchTerms();
@@ -93,31 +107,31 @@ function Configuration() {
   const handleStatusToggle = async (id, currentStatus) => {
     const targetRow = tableData.find((item) => item.id === id);
     if (!targetRow) return;
-
-    const updatedStatus = currentStatus ? 0 : 1;
+  
+    const updatedStatus = currentStatus === 1 ? 2 : 1; 
+  
     const updatedTable = tableData.map((item) =>
-      item.id === id ? { ...item, status: updatedStatus } : item
+      item.id === id ? { ...item, status_id: updatedStatus } : item
     );
-    setTableData(updatedTable);
-
+    setTableData(updatedTable); 
+  
     try {
-      await axiosClient.put(`/admin/terms-and-conditions/${id}`, {
-        content: targetRow.content,
-        status: updatedStatus,
+      await axiosClient.put(`/admin/update/terms-and-conditions/status/${id}`, {
+        status_id: updatedStatus,
       });
     } catch (error) {
       console.error("Update failed:", error.response?.data || error.message);
-      fetchTerms();
     }
   };
+  
 
   const fetchTerms = async () => {
     try {
       const response = await axiosClient.get("/admin/terms-and-conditions");
       console.log(response.data);
-      setTableData(response.data);
+      setTableData(response.data.data);
     } catch (e) {
-      console.error(e.response?.data || e.message); // More accurate error handling
+      console.error(e.response?.data || e.message);
     }
   };
 
@@ -128,14 +142,14 @@ function Configuration() {
   const handleSave = async () => {
     const data = {
       content: content,
-      status: status ? 1 : 0,
+      status_id: status ? 1 : 2,
     };
     try {
       const response = await axiosClient.post(
         "admin/terms-and-conditions",
         data
       );
-      console.log(response.data);
+      console.log(response.data.data);
     } catch (e) {
       console.error(e.error);
     } finally {
@@ -211,8 +225,8 @@ function Configuration() {
                 <td key="status" className="p-4">
                   <Switch
                     color="green"
-                    checked={!!data.status}
-                    onChange={() => handleStatusToggle(data.id, data.status)}
+                    checked={data.status_id === 1} 
+                    onChange={() => handleConfirmModal(data)} 
                   />
                 </td>,
                 <td key="created" className="p-4">
@@ -234,19 +248,23 @@ function Configuration() {
                 </td>,
               ];
               const reorderedCells = isColumnReversed
-                ? [cells[5], ...cells.slice(0, 5)] 
+                ? [cells[5], ...cells.slice(0, 5)]
                 : cells;
               return <tr key={data.id}>{reorderedCells}</tr>;
             })}
           </tbody>
         </table>
       </CardBody>
+
+      {/*Modals*/}
       <Dialog open={modalOpen} handler={setModalOpen}>
         <DialogHeader>
           <Typography>ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
         <DialogBody className="flex min-w-fit flex-col gap-2 overflow-auto">
           <Textarea
+            variant="standard"
+            size="lg"
             label="Content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -268,6 +286,8 @@ function Configuration() {
         <DialogHeader>Edit Content</DialogHeader>
         <DialogBody>
           <Textarea
+            size="lg"
+            variant="static"
             label="Content Area"
             value={textArea}
             onChange={(e) => {
@@ -286,6 +306,27 @@ function Configuration() {
             className="text-primary"
             variant="text"
             onClick={handleEditModal}
+          >
+            Cancel
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      <Dialog open={confirmModal} handler={handleConfirmModal}>
+        <DialogHeader>
+          <Typography variant="h3">Change Status?</Typography>
+        </DialogHeader>
+        <DialogBody>
+          <Typography variant="h6">Confirm change status?</Typography>
+        </DialogBody>
+        <DialogFooter className="flex gap-2">
+          <Button className="bg-primary" onClick={handleConfirm}>
+            Confirm
+          </Button>
+          <Button
+            className="text-primary"
+            variant="text"
+            onClick={handleConfirmModal}
           >
             Cancel
           </Button>
