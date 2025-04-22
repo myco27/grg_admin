@@ -12,9 +12,11 @@ import {
   Textarea,
   Typography,
 } from "@material-tailwind/react";
+
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import { ArrowLeftRight, PencilIcon } from "lucide-react";
+import TextEditor from "../../components/Editor/TextEditor";
 
 function Configuration() {
   const [textArea, setTextAreaVal] = useState("");
@@ -107,14 +109,14 @@ function Configuration() {
   const handleStatusToggle = async (id, currentStatus) => {
     const targetRow = tableData.find((item) => item.id === id);
     if (!targetRow) return;
-  
-    const updatedStatus = currentStatus === 1 ? 2 : 1; 
-  
+
+    const updatedStatus = currentStatus === 1 ? 2 : 1;
+
     const updatedTable = tableData.map((item) =>
       item.id === id ? { ...item, status_id: updatedStatus } : item
     );
-    setTableData(updatedTable); 
-  
+    setTableData(updatedTable);
+
     try {
       await axiosClient.put(`/admin/update/terms-and-conditions/status/${id}`, {
         status_id: updatedStatus,
@@ -123,7 +125,6 @@ function Configuration() {
       console.error("Update failed:", error.response?.data || error.message);
     }
   };
-  
 
   const fetchTerms = async () => {
     try {
@@ -225,8 +226,8 @@ function Configuration() {
                 <td key="status" className="p-4">
                   <Switch
                     color="green"
-                    checked={data.status_id === 1} 
-                    onChange={() => handleConfirmModal(data)} 
+                    checked={data.status_id === 1}
+                    onChange={() => handleConfirmModal(data)}
                   />
                 </td>,
                 <td key="created" className="p-4">
@@ -259,25 +260,19 @@ function Configuration() {
       {/*Modals*/}
       <Dialog open={modalOpen} handler={setModalOpen}>
         <DialogHeader>
-          <Typography>ADD TERMS AND CONDITIONS</Typography>
+          <Typography variant="h5">ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
         <DialogBody className="flex min-w-fit flex-col gap-2 overflow-auto">
-          <Textarea
-            variant="standard"
-            size="lg"
-            label="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          ></Textarea>
+          <TextEditor onChange={(val) => setContent(val)} />
           <Typography>Status?</Typography>
           <Switch checked={status} onChange={handleSwitchChange} />
         </DialogBody>
         <DialogFooter className="flex gap-2">
-          <Button className="bg-primary" onClick={handleOpen}>
-            Cancel
-          </Button>
-          <Button className="text-primary" variant="text" onClick={handleSave}>
+          <Button className="bg-primary" onClick={handleSave}>
             Save
+          </Button>
+          <Button className="text-primary" variant="text" onClick={handleOpen}>
+            Cancel
           </Button>
         </DialogFooter>
       </Dialog>
@@ -285,15 +280,7 @@ function Configuration() {
       <Dialog open={editModal} handler={setEditModal}>
         <DialogHeader>Edit Content</DialogHeader>
         <DialogBody>
-          <Textarea
-            size="lg"
-            variant="static"
-            label="Content Area"
-            value={textArea}
-            onChange={(e) => {
-              setTextAreaVal(e.target.value);
-            }}
-          ></Textarea>
+          <TextEditor onChange={(val) => setTextAreaVal(val)} />
         </DialogBody>
         <DialogFooter className="flex gap-2">
           <Button
