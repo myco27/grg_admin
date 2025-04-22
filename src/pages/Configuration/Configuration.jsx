@@ -246,6 +246,13 @@ function Configuration() {
           </div>
           
           <div className="flex flex-row items-center justify-center gap-2">
+          <Button
+              variant="filled"
+              className="min-w-[120px] bg-primary"
+              onClick={handleOpen}
+            >
+              ADD T&C
+            </Button>
           <Input
                   label="Search User"
                   icon={
@@ -266,14 +273,11 @@ function Configuration() {
             >
               <ArrowLeftRight></ArrowLeftRight>
             </IconButton>
-            <Button
-              variant="filled"
-              className="bg-primary"
-              onClick={handleOpen}
-            >
-              ADD T&C
-            </Button>
+         
           </div>
+          </div>
+          <div>
+     
         </div>
       </CardHeader>
       <CardBody className="w-full overflow-x-auto">
