@@ -188,7 +188,7 @@ function Configuration() {
           </div>
         </div>
       </CardHeader>
-      <CardBody>
+      <CardBody className="w-full overflow-x-auto">
         <table className="w-full min-w-max table-auto rounded-md">
           <thead>
             <tr>
@@ -216,6 +216,7 @@ function Configuration() {
           </thead>
           <tbody>
             {tableData.map((data) => {
+              
               const cells = [
                 <td key="id" className="p-4">
                   {data.id}
@@ -251,7 +252,7 @@ function Configuration() {
               const reorderedCells = isColumnReversed
                 ? [cells[5], ...cells.slice(0, 5)]
                 : cells;
-              return <tr key={data.id}>{reorderedCells}</tr>;
+              return <tr  className="border-b border-gray-300 hover:bg-gray-100" key={data.id}>{reorderedCells}</tr>;
             })}
           </tbody>
         </table>
