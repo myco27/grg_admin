@@ -427,8 +427,7 @@ const RestaurantManagementPage = () => {
       <EditRestaurantModal
         open={editOpen}
         handleOpen={handleEditOpen}
-        userId={selectedStoreId}
-        userType={selectedUser}
+        storeId={selectedStoreId}
         fetchStores={fetchStores}
       />
     </>

@@ -33,13 +33,7 @@ import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 
-const EditRestaurantModal = ({
-  open,
-  handleOpen,
-  storeId,
-  userType,
-  fetchStores,
-}) => {
+const EditRestaurantModal = ({ open, handleOpen, storeId, fetchStores }) => {
   const [storesAttachments, setStoresAttachments] = useState({
     businessCertificate: null,
     certificateOfRegistration: null,
@@ -54,8 +48,6 @@ const EditRestaurantModal = ({
 
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
-  const [storeBranch, setStoreBranch] = useState([]);
-
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
@@ -63,23 +55,13 @@ const EditRestaurantModal = ({
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
-  const [points, setPoints] = useState(0);
   const [localSupportNumber, setLocalSupportNumber] = useState("");
   const [businessLandlineNumber, setBusinessLandlineNumber] = useState("");
   const [businessContactNumber, setBusinessContactNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isColumnReversed, setisColumnReversed] = useState(false);
-  const [address, setAddress] = useState({
-    houseNumber: "",
-    building: "",
-    street: "",
-    district: "",
-    zipcode: "",
-    city: "",
-    state: "",
-  });
+
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -91,17 +73,21 @@ const EditRestaurantModal = ({
 
   const fetchRestaurantDetails = async () => {
     setLoading(true);
+
     try {
       const response = await axiosClient.get(`/admin/store/${storeId}`);
 
       if (response.status === 200) {
-        console.log(response.data);
-        
-
-        
-
-        //   setStoresAttachments(attachments);
-      
+        console.log(response.data.data);
+        if (response.data.data.resto_attachments) {
+          const restoAttachments = {
+            businessCertificate:
+              response.data.data.resto_attachments.business_permit,
+            certificateOfRegistration:
+              response.data.data.resto_attachments.certificate_registration,
+          };
+          setStoresAttachments(restoAttachments);
+        }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -112,7 +98,7 @@ const EditRestaurantModal = ({
 
   useEffect(() => {
     if (open && storeId) {
-      fetchRestaurantDetails;
+      fetchRestaurantDetails();
     } else {
       setFirstName("");
       setLastName("");
@@ -123,20 +109,17 @@ const EditRestaurantModal = ({
       setBusinessContactNumber("");
       setPassword("");
       setConfirmPassword("");
-     
 
       setStoresAttachments({
         businessCertificate: null,
 
         certificateOfRegistration: null,
-
       });
 
       setImagePreview({
         businessCertificate: null,
 
         certificateOfRegistration: null,
-
       });
     }
     setActiveTab("Attachments");
@@ -251,21 +234,6 @@ const EditRestaurantModal = ({
     },
   ];
 
-  const handlePageChange = (newPage) => {
-    setPagination({
-      ...pagination,
-      page: newPage,
-    });
-  };
-
-  const handlePageSizeChange = (newSize) => {
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: Number(newSize),
-    });
-  };
-
   const handleImageChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
@@ -281,88 +249,57 @@ const EditRestaurantModal = ({
     }
   };
 
-  const fetchStoreBranches = async () => {
+  const updateUser = async () => {
+    setSaving(true);
+    setLoading(true);
     try {
-      setPagination({ ...pagination, isLoading: true });
-      const response = await axiosClient.get(
-        `/admin/users/store-branches/${userId}`,
+      const formData = new FormData();
+      formData.append("first_name", firstName);
+      formData.append("last_name", lastName);
+      formData.append("email", email);
+      formData.append("mobile_number", mobileNumber);
+      formData.append("local_support_number", localSupportNumber);
+      formData.append("business_landline_number", businessLandlineNumber);
+      formData.append("business_contact_number", businessContactNumber);
+      if (password) formData.append("password", password);
+      if (confirmPassword)
+        formData.append("password_confirmation", confirmPassword);
+      formData.append("address", address);
+
+      Object.entries(storesAttachments).forEach(([key, file]) => {
+        if (file instanceof File) {
+          formData.append(key, file);
+        } else {
+          formData.append(key, "");
+        }
+      });
+
+      const response = await axiosClient.post(
+        `/admin/users/update/${userId}`,
+        formData,
         {
-          params: {
-            search: debounceSearch,
-            page: pagination.page,
-            page_size: pagination.itemsPerPage,
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      if (response.status === 200) {
-        const userData = response.data.data;
-        setStoreBranch(userData.data);
-        const newPagination = {
-          page: userData.current_page,
-          totalPages: userData.last_page,
-          totalItems: userData.total,
-          links: [],
-          itemsPerPage: userData.per_page,
-          isLoading: false,
-        };
 
-        setPagination(newPagination);
+      if (response.status === 202) {
+        showAlert("User updated successfully!", "success");
+        handleOpen();
       }
-    } catch {}
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
+      setSaving(false);
+      setLoading(false);
+    }
   };
 
-  //   const updateUser = async () => {
-  //     setSaving(true);
-  //     setLoading(true);
-  //     try {
-  //       const formData = new FormData();
-  //       formData.append("first_name", firstName);
-  //       formData.append("last_name", lastName);
-  //       formData.append("email", email);
-  //       formData.append("mobile_number", mobileNumber);
-  //       formData.append("local_support_number", localSupportNumber);
-  //       formData.append("business_landline_number", businessLandlineNumber);
-  //       formData.append("business_contact_number", businessContactNumber);
-  //       if (password) formData.append("password", password);
-  //       if (confirmPassword)
-  //         formData.append("password_confirmation", confirmPassword);
-  //       formData.append("address", address);
-
-  //       Object.entries(storesAttachments).forEach(([key, file]) => {
-  //         if (file instanceof File) {
-  //           formData.append(key, file);
-  //         } else {
-  //           formData.append(key, "");
-  //         }
-  //       });
-
-  //       const response = await axiosClient.post(
-  //         `/admin/users/update/${userId}`,
-  //         formData,
-  //         {
-  //           headers: { "Content-Type": "multipart/form-data" },
-  //         }
-  //       );
-
-  //       if (response.status === 202) {
-  //         showAlert("User updated successfully!", "success");
-  //         handleOpen();
-  //       }
-  //     } catch (error) {
-  //       if (error.response?.data?.errors) {
-  //         Object.values(error.response.data.errors)
-  //           .flat()
-  //           .forEach((errorMessage) => showAlert(errorMessage, "error"));
-  //       } else {
-  //         showAlert("An error occurred. Please try again.", "error");
-  //       }
-  //     } finally {
-  //       setSaving(false);
-  //       setLoading(false);
-  //     }
-  //   };
-
- 
   const handleSubmit = (event) => {
     event.preventDefault();
     updateUser();
@@ -377,10 +314,6 @@ const EditRestaurantModal = ({
       itemsPerPage: 10,
     });
   };
-
-  useEffect(() => {
-    fetchStoreBranches();
-  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   return (
     <>
