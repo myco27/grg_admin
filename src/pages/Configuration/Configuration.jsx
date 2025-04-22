@@ -2,23 +2,38 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Dialog,
   DialogBody,
   DialogFooter,
   DialogHeader,
   IconButton,
+  Input,
+  Spinner,
   Switch,
   Textarea,
   Typography,
 } from "@material-tailwind/react";
-
+import useDebounce from "../../components/UseDebounce";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
-import { ArrowLeftRight, PencilIcon } from "lucide-react";
+import { ArrowLeftRight, PencilIcon, Search } from "lucide-react";
 import TextEditor from "../../components/Editor/TextEditor";
+import Pagination from "../../components/OrdersPage/Pagination";
 
 function Configuration() {
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    totalItems: 0,
+    links: [],
+    itemsPerPage: 10,
+    isLoading: false,
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const debounceSearch = useDebounce({ value: searchTerm });
   const [textArea, setTextAreaVal] = useState("");
   const [selectedRow, setSelectedRow] = useState(null);
   const [tableData, setTableData] = useState([]);
@@ -29,9 +44,35 @@ function Configuration() {
   const [confirmModal, setConfirmModal] = useState(false);
   const [confirmRow, setConfirmRow] = useState(null);
 
+
+  const handleSearchInput = (event) => {
+    const { value } = event.target;
+    setSearchTerm(value);
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: 10,
+    });
+  };
+
+  const handlePageChange = (newPage) => {
+    setPagination({
+      ...pagination,
+      page: newPage,
+    });
+  };
+
   const handleConfirmModal = (row = null) => {
     setConfirmModal(!confirmModal);
     setConfirmRow(row);
+  };
+
+  const handlePageSizeChange = (newSize) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(newSize),
+    });
   };
 
   const handleConfirm = () => {
@@ -66,10 +107,6 @@ function Configuration() {
         return reversedHead;
       })()
     : TABLE_HEAD;
-
-  useEffect(() => {
-    fetchTerms();
-  }, [setTableData, status]);
 
   const handleSaveContent = async (id) => {
     if (!id) {
@@ -128,17 +165,49 @@ function Configuration() {
 
   const fetchTerms = async () => {
     try {
-      const response = await axiosClient.get("/admin/terms-and-conditions");
-      console.log(response.data);
-      setTableData(response.data.data);
+      setPagination({ ...pagination, isLoading: true });
+
+      const response = await axiosClient.get("/admin/terms-and-conditions", {
+        params: {
+          page: pagination.page,
+          page_size: pagination.itemsPerPage,
+          search: debounceSearch,
+        },
+      });
+      
+      if (response.status === 200) {
+        const responseData = response.data.data.data;
+
+        const { current_page, last_page, total, links, per_page } =
+          response.data.data;
+
+        const newPagination = {
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links: links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        };
+        setTableData(responseData);
+        setPagination(newPagination);
+      }
+      
+
     } catch (e) {
       console.error(e.response?.data || e.message);
     }
   };
 
+  useEffect(() => {
+    fetchTerms();
+  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
+  
+  
   const handleOpen = () => {
     setModalOpen(!modalOpen);
   };
+  
 
   const handleSave = async () => {
     const data = {
@@ -159,6 +228,10 @@ function Configuration() {
     }
   };
 
+
+ 
+
+  
   return (
     <Card className="h-full w-full rounded-none shadow-none">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -171,7 +244,22 @@ function Configuration() {
               See information about all Cofigurations
             </Typography>
           </div>
+          
           <div className="flex flex-row items-center justify-center gap-2">
+          <Input
+                  label="Search User"
+                  icon={
+                    pagination.isLoading ? (
+                      <Spinner className="h-5 w-5" />
+                    ) : (
+                      <Search className="h-5 w-5" />
+                    )
+                  }
+                  size="md"
+                  className="bg-white"
+                  value={searchTerm}
+                  onChange={(e) => handleSearchInput(e)}
+                />
             <IconButton
               variant="text"
               onClick={() => setisColumnReversed(!isColumnReversed)}
@@ -257,6 +345,17 @@ function Configuration() {
           </tbody>
         </table>
       </CardBody>
+      <CardFooter>
+             <Pagination
+                      currentPage={pagination.page}
+                      totalItems={pagination.totalItems}
+                      itemsPerPage={pagination.itemsPerPage}
+                      totalPages={pagination.totalPages}
+                      onPageChange={(newPage) => handlePageChange(newPage)}
+                      isLoading={pagination.isLoading}
+                      onPageSizeChange={handlePageSizeChange}
+                    />
+      </CardFooter>
 
       {/*Modals*/}
       <Dialog open={modalOpen} handler={setModalOpen}>
