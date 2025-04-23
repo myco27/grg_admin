@@ -14,7 +14,7 @@ import { useAlert } from "../../contexts/alertContext";
 
 
 
-function TermsAndConditions() {
+function PrivacyPolicy() {
   const [_content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
@@ -22,7 +22,7 @@ function TermsAndConditions() {
   const fetchTerms = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.get("admin/config/terms_and_conditions");
+      const response = await axiosClient.get("admin/config/privacy_policy");
       setContent(response.data.content);
     } catch (e) {
       console.error(e.error);
@@ -35,7 +35,7 @@ function TermsAndConditions() {
     try {
       setLoading(true);
       const response = await axiosClient.post(
-        "admin/terms-and-conditions/saveTerm",
+        "admin/terms-and-conditions/savePrivacy",
         { content: _content }
       );
       console.log(response.data);
@@ -57,7 +57,7 @@ function TermsAndConditions() {
     <Card className="h-full w-full rounded-none shadow-none">
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <Typography className="text-black" variant="h3">
-          Terms and Conditions
+          Privacy Policy
         </Typography>
       </CardHeader>
       {loading?<Loading/>:<CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
@@ -75,4 +75,4 @@ function TermsAndConditions() {
   );
 }
 
-export default TermsAndConditions;
+export default PrivacyPolicy;

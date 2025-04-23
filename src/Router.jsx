@@ -23,6 +23,9 @@ import Settings from "./pages/settingsTable/settings";
 import RestaurantManagement from "./pages/restaurantManagement/RestaurantManagementPage";
 import Configuration from "./pages/Configuration/Configuration";
 import TermsAndConditions from "./pages/Configuration/TermsAndConditions";
+import AboutUs from "./pages/Configuration/AboutUs";
+import PrivacyPolicy from "./pages/Configuration/PrivacyPolicies";
+
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -124,6 +127,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "configuration/privacypolicy",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <PrivacyPolicy/>
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "configuration/termsandconditions",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
@@ -131,6 +142,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "configuration/aboutus",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <AboutUs/>
+          </ProtectedRoute>
+        ),
+      },
+  
       {
         path: "configuration",
         element: (

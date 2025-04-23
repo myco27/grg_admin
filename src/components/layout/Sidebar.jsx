@@ -18,6 +18,8 @@ import {
   ChevronDown,
   ChevronRight,
   Cog,
+  Info,
+  Siren,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -392,6 +394,64 @@ const Sidebar = () => {
                   </ListItem>
 
                   <Collapse open={configOpen}>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/aboutus"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/aboutus"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Info className="h-4 w-4" />
+                          </ListItemPrefix>
+                          About Us
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/privacypolicy"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/privacypolicy"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Siren className="h-4 w-4" />
+                          </ListItemPrefix>
+                          Privacy Policy
+                        </ListItem>
+                      </Link>
+                    </div>
                     <div
                       className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
                         configOpen ? "max-h-40" : "max-h-0"
