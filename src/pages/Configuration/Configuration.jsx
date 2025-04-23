@@ -18,7 +18,13 @@ import {
 import useDebounce from "../../components/UseDebounce";
 import React, { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
-import { ArrowLeftRight, Handshake, HandshakeIcon, PencilIcon, Search } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Handshake,
+  HandshakeIcon,
+  PencilIcon,
+  Search,
+} from "lucide-react";
 import TextEditor from "../../components/Editor/TextEditor";
 import Pagination from "../../components/OrdersPage/Pagination";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
@@ -246,54 +252,51 @@ function Configuration() {
         <div className="mb-4 flex items-center justify-between gap-8">
           <div className="flex w-full flex-row justify-between">
             <div>
-            <Typography variant="h4" color="blue-gray">
-              Configuration
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              Information about Terms and Conditions
-            </Typography>
+              <Typography variant="h4" color="blue-gray">
+                Configuration
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                Information about Terms and Conditions
+              </Typography>
             </div>
-           <div className="justify-end gap-2 rounded-md">
-           <Button
+            <div className="justify-end gap-2 rounded-md">
+              <Button
                 variant="filled"
                 className="flex flex-row items-center gap-3"
                 onClick={handleOpen}
-                
-       
               >
-                <HandshakeIcon strokeWidth={2} className="w-5"/>
+                <HandshakeIcon strokeWidth={2} className="w-5" />
                 ADD T&C
               </Button>
-           </div>
-           
-          </div>
-        </div>
-          <div className="flex items-center justify-end gap-4 md:flex-row">
-            <div className="flex flex-row">
-              <IconButton
-                className="h-10 w-16"
-                variant="text"
-                onClick={() => setisColumnReversed(!isColumnReversed)}
-              >
-                <ArrowLeftRight></ArrowLeftRight>
-              </IconButton>
-          
-              <Input
-                label="Search Content"
-                icon={
-                  pagination.isLoading ? (
-                    <Spinner className="h-5 w-5" />
-                  ) : (
-                    <Search className="h-5 w-5" />
-                  )
-                }
-                size="md"
-                className="bg-white"
-                value={searchTerm}
-                onChange={(e) => handleSearchInput(e)}
-              />
             </div>
           </div>
+        </div>
+        <div className="flex items-center justify-end gap-4 md:flex-row">
+          <div className="flex flex-row">
+            <IconButton
+              className="h-10 w-16"
+              variant="text"
+              onClick={() => setisColumnReversed(!isColumnReversed)}
+            >
+              <ArrowLeftRight></ArrowLeftRight>
+            </IconButton>
+
+            <Input
+              label="Search Content"
+              icon={
+                pagination.isLoading ? (
+                  <Spinner className="h-5 w-5" />
+                ) : (
+                  <Search className="h-5 w-5" />
+                )
+              }
+              size="md"
+              className="bg-white"
+              value={searchTerm}
+              onChange={(e) => handleSearchInput(e)}
+            />
+          </div>
+        </div>
       </CardHeader>
       {loading ? (
         <Loading />
@@ -331,7 +334,9 @@ function Configuration() {
                     {data.id}
                   </td>,
                   <td key="content" className="p-4">
-                    {data.content}
+                    {data.content.length > 40
+                      ? `${data.content.slice(0, 40)}...`
+                      : data.content}
                   </td>,
                   <td key="status" className="p-4">
                     <Switch
@@ -387,7 +392,7 @@ function Configuration() {
       </CardFooter>
 
       {/*Modals*/}
-      <Dialog open={modalOpen} handler={setModalOpen}>
+      <Dialog open={modalOpen} handler={setModalOpen} size="xl">
         <DialogHeader>
           <Typography variant="h5">ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
@@ -406,9 +411,9 @@ function Configuration() {
         </DialogFooter>
       </Dialog>
 
-      <Dialog open={editModal} handler={setEditModal}>
+      <Dialog open={editModal} handler={setEditModal}  size="xl">
         <DialogHeader>Edit Content</DialogHeader>
-        <DialogBody>
+        <DialogBody className="overflow-scroll">
           <TextEditor
             value={textArea}
             onChange={(val) => setTextAreaVal(val)}
