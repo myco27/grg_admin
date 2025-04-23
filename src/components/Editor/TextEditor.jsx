@@ -5,15 +5,17 @@ import "react-quill/dist/quill.snow.css";
 
 const modules = {
   toolbar: [
+   
     [{ header: [1, 2, 3, false] }],
     ["bold", "italic", "underline", "strike"],
     [{ list: "ordered" }, { list: "bullet" }],
-    ["link", "image"],
+    ["link", "image"], [{ 'align': [] }], 
     ["clean"],
   ],
 };
 
 const formats = [
+  
   "header",
   "bold",
   "italic",
@@ -22,6 +24,7 @@ const formats = [
   "list",
   "bullet",
   "link",
+  'align',
   "image",
 ];
 

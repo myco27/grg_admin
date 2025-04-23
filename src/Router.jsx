@@ -22,6 +22,7 @@ import ApplicationsPage from "./pages/applicationsManagement/ApplicationsPage";
 import Settings from "./pages/settingsTable/settings";
 import RestaurantManagement from "./pages/restaurantManagement/RestaurantManagementPage";
 import Configuration from "./pages/Configuration/Configuration";
+import TermsAndConditions from "./pages/Configuration/TermsAndConditions";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -123,10 +124,10 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "configuration",
+        path: "configuration/termsandconditions",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
-            <Configuration/>
+            <TermsAndConditions/>
           </ProtectedRoute>
         ),
       },

@@ -13,6 +13,7 @@ import {
   Spinner,
   Switch,
   Textarea,
+  Tooltip,
   Typography,
 } from "@material-tailwind/react";
 import useDebounce from "../../components/UseDebounce";
@@ -231,6 +232,7 @@ function Configuration() {
       status_id: status ? 1 : 2,
     };
     try {
+      setSaving(true);
       setLoading(true);
       const response = await axiosClient.post(
         "admin/terms-and-conditions",
@@ -242,6 +244,7 @@ function Configuration() {
     } finally {
       fetchTerms();
       handleOpen();
+      setSaving(false);
       setLoading(false);
     }
   };
@@ -264,8 +267,9 @@ function Configuration() {
                 variant="filled"
                 className="flex flex-row items-center gap-3"
                 onClick={handleOpen}
+                size="md"
               >
-                <HandshakeIcon strokeWidth={2} className="w-5" />
+                <HandshakeIcon strokeWidth={2} className="w-4" />
                 ADD T&C
               </Button>
             </div>
@@ -273,13 +277,13 @@ function Configuration() {
         </div>
         <div className="flex items-center justify-end gap-4 md:flex-row">
           <div className="flex flex-row">
-            <IconButton
-              className="h-10 w-16"
+            <button
+              className="h-10 w-10"
               variant="text"
               onClick={() => setisColumnReversed(!isColumnReversed)}
             >
-              <ArrowLeftRight></ArrowLeftRight>
-            </IconButton>
+              <ArrowLeftRight className="text-gray-500 hover:text-gray-700"></ArrowLeftRight>
+            </button>
 
             <Input
               label="Search Content"
@@ -333,7 +337,7 @@ function Configuration() {
                   <td key="id" className="p-4">
                     {data.id}
                   </td>,
-                  <td key="content" className="p-4">
+                  <td key="content" className="p-4" onClick={handleEditModal} >
                     {data.content.length > 40
                       ? `${data.content.slice(0, 40)}...`
                       : data.content}
@@ -352,6 +356,7 @@ function Configuration() {
                     {new Date(data.updated_at).toLocaleString()}
                   </td>,
                   <td key="action" className="p-4">
+                    <Tooltip content="Edit Content">
                     <IconButton
                       variant="text"
                       onClick={() => {
@@ -361,6 +366,7 @@ function Configuration() {
                     >
                       <PencilIcon className="h-4 w-4" />
                     </IconButton>
+                    </Tooltip>
                   </td>,
                 ];
                 const reorderedCells = isColumnReversed
@@ -396,31 +402,41 @@ function Configuration() {
         <DialogHeader>
           <Typography variant="h5">ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
-        <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-          <TextEditor value={content} onChange={(val) => setContent(val)} />
-          <Typography>Status?</Typography>
-          <Switch checked={status} onChange={handleSwitchChange} />
-        </DialogBody>
+        {loading ? (
+          <Loading></Loading>
+        ) : (
+          <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+            <TextEditor value={content} onChange={(val) => setContent(val)} />
+            <Typography>Status?</Typography>
+            <Switch checked={status} onChange={handleSwitchChange} />
+          </DialogBody>
+        )}
         <DialogFooter className="flex gap-2">
-          <Button className="bg-primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button className="text-primary" variant="text" onClick={handleOpen}>
+          <Button disabled={saving} onClick={handleOpen}>
             Cancel
+          </Button>
+          <Button className="bg-primary" disabled={saving} onClick={handleSave}>
+            Save
           </Button>
         </DialogFooter>
       </Dialog>
 
-      <Dialog open={editModal} handler={setEditModal}  size="xl">
+      <Dialog open={editModal} handler={setEditModal} size="xl">
         <DialogHeader>Edit Content</DialogHeader>
-        <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-          <TextEditor
-            value={textArea}
-            onChange={(val) => setTextAreaVal(val)}
-          />
-        </DialogBody>
+        {loading ? (
+          <Loading></Loading>
+        ) : (
+          <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+            <TextEditor
+              value={textArea}
+              onChange={(val) => setTextAreaVal(val)}
+            />
+          </DialogBody>
+        )}
         <DialogFooter className="flex gap-2">
-          <Button onClick={handleEditModal}>Cancel</Button>
+          <Button disabled={saving} onClick={handleEditModal}>
+            Cancel
+          </Button>
           <Button
             className="bg-primary"
             onClick={() => handleSaveContent(selectedRow)}

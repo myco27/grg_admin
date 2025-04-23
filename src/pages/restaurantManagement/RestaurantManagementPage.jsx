@@ -196,7 +196,7 @@ const RestaurantManagementPage = () => {
             </div>
           </div>
           <div className="flex items-center justify-end gap-4 md:flex-row">
-            <div className="flex gap-2 justify-end w-full rounded-md md:w-72">
+            <div className="flex w-full justify-end gap-2 rounded-md md:w-72">
               <button
                 className="text-gray-500 hover:text-gray-700"
                 onClick={rotateColumns}
