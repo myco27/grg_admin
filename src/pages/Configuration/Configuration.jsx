@@ -396,7 +396,7 @@ function Configuration() {
         <DialogHeader>
           <Typography variant="h5">ADD TERMS AND CONDITIONS</Typography>
         </DialogHeader>
-        <DialogBody className="flex min-w-fit flex-col gap-2 overflow-auto">
+        <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
           <TextEditor value={content} onChange={(val) => setContent(val)} />
           <Typography>Status?</Typography>
           <Switch checked={status} onChange={handleSwitchChange} />
@@ -413,7 +413,7 @@ function Configuration() {
 
       <Dialog open={editModal} handler={setEditModal}  size="xl">
         <DialogHeader>Edit Content</DialogHeader>
-        <DialogBody className="overflow-scroll">
+        <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
           <TextEditor
             value={textArea}
             onChange={(val) => setTextAreaVal(val)}

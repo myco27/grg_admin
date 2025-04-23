@@ -34,7 +34,7 @@ const TextEditor = ({ value = "", onChange }) => {
         onChange={onChange}
         modules={modules}
         formats={formats}
-        className="min-h-[30rem] border-none"
+        className="min-h-[30rem] w-full break-words"
       />
     </div>
   );
