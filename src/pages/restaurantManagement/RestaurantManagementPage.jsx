@@ -30,6 +30,7 @@ import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import { ArrowLeftRight } from "lucide-react";
 import EditRestaurantModal from "./EditRestaurantModal";
+import axios from "axios";
 
 const RestaurantManagementPage = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const RestaurantManagementPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedApplicantId, setSelectedApplicantId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -63,6 +65,9 @@ const RestaurantManagementPage = () => {
           page_size: pagination.itemsPerPage,
         },
       });
+
+  
+      
 
       if (response.status === 200) {
         const responseData = response.data.data;
@@ -113,8 +118,9 @@ const RestaurantManagementPage = () => {
     });
   };
 
-  const handleEditOpen = (storeId) => {
+  const handleEditOpen = (storeId, applicantId) => {
     setSelectedStoreId(storeId);
+    setSelectedApplicantId(applicantId);
     setEditOpen(!editOpen);
   };
 
@@ -275,7 +281,7 @@ const RestaurantManagementPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {store.id}
+                                  {store.store.id}
                                 </Typography>
                               </div>
                             </td>
@@ -290,7 +296,7 @@ const RestaurantManagementPage = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {store.store_name} {store.store_branch}
+                                    {store.store.store_name} {store.store.store_branch}
                                   </Typography>
                                 </div>
                               </div>
@@ -313,7 +319,7 @@ const RestaurantManagementPage = () => {
                                     color="gray"
                                     className="font-normal"
                                   >
-                                    {store.phone}
+                                    {store.store.phone}
                                   </Typography>
                                 </div>
 
@@ -330,7 +336,7 @@ const RestaurantManagementPage = () => {
                                     color="gray"
                                     className="font-normal"
                                   >
-                                    {store.mobile}
+                                    {store.store.mobile}
                                   </Typography>
                                 </div>
                               </div>
@@ -344,20 +350,20 @@ const RestaurantManagementPage = () => {
                                   variant="ghost"
                                   size="sm"
                                   value={
-                                    store.is_active == 1
+                                    store.store.is_active == 1
                                       ? "Active"
-                                      : store.is_active == 2
+                                      : store.store.is_active == 2
                                       ? "Suspended"
-                                      : store.is_active == 3
+                                      : store.store.is_active == 3
                                       ? "Deleted"
                                       : "Inactive"
                                   }
                                   color={
-                                    store.is_active == 1
+                                    store.store.is_active == 1
                                       ? "green"
-                                      : store.is_active == 2
+                                      : store.store.is_active == 2
                                       ? "orange"
-                                      : store.is_active == 3
+                                      : store.store.is_active == 3
                                       ? "red"
                                       : "blue-gray"
                                   }
@@ -374,7 +380,7 @@ const RestaurantManagementPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {new Date(store.date_created).toLocaleString(
+                                  {new Date(store.store.date_created).toLocaleString(
                                     "en-US",
                                     {
                                       year: "numeric",
@@ -392,7 +398,7 @@ const RestaurantManagementPage = () => {
                               <Tooltip content="Edit Store">
                                 <IconButton
                                   variant="text"
-                                  onClick={() => handleEditOpen(store.id)}
+                                  onClick={() => handleEditOpen(store.store.id, store.applicant_id)}
                                 >
                                   <PencilIcon className="h-4 w-4" />
                                 </IconButton>
@@ -428,6 +434,7 @@ const RestaurantManagementPage = () => {
         open={editOpen}
         handleOpen={handleEditOpen}
         storeId={selectedStoreId}
+        applicantId={selectedApplicantId}
         fetchStores={fetchStores}
       />
     </>
