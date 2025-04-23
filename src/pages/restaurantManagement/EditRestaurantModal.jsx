@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Input,
   Tabs,
   Avatar,
   Typography,
@@ -9,35 +8,23 @@ import {
   Dialog,
   DialogHeader,
   IconButton,
-  Chip,
-  Tooltip,
-  Spinner,
   TabsBody,
   TabPanel,
   DialogFooter,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
-import { PencilIcon } from "@heroicons/react/24/solid";
-import {
-  EyeIcon,
-  EyeClosed,
-  X,
-  UserRoundCog,
-  PaperclipIcon,
-  Search,
-  ArrowLeftRight,
-  Medal,
-} from "lucide-react";
+
+import { X, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
-import { Base, Header, Body, Footer, Sidebar } from "../../components/Modal";
-import useDebounce from "../../components/UseDebounce";
-import Pagination from "../../components/OrdersPage/Pagination";
+import { Sidebar } from "../../components/Modal";
+
+import axios from "axios";
 
 const EditRestaurantModal = ({
   open,
   handleOpen,
   storeId,
-  userType,
+  applicantId,
   fetchStores,
 }) => {
   const [storesAttachments, setStoresAttachments] = useState({
@@ -51,92 +38,101 @@ const EditRestaurantModal = ({
   });
 
   const [activeTab, setActiveTab] = useState("Attachments");
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const debounceSearch = useDebounce({ value: searchTerm });
-  const [storeBranch, setStoreBranch] = useState([]);
-
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [points, setPoints] = useState(0);
-  const [localSupportNumber, setLocalSupportNumber] = useState("");
-  const [businessLandlineNumber, setBusinessLandlineNumber] = useState("");
-  const [businessContactNumber, setBusinessContactNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isColumnReversed, setisColumnReversed] = useState(false);
-  const [address, setAddress] = useState({
-    houseNumber: "",
-    building: "",
-    street: "",
-    district: "",
-    zipcode: "",
-    city: "",
-    state: "",
-  });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    totalPages: 1,
-    totalItems: 0,
-    links: [],
-    itemsPerPage: 10,
-    isLoading: false,
-  });
+  const { showAlert } = useAlert();
 
   const fetchRestaurantDetails = async () => {
-    setLoading(true);
     try {
-      const response = await axiosClient.get(`/admin/store/${storeId}`);
+      const formData = new FormData();
+      formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
+      formData.append("applicant_id", applicantId);
+      formData.append("store_id", storeId);
+      const response = await axios.post(
+        `${import.meta.env.VITE_ROCKYGO_URL}/store/attachment`,
+        // {
+        //   applicant_id: applicantId,
+        //   store_id: storeId,
+        //   token: import.meta.env.VITE_ROCKYGO_TOKEN,
+        // }
+        formData, {
+          withCredentials: true
+        }
+      );
 
       if (response.status === 200) {
-        console.log(response.data);
-        
-
-        
-
-        //   setStoresAttachments(attachments);
-      
+        if (response.data.data) {
+          const restoAttachments = {
+            businessCertificate: response.data.data.business,
+            certificateOfRegistration: response.data.data.certificate,
+          };
+          setStoresAttachments(restoAttachments);
+        }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
     } finally {
+    }
+  };
+
+  const updateStore = async () => {
+    setSaving(true);
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
+      formData.append("applicant_id", applicantId);
+      formData.append("store_id", storeId);
+      Object.entries(storesAttachments).forEach(([key, file]) => {
+        if (file instanceof File) {
+          formData.append(key, file);
+        } else {
+          formData.append(key, "");
+        }
+      });
+
+      const response = await axiosClient.post(
+        `${import.meta.env.VITE_ROCKYGO_URL}/store/attachment_update`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true
+        }
+      );
+
+      if (response.status === 200) {
+        showAlert("Store updated successfully!", "success");
+        fetchStores();
+        handleOpen();
+      }
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
+      setSaving(false);
       setLoading(false);
     }
   };
 
   useEffect(() => {
     if (open && storeId) {
-      fetchRestaurantDetails;
+      fetchRestaurantDetails();
     } else {
-      setFirstName("");
-      setLastName("");
-      setEmail("");
-      setMobileNumber("");
-      setLocalSupportNumber("");
-      setBusinessLandlineNumber("");
-      setBusinessContactNumber("");
-      setPassword("");
-      setConfirmPassword("");
-     
-
       setStoresAttachments({
         businessCertificate: null,
-
         certificateOfRegistration: null,
-
       });
 
       setImagePreview({
         businessCertificate: null,
-
         certificateOfRegistration: null,
-
       });
     }
     setActiveTab("Attachments");
@@ -147,11 +143,28 @@ const EditRestaurantModal = ({
   };
   const checkimagePreview = (e, key, value) => {
     e.preventDefault();
-    setPreviewImage(
-      imagePreview[key] ||
-        `${import.meta.env.VITE_APP_IMAGE_PATH}/applicant/${value}`
-    );
+    setPreviewImage(imagePreview[key] || value);
     setOpenImage(!openImage);
+  };
+
+  const handleImageChange = (event, type) => {
+    const file = event.target.files[0];
+    if (file) {
+      setStoresAttachments((prev) => ({
+        ...prev,
+        [type]: file,
+      }));
+
+      setImagePreview((prev) => ({
+        ...prev,
+        [type]: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    updateStore();
   };
 
   const tabs = [
@@ -162,63 +175,60 @@ const EditRestaurantModal = ({
       content: (
         <>
           <div className="grid grid-cols-1 gap-1 pb-10 md:grid-cols-2">
-            {Object.entries(storesAttachments).map(([key, value]) => (
-              <div key={key} className="flex flex-col items-center gap-2">
-                <input
-                  type="file"
-                  id={key}
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, key)}
-                  className="hidden"
-                />
-                <label htmlFor={key}>
-                  <Typography className="text-nowrap text-sm font-semibold">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .trim()
-                      .toUpperCase()}{" "}
-                  </Typography>
-                </label>
+            {Object.entries(storesAttachments).map(([key, value]) => {
+              return (
+                <div key={key} className="flex flex-col items-center gap-2">
+                  <input
+                    type="file"
+                    id={key}
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, key)}
+                    className="hidden"
+                  />
+                  <label htmlFor={key}>
+                    <Typography className="text-nowrap text-sm font-semibold">
+                      {key
+                        .replace(/([A-Z])/g, " $1")
+                        .trim()
+                        .toUpperCase()}{" "}
+                    </Typography>
+                  </label>
 
-                {imagePreview[key] || value ? (
-                  <div className="flex">
-                    <div className="group relative">
-                      <Avatar
-                        src={
-                          imagePreview[key] ||
-                          `${
-                            import.meta.env.VITE_APP_IMAGE_PATH
-                          }/applicant/${value}`
-                        }
-                        alt={`${key} Preview`}
-                        className="h-48 w-48 border border-gray-300 object-cover shadow-md"
-                        variant="rounded"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <Button
-                          onClick={(e) => checkimagePreview(e, key, value)}
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          <span>View</span>
-                        </Button>
-                        <Button
-                          onClick={() => document.getElementById(key).click()}
-                          className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
-                        >
-                          Upload
-                        </Button>
+                  {imagePreview[key] || value ? (
+                    <div className="flex">
+                      <div className="group relative">
+                        <Avatar
+                          src={imagePreview[key] || value}
+                          alt={`${key} Preview`}
+                          className="h-48 w-48 border border-gray-300 object-cover shadow-md"
+                          variant="rounded"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <Button
+                            onClick={(e) => checkimagePreview(e, key, value)}
+                            className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                          >
+                            <span>View</span>
+                          </Button>
+                          <Button
+                            onClick={() => document.getElementById(key).click()}
+                            className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100"
+                          >
+                            Upload
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
-                    <span className="text-center text-sm text-gray-500">
-                      Upload {key.replace(/([A-Z])/g, " $1").trim()}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
+                  ) : (
+                    <div className="flex h-48 w-48 items-center justify-center rounded-lg border border-gray-300 bg-gray-100 shadow-md">
+                      <span className="text-center text-sm text-gray-500">
+                        Upload {key.replace(/([A-Z])/g, " $1").trim()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <Dialog
@@ -250,137 +260,6 @@ const EditRestaurantModal = ({
       ),
     },
   ];
-
-  const handlePageChange = (newPage) => {
-    setPagination({
-      ...pagination,
-      page: newPage,
-    });
-  };
-
-  const handlePageSizeChange = (newSize) => {
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: Number(newSize),
-    });
-  };
-
-  const handleImageChange = (event, type) => {
-    const file = event.target.files[0];
-    if (file) {
-      setStoresAttachments((prev) => ({
-        ...prev,
-        [type]: file,
-      }));
-
-      setImagePreview((prev) => ({
-        ...prev,
-        [type]: URL.createObjectURL(file),
-      }));
-    }
-  };
-
-  const fetchStoreBranches = async () => {
-    try {
-      setPagination({ ...pagination, isLoading: true });
-      const response = await axiosClient.get(
-        `/admin/users/store-branches/${userId}`,
-        {
-          params: {
-            search: debounceSearch,
-            page: pagination.page,
-            page_size: pagination.itemsPerPage,
-          },
-        }
-      );
-      if (response.status === 200) {
-        const userData = response.data.data;
-        setStoreBranch(userData.data);
-        const newPagination = {
-          page: userData.current_page,
-          totalPages: userData.last_page,
-          totalItems: userData.total,
-          links: [],
-          itemsPerPage: userData.per_page,
-          isLoading: false,
-        };
-
-        setPagination(newPagination);
-      }
-    } catch {}
-  };
-
-  //   const updateUser = async () => {
-  //     setSaving(true);
-  //     setLoading(true);
-  //     try {
-  //       const formData = new FormData();
-  //       formData.append("first_name", firstName);
-  //       formData.append("last_name", lastName);
-  //       formData.append("email", email);
-  //       formData.append("mobile_number", mobileNumber);
-  //       formData.append("local_support_number", localSupportNumber);
-  //       formData.append("business_landline_number", businessLandlineNumber);
-  //       formData.append("business_contact_number", businessContactNumber);
-  //       if (password) formData.append("password", password);
-  //       if (confirmPassword)
-  //         formData.append("password_confirmation", confirmPassword);
-  //       formData.append("address", address);
-
-  //       Object.entries(storesAttachments).forEach(([key, file]) => {
-  //         if (file instanceof File) {
-  //           formData.append(key, file);
-  //         } else {
-  //           formData.append(key, "");
-  //         }
-  //       });
-
-  //       const response = await axiosClient.post(
-  //         `/admin/users/update/${userId}`,
-  //         formData,
-  //         {
-  //           headers: { "Content-Type": "multipart/form-data" },
-  //         }
-  //       );
-
-  //       if (response.status === 202) {
-  //         showAlert("User updated successfully!", "success");
-  //         handleOpen();
-  //       }
-  //     } catch (error) {
-  //       if (error.response?.data?.errors) {
-  //         Object.values(error.response.data.errors)
-  //           .flat()
-  //           .forEach((errorMessage) => showAlert(errorMessage, "error"));
-  //       } else {
-  //         showAlert("An error occurred. Please try again.", "error");
-  //       }
-  //     } finally {
-  //       setSaving(false);
-  //       setLoading(false);
-  //     }
-  //   };
-
- 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    updateUser();
-  };
-
-  const handleSearchInput = (event) => {
-    const { value } = event.target;
-    setSearchTerm(value);
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: 10,
-    });
-  };
-
-  useEffect(() => {
-    fetchStoreBranches();
-  }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
 
   return (
     <>
