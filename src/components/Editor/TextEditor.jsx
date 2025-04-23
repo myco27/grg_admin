@@ -8,7 +8,7 @@ const modules = {
     [{ header: [1, 2, 3, false] }],
     ["bold", "italic", "underline", "strike"],
     [{ list: "ordered" }, { list: "bullet" }],
-    ["link", "image"],
+    ["link"],
     ["clean"],
   ],
 };
@@ -34,7 +34,7 @@ const TextEditor = ({ value = "", onChange }) => {
         onChange={onChange}
         modules={modules}
         formats={formats}
-        className="min-h-[200px]"
+        className="min-h-[300px]"
       />
     </div>
   );

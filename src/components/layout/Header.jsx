@@ -135,6 +135,8 @@ export default function Header() {
         return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
+        case "/configuration":
+          return "Configuration";
       default:
         return "Dashboard";
     }
