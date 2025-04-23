@@ -132,6 +132,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "configuration",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <Configuration/>
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "unauthorized",
         element: <UnauthorizedPage />,
       },

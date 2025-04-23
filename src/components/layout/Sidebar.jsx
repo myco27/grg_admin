@@ -17,11 +17,10 @@ import {
   FileSliders,
   ChevronDown,
   ChevronRight,
-  Cog
+  Cog,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
-
 
 const Sidebar = () => {
   const { user, sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } =
@@ -31,8 +30,8 @@ const Sidebar = () => {
   const [configOpen, setConfigOpen] = useState(false);
 
   const handleConfig = () => {
-    setConfigOpen(!configOpen)
-  }
+    setConfigOpen(!configOpen);
+  };
 
   const canViewDashboardModule =
     user?.all_permissions?.includes("view dashboard module") || false;
@@ -49,7 +48,7 @@ const Sidebar = () => {
     user?.all_permissions?.includes("view settings module") || false;
   const canViewRestaurantModule =
     user?.all_permissions?.includes("view restaurant module") || false;
-      const canViewConfigurationModule =
+  const canViewConfigurationModule =
     user?.all_permissions?.includes("view configuration module") || false;
 
   return (
@@ -352,55 +351,79 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {canViewConfigurationModule && (
+                <>
+                  <ListItem
+                    onClick={handleConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/configuration")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <FileSliders className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Configuration
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {configOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
 
-
-{canViewConfigurationModule && (
-  <>
-    <ListItem
-      onClick={handleConfig}
-      className={`cursor-pointer hover:bg-[#3A1066] ${
-        sidebarCollapsed && !sidebarHovered ? "w-[40px] px-2" : "w-[220px]"
-      } ${location.pathname.startsWith("/configuration") ? "!bg-[#3A1066]" : ""}`}
-    >
-      <ListItemPrefix className="min-w-[24px]">
-        <FileSliders className="h-5 w-5 text-white" />
-      </ListItemPrefix>
-      <div
-        className={`rounded-sm flex items-center justify-between w-full ${
-          sidebarCollapsed && !sidebarHovered ? "absolute left-[-9999px]" : ""
-        } transition-all duration-300`}
-      >
-        <Typography color="white" className="whitespace-nowrap text-sm font-normal">
-          Configuration
-        </Typography>
-        <span className="ml-auto pr-2">
-          {configOpen ? (
-            <ChevronDown className="h-4 w-4 text-white" />
-          ) : (
-            <ChevronRight className="h-4 w-4 text-white" />
-          )}
-        </span>
-      </div>
-    </ListItem>
-
-  
-  {configOpen?<div className={`hover:bg-[#3A1066] transition-all  rounded  duration-300 overflow-hidden max-w-[180px] ml-10 ${configOpen ? 'max-h-40' : 'max-h-0'}`}>
-  <Link to="/configuration/termsandconditions" className="flex w-full items-center">
-    <ListItem className="rounded text-sm text-white hover:bg-[#3A1066] hover:text-white">
-
-        <ListItemPrefix className="rounded">
-          <Cog className="h-4 w-4" />
-        </ListItemPrefix>
-        T&C
-    </ListItem>
-    </Link>
-</div>
-:<></>}
-
-      
-  </>
-)}
-
+                  <Collapse open={configOpen}>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4" />
+                          </ListItemPrefix>
+                          T&C
+                        </ListItem>
+                      </Link>
+                    </div>
+                  </Collapse>
+                </>
+              )}
 
               {/* Roles and Permissions */}
               {canViewRolesAndPermissionsModule && (
