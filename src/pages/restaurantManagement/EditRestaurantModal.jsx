@@ -46,12 +46,19 @@ const EditRestaurantModal = ({
 
   const fetchRestaurantDetails = async () => {
     try {
+      const formData = new FormData();
+      formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
+      formData.append("applicant_id", applicantId);
+      formData.append("store_id", storeId);
       const response = await axios.post(
         `${import.meta.env.VITE_ROCKYGO_URL}/store/attachment`,
-        {
-          applicant_id: applicantId,
-          store_id: storeId,
-          token: import.meta.env.VITE_ROCKYGO_TOKEN,
+        // {
+        //   applicant_id: applicantId,
+        //   store_id: storeId,
+        //   token: import.meta.env.VITE_ROCKYGO_TOKEN,
+        // }
+        formData, {
+          withCredentials: true
         }
       );
 
@@ -91,6 +98,7 @@ const EditRestaurantModal = ({
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true
         }
       );
 
