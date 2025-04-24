@@ -9,7 +9,7 @@ import {
 import axiosClient from "../../axiosClient";
 import Chart from "react-apexcharts";
 import Loading from "../layout/Loading";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function SalesByRestaurant() {
   const allMonths = [
@@ -253,11 +253,11 @@ export default function SalesByRestaurant() {
           <Input
             inputRef={inputRef}
             label={selectedStore}
-            icon={
+            icon={isDropdownOpen?
               <ChevronDown
                 onClick={handleInputClick}
                 className="cursor-pointer"
-              />
+              />:<ChevronRight/>
             }
             placeholder={selectedStore}
             value={searchTerm}
