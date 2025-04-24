@@ -40,7 +40,7 @@ const RestaurantManagementPage = () => {
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedStore,setSelectedStore] = useState(null)
   const [selectedStoreId, setSelectedStoreId] = useState(null);
   const [selectedApplicantId, setSelectedApplicantId] = useState(null);
   const [pagination, setPagination] = useState({
@@ -118,6 +118,7 @@ const RestaurantManagementPage = () => {
   };
 
   const handleEditOpen = (storeId, applicantId) => {
+    console.log(selectedStore)
     setSelectedStoreId(storeId);
     setSelectedApplicantId(applicantId);
     setEditOpen(!editOpen);
@@ -413,7 +414,7 @@ const RestaurantManagementPage = () => {
                               <Tooltip content="Edit Store">
                                 <IconButton
                                   variant="text"
-                                  onClick={() => handleEditOpen(store.store.id, store.applicant_id)}
+                                  onClick={() => {handleEditOpen(store.store.id, store.applicant_id); setSelectedStore(store);}}
                                 >
                                   <PencilIcon className="h-4 w-4" />
                                 </IconButton>
@@ -451,7 +452,7 @@ const RestaurantManagementPage = () => {
         storeId={selectedStoreId}
         applicantId={selectedApplicantId}
         fetchStores={fetchStores}
-        storeData={stores}
+        selectedStore={selectedStore}
       />
     </>
   );

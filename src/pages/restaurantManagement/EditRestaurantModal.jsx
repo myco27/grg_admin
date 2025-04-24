@@ -27,7 +27,7 @@ const EditRestaurantModal = ({
   storeId,
   applicantId,
   fetchStores,
-  storeData,
+  selectedStore
 }) => {
   const [storesAttachments, setStoresAttachments] = useState({
     businessCertificate: null,
@@ -38,14 +38,13 @@ const EditRestaurantModal = ({
     businessCertificate: null,
     certificateOfRegistration: null,
   });
-
+  const [userId,setUserId] = useState("")
   const [activeTab, setActiveTab] = useState("Attachments");
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [openImage, setOpenImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
-  const [storeContent, setStoreContent] = useState(null);
   const [businessName, setBusinessName] = useState("");
   const [businessStore, setBusinessStore] = useState("");
   const [businessLandline, setBusinessLandline] = useState("");
@@ -53,15 +52,14 @@ const EditRestaurantModal = ({
   const [businessEmail, setBusinessEmail] = useState("")
 
   const handleEdit = () => {
-    const targetStore = storeData.find(
-      (item) => item.applicant_id === applicantId
-    );
-    setBusinessEmail(targetStore.email)
-    setBusinessName(targetStore.store.store_name);
-    setBusinessStore(targetStore.store.store_branch);
-    setBusinessLandline(targetStore.store.phone);
-    setBusinessMobile(targetStore.store.mobile);
+    setUserId(selectedStore.id)
+    setBusinessEmail(selectedStore.email)
+    setBusinessName(selectedStore.store.store_name);
+    setBusinessStore(selectedStore.store.store_branch);
+    setBusinessLandline(selectedStore.store.phone);
+    setBusinessMobile(selectedStore.store.mobile);
   };
+
   const fetchRestaurantDetails = async () => {
     try {
       const formData = new FormData();
@@ -95,6 +93,7 @@ const EditRestaurantModal = ({
     } finally {
     }
   };
+  
   const updateStoreDetails = async () => {
     setSaving(true);
     setLoading(true);
@@ -103,19 +102,21 @@ const EditRestaurantModal = ({
       store_branch: businessStore,
       phone: businessLandline,
       mobile: businessMobile,
+      email:businessEmail
     };
     try {
       const response = await axiosClient.put(
-        `admin/store/updateStore/${storeId}`,
+        `admin/store/updateStore/${storeId}/user/${userId}`,
         data
       );
+      handleOpen()
+      fetchStores();
       showAlert("Store updated successfully!", "success");
     } catch (e) {
       console.error(e.error);
       showAlert("Failed to Update", "error");
     } finally {
-      handleOpen()
-      fetchStores();
+      
       setLoading(false);
       setSaving(false);
     }
