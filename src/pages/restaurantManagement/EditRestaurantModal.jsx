@@ -54,13 +54,9 @@ const EditRestaurantModal = ({
     const targetStore = storeData.find(
       (item) => item.applicant_id === applicantId
     );
-
     setBusinessName(targetStore.store.store_name);
-    console.log(businessName);
     setBusinessStore(targetStore.store.store_branch);
-    console.log(businessStore);
     setBusinessLandline(targetStore.store.phone);
-    console.log(businessLandline);
     setBusinessMobile(targetStore.store.mobile);
   };
   const fetchRestaurantDetails = async () => {
@@ -104,12 +100,10 @@ const EditRestaurantModal = ({
       mobile: businessMobile,
     };
     try {
-      console.log(data);
       const response = await axiosClient.put(
         `admin/store/updateStore/${storeId}`,
         data
       );
-      console.log(response.data);
     } catch (e) {
       console.error(e.error);
     } finally {
