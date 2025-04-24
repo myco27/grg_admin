@@ -11,14 +11,14 @@ import {
   TabsBody,
   TabPanel,
   DialogFooter,
+  Input,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
-
 import { X, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Sidebar } from "../../components/Modal";
-
 import axios from "axios";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 const EditRestaurantModal = ({
   open,
@@ -26,6 +26,7 @@ const EditRestaurantModal = ({
   storeId,
   applicantId,
   fetchStores,
+  storeData,
 }) => {
   const [storesAttachments, setStoresAttachments] = useState({
     businessCertificate: null,
@@ -43,7 +44,25 @@ const EditRestaurantModal = ({
   const [openImage, setOpenImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
+  const [storeContent, setStoreContent] = useState(null);
+  const [businessName, setBusinessName] = useState("");
+  const [businessStore, setBusinessStore] = useState("");
+  const [businessLandline, setBusinessLandline] = useState("");
+  const [businessMobile, setBusinessMobile] = useState("");
 
+  const handleEdit = () => {
+    const targetStore = storeData.find(
+      (item) => item.applicant_id === applicantId
+    );
+
+    setBusinessName(targetStore.store.store_name);
+    console.log(businessName);
+    setBusinessStore(targetStore.store.store_branch);
+    console.log(businessStore);
+    setBusinessLandline(targetStore.store.phone);
+    console.log(businessLandline);
+    setBusinessMobile(targetStore.store.mobile);
+  };
   const fetchRestaurantDetails = async () => {
     try {
       const formData = new FormData();
@@ -57,8 +76,9 @@ const EditRestaurantModal = ({
         //   store_id: storeId,
         //   token: import.meta.env.VITE_ROCKYGO_TOKEN,
         // }
-        formData, {
-          withCredentials: true
+        formData,
+        {
+          withCredentials: true,
         }
       );
 
@@ -76,7 +96,26 @@ const EditRestaurantModal = ({
     } finally {
     }
   };
-
+  const updateStoreDetails = async () => {
+    const data = {
+      store_name: businessName,
+      store_branch: businessStore,
+      phone: businessLandline,
+      mobile: businessMobile,
+    };
+    try {
+      console.log(data);
+      const response = await axiosClient.put(
+        `admin/store/updateStore/${storeId}`,
+        data
+      );
+      console.log(response.data);
+    } catch (e) {
+      console.error(e.error);
+    } finally {
+      fetchStores();
+    }
+  };
   const updateStore = async () => {
     setSaving(true);
     setLoading(true);
@@ -98,7 +137,7 @@ const EditRestaurantModal = ({
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
@@ -123,6 +162,7 @@ const EditRestaurantModal = ({
 
   useEffect(() => {
     if (open && storeId) {
+      handleEdit();
       fetchRestaurantDetails();
     } else {
       setStoresAttachments({
@@ -135,7 +175,7 @@ const EditRestaurantModal = ({
         certificateOfRegistration: null,
       });
     }
-    setActiveTab("Attachments");
+    setActiveTab("Information");
   }, [open, storeId]);
 
   const handleImageOpen = () => {
@@ -164,10 +204,43 @@ const EditRestaurantModal = ({
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    updateStoreDetails();
     updateStore();
+    handleOpen();
   };
 
   const tabs = [
+    {
+      value: "Information",
+      label: "Information",
+      icon: <InformationCircleIcon />,
+      content: (
+        <>
+          <div className="flex flex-col gap-3">
+            <Input
+              value={businessName}
+              label="Business Name"
+              onChange={(e) => setBusinessName(e.target.value)}
+            />
+            <Input
+              value={businessStore}
+              label="Business Store"
+              onChange={(e) => setBusinessStore(e.target.value)}
+            />
+            <Input
+              value={businessLandline}
+              label="Business Landline"
+              onChange={(e) => setBusinessLandline(e.target.value)}
+            />
+            <Input
+              value={businessMobile}
+              label="Business Contact Number"
+              onChange={(e) => setBusinessMobile(e.target.value)}
+            />
+          </div>
+        </>
+      ),
+    },
     {
       value: "Attachments",
       label: "Attachments",
@@ -313,7 +386,7 @@ const EditRestaurantModal = ({
                   )}
                 </TabsBody>
               </DialogBody>
-              <DialogFooter className="flex justify-end gap-2 bg-white p-2 border-t border-gray-300">
+              <DialogFooter className="flex justify-end gap-2 border-t border-gray-300 bg-white p-2">
                 <>
                   <Button color="gray" disabled={loading} onClick={handleOpen}>
                     Cancel

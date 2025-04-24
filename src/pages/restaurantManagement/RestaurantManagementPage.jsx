@@ -89,6 +89,8 @@ const RestaurantManagementPage = () => {
     } catch (error) {
       // navigate("/notfound");
     }
+
+    
   };
 
   useEffect(() => {
@@ -436,6 +438,7 @@ const RestaurantManagementPage = () => {
         storeId={selectedStoreId}
         applicantId={selectedApplicantId}
         fetchStores={fetchStores}
+        storeData={stores}
       />
     </>
   );
