@@ -51,17 +51,16 @@ const EditRestaurantModal = ({
   const [businessMobile, setBusinessMobile] = useState("");
   const [businessEmail, setBusinessEmail] = useState("")
 
-  const handleEdit = () => {
-    setUserId(selectedStore.id)
-    setBusinessEmail(selectedStore.email)
-    setBusinessName(selectedStore.store.store_name);
-    setBusinessStore(selectedStore.store.store_branch);
-    setBusinessLandline(selectedStore.store.phone);
-    setBusinessMobile(selectedStore.store.mobile);
-  };
+
 
   const fetchRestaurantDetails = async () => {
     try {
+      setUserId(selectedStore.id)
+      setBusinessEmail(selectedStore.email)
+      setBusinessName(selectedStore.store.store_name);
+      setBusinessStore(selectedStore.store.store_branch);
+      setBusinessLandline(selectedStore.store.phone);
+      setBusinessMobile(selectedStore.store.mobile);
       const formData = new FormData();
       formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
       formData.append("applicant_id", applicantId);
@@ -109,6 +108,7 @@ const EditRestaurantModal = ({
         `admin/store/updateStore/${storeId}/user/${userId}`,
         data
       );
+      console.log(response)
       handleOpen()
       fetchStores();
       showAlert("Store updated successfully!", "success");
@@ -167,7 +167,6 @@ const EditRestaurantModal = ({
 
   useEffect(() => {
     if (open && storeId) {
-      handleEdit();
       fetchRestaurantDetails();
     } else {
       setStoresAttachments({
