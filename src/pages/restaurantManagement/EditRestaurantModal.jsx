@@ -14,7 +14,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
-import { X, PaperclipIcon } from "lucide-react";
+import { X, PaperclipIcon, Info } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Body, Footer, Header, Sidebar } from "../../components/Modal";
 import axios from "axios";
@@ -50,11 +50,13 @@ const EditRestaurantModal = ({
   const [businessStore, setBusinessStore] = useState("");
   const [businessLandline, setBusinessLandline] = useState("");
   const [businessMobile, setBusinessMobile] = useState("");
+  const [businessEmail, setBusinessEmail] = useState("")
 
   const handleEdit = () => {
     const targetStore = storeData.find(
       (item) => item.applicant_id === applicantId
     );
+    setBusinessEmail(targetStore.email)
     setBusinessName(targetStore.store.store_name);
     setBusinessStore(targetStore.store.store_branch);
     setBusinessLandline(targetStore.store.phone);
@@ -107,9 +109,12 @@ const EditRestaurantModal = ({
         `admin/store/updateStore/${storeId}`,
         data
       );
+      showAlert("Store updated successfully!", "success");
     } catch (e) {
       console.error(e.error);
+      showAlert("Failed to Update", "error");
     } finally {
+      handleOpen()
       fetchStores();
       setLoading(false);
       setSaving(false);
@@ -217,13 +222,19 @@ const EditRestaurantModal = ({
     {
       value: "Information",
       label: "Information",
-      icon: <InformationCircleIcon />,
+      icon: <Info/>,
       content: (
         <>
           {loading ? (
             <Loading />
           ) : (
             <div className="flex flex-col gap-5">
+              <Input
+                value={businessEmail}
+                label="Business Email"
+                onChange={(e) => setBusinessEmail(e.target.value)}
+              />
+
               <Input
                 value={businessName}
                 label="Business Name"
@@ -370,7 +381,7 @@ const EditRestaurantModal = ({
               loading={loading}
               saving={saving}
               onCancel={handleOpen}
-              onSubmit={activeTab === "Attachment"
+              onSubmit={activeTab === "Attachments"
                 ? handleSubmit
                 : updateStoreDetails}
               >
