@@ -203,10 +203,17 @@ const EditRestaurantModal = ({
   };
 
   const handleSubmit = (event) => {
+    try{
+    setSaving(true)
     event.preventDefault();
     updateStoreDetails();
     updateStore();
-    handleOpen();
+    handleOpen();}
+    catch{
+
+    }finally{
+      setSaving(false)
+    }
   };
 
   const tabs = [

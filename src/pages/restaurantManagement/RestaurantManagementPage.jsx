@@ -51,7 +51,7 @@ const RestaurantManagementPage = () => {
     itemsPerPage: 10,
     isLoading: false,
   });
-  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5, 6]);
+  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5]);
   const [isRotated, setIsRotated] = useState(false);
 
   const fetchStores = async () => {
