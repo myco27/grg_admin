@@ -84,7 +84,7 @@ export default function SalesByCentral({centralData}) {
         className="flex flex-col rounded-none md:flex-row md:items-center"
       >
         <Typography variant="h5" color="black">
-          Sales by Central
+          Top 3 Sales by Central
         </Typography>
       </CardHeader>
       <CardBody className="px-2 pb-0">

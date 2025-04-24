@@ -117,7 +117,7 @@ export default function SalesByRestaurant() {
   };
   
   const filteredStores = storeData.filter((store) =>
-    (store.central_store_name + store.store_name)
+    (store.store_branch + store.store_name)
       .toLowerCase()
       .replace(/[:\s]/g, "")
       .includes(searchTerm.toLowerCase().replace(/\s/g, ""))
@@ -244,7 +244,7 @@ export default function SalesByRestaurant() {
       >
         <div className="flex-grow overflow-visible">
           <Typography color="black" variant="h5" className="min-w-[350px]">
-            Sales by Restaurant
+            Sales by {selectedStore}
           </Typography>
           <Typography>{selectedStore}</Typography>
         </div>

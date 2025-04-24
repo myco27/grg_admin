@@ -35,7 +35,7 @@ function TermsAndConditions() {
     try {
       setLoading(true);
       const response = await axiosClient.post(
-        "admin/terms-and-conditions/saveTerm",
+        "admin/config/terms_and_conditions",
         { content: _content }
       );
       console.log(response.data);
@@ -60,14 +60,14 @@ function TermsAndConditions() {
           Terms and Conditions
         </Typography>
       </CardHeader>
-      {loading?<Loading/>:<CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+      {loading?<Loading/>:<CardBody className="h-full overflow-y-auto overflow-x-hidden">
         <TextEditor
           value={_content}
           onChange={(e) => setContent(e)}
         ></TextEditor>
       </CardBody>}
       <CardFooter className="flex justify-end">
-        <Button className="sticky" onClick={saveTerms}>
+        <Button className="sticky bg-primary" onClick={saveTerms}>
           Save
         </Button>
       </CardFooter>

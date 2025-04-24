@@ -35,7 +35,7 @@ function PrivacyPolicy() {
     try {
       setLoading(true);
       const response = await axiosClient.post(
-        "admin/terms-and-conditions/savePrivacy",
+        "admin/config/privacy_policy",
         { content: _content }
       );
       console.log(response.data);
@@ -67,7 +67,7 @@ function PrivacyPolicy() {
         ></TextEditor>
       </CardBody>}
       <CardFooter className="flex justify-end">
-        <Button className="sticky" onClick={saveTerms}>
+        <Button className="sticky bg-primary" onClick={saveTerms}>
           Save
         </Button>
       </CardFooter>
