@@ -393,7 +393,7 @@ const Sidebar = () => {
                     </div>
                   </ListItem>
 
-                  <Collapse open={configOpen} className="flex flex-col gap-1">
+                  <Collapse open={configOpen} className="flex flex-col">
                     <div
                       className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
                         configOpen ? "max-h-40" : "max-h-0"
