@@ -16,9 +16,10 @@ import {
 import axiosClient from "../../axiosClient";
 import { X, PaperclipIcon } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
-import { Sidebar } from "../../components/Modal";
+import { Base, Body, Footer, Header, Sidebar } from "../../components/Modal";
 import axios from "axios";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import Loading from "../../components/layout/Loading";
 
 const EditRestaurantModal = ({
   open,
@@ -93,6 +94,8 @@ const EditRestaurantModal = ({
     }
   };
   const updateStoreDetails = async () => {
+    setSaving(true);
+    setLoading(true);
     const data = {
       store_name: businessName,
       store_branch: businessStore,
@@ -108,6 +111,8 @@ const EditRestaurantModal = ({
       console.error(e.error);
     } finally {
       fetchStores();
+      setLoading(false);
+      setSaving(false);
     }
   };
   const updateStore = async () => {
@@ -197,16 +202,14 @@ const EditRestaurantModal = ({
   };
 
   const handleSubmit = (event) => {
-    try{
-    setSaving(true)
-    event.preventDefault();
-    updateStoreDetails();
-    updateStore();
-    handleOpen();}
-    catch{
-
-    }finally{
-      setSaving(false)
+    try {
+      setSaving(true);
+      event.preventDefault();
+      updateStore();
+      handleOpen();
+    } catch {
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -217,28 +220,32 @@ const EditRestaurantModal = ({
       icon: <InformationCircleIcon />,
       content: (
         <>
-          <div className="flex flex-col gap-3">
-            <Input
-              value={businessName}
-              label="Business Name"
-              onChange={(e) => setBusinessName(e.target.value)}
-            />
-            <Input
-              value={businessStore}
-              label="Business Store"
-              onChange={(e) => setBusinessStore(e.target.value)}
-            />
-            <Input
-              value={businessLandline}
-              label="Business Landline"
-              onChange={(e) => setBusinessLandline(e.target.value)}
-            />
-            <Input
-              value={businessMobile}
-              label="Business Contact Number"
-              onChange={(e) => setBusinessMobile(e.target.value)}
-            />
-          </div>
+          {loading ? (
+            <Loading />
+          ) : (
+            <div className="flex flex-col gap-3">
+              <Input
+                value={businessName}
+                label="Business Name"
+                onChange={(e) => setBusinessName(e.target.value)}
+              />
+              <Input
+                value={businessStore}
+                label="Business Store"
+                onChange={(e) => setBusinessStore(e.target.value)}
+              />
+              <Input
+                value={businessLandline}
+                label="Business Landline"
+                onChange={(e) => setBusinessLandline(e.target.value)}
+              />
+              <Input
+                value={businessMobile}
+                label="Business Contact Number"
+                onChange={(e) => setBusinessMobile(e.target.value)}
+              />
+            </div>
+          )}
         </>
       ),
     },
@@ -337,10 +344,10 @@ const EditRestaurantModal = ({
 
   return (
     <>
-      <Dialog
-        size="lg"
+      <Base
         open={open}
-        handler={handleOpen}
+        handleOpen={handleOpen}
+        size="lg"
         className="flex flex-col"
         dismiss={{ outsidePress: false }}
       >
@@ -358,7 +365,7 @@ const EditRestaurantModal = ({
               sidebarTitle="PROFILE"
             />
             <div className="w-full">
-              <DialogHeader className="px-4">
+              <Header className="px-4">
                 <div className="flex w-full items-center justify-between border-b border-gray-300 py-2">
                   <Typography variant="h5" className="font-semibold">
                     {activeTab}
@@ -371,8 +378,8 @@ const EditRestaurantModal = ({
                     &times; {/* This is the "X" character */}
                   </button>
                 </div>
-              </DialogHeader>
-              <DialogBody className="p-0">
+              </Header>
+              <Body className="p-0">
                 <TabsBody className="overflow-auto px-2">
                   {tabs.map((tab) =>
                     tab.value === activeTab ? (
@@ -386,29 +393,20 @@ const EditRestaurantModal = ({
                     ) : null
                   )}
                 </TabsBody>
-              </DialogBody>
-              <DialogFooter className="flex justify-end gap-2 border-t border-gray-300 bg-white p-2">
-                <>
-                  <Button color="gray" disabled={loading} onClick={handleOpen}>
-                    Cancel
-                  </Button>
-
-                  <Button
-                    className="bg-primary"
-                    type="submit"
-                    disabled={loading}
-                    onClick={handleSubmit}
-                  >
-                    <span className="m-0 p-0">
-                      {saving ? "Saving..." : "Save"}
-                    </span>
-                  </Button>
-                </>
-              </DialogFooter>
+              </Body>
+              <Footer 
+              loading={loading}
+              saving={saving}
+              onCancel={handleOpen}
+              onSubmit={activeTab === "Attachment"
+                ? handleSubmit
+                : updateStoreDetails}
+              >
+              </Footer>
             </div>
           </div>
         </Tabs>
-      </Dialog>
+      </Base>
     </>
   );
 };
