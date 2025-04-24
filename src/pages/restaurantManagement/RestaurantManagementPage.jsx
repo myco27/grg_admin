@@ -66,9 +66,6 @@ const RestaurantManagementPage = () => {
         },
       });
 
-  
-      
-
       if (response.status === 200) {
         const responseData = response.data.data;
 
@@ -306,6 +303,22 @@ const RestaurantManagementPage = () => {
                           return (
                             <td className="p-4" key={`col-${colIndex}`}>
                               <div className="space-y-2">
+                              <div className="flex gap-2">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-medium"
+                                  >
+                                    Email:
+                                  </Typography>
+                                  <Typography
+                                    variant="small"
+                                    color="gray"
+                                    className="font-normal"
+                                  >
+                                    {store.email}
+                                  </Typography>
+                                </div>
                                 <div className="flex gap-2">
                                   <Typography
                                     variant="small"
