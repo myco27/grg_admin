@@ -60,7 +60,7 @@ function TermsAndConditions() {
           Terms and Conditions
         </Typography>
       </CardHeader>
-      {loading?<Loading/>:<CardBody className="h-full overflow-y-auto overflow-x-hidden">
+      {loading?<Loading/>:<CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
         <TextEditor
           value={_content}
           onChange={(e) => setContent(e)}

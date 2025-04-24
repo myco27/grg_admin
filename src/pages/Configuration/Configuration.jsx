@@ -47,6 +47,8 @@ function Configuration() {
   const [selectedRow, setSelectedRow] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [module_name, setModule_Name] = useState("")
   const [status, setStatus] = useState(false);
   const [isColumnReversed, setisColumnReversed] = useState(false);
   const [editModal, setEditModal] = useState(false);
@@ -98,6 +100,8 @@ function Configuration() {
   };
   const TABLE_HEAD = [
     "ID",
+    "Module Name",
+    "Title",
     "Content",
     "Status",
     "Date Created",
@@ -228,9 +232,12 @@ function Configuration() {
 
   const handleSave = async () => {
     const data = {
+      title:title,
+      module_name:module_name,
       content: content,
       status_id: status ? 1 : 2,
     };
+    console.log(data)
     try {
       setSaving(true);
       setLoading(true);
@@ -337,9 +344,15 @@ function Configuration() {
                   <td key="id" className="p-4">
                     {data.id}
                   </td>,
+                  <td key="module_name" className="p-4">
+                      {data.module_name}
+                  </td>,
+                  <td key="title" className="p-4">
+                  {data.title}
+              </td>,
                   <td key="content" className="p-4" onClick={handleEditModal} >
-                    {data.content.length > 40
-                      ? `${data.content.slice(0, 40)}...`
+                    {data.content.length > 30
+                      ? `${data.content.slice(0, 30)}...`
                       : data.content}
                   </td>,
                   <td key="status" className="p-4">
@@ -405,7 +418,9 @@ function Configuration() {
         {loading ? (
           <Loading></Loading>
         ) : (
-          <DialogBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+          <DialogBody className="flex max-h-[70vh] flex-col gap-2 overflow-y-auto overflow-x-hidden">
+            <Input value={title} label="Title" onChange={(e) => setTitle(e.target.value)}/>
+            <Input value={module_name} label="Module Name" onChange={(e) => setModule_Name(e.target.value)}/>
             <TextEditor value={content} onChange={(val) => setContent(val)} />
             <Typography>Status?</Typography>
             <Switch checked={status} onChange={handleSwitchChange} />
