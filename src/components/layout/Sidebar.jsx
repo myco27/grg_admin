@@ -395,7 +395,7 @@ const Sidebar = () => {
 
                   <Collapse open={configOpen} className="flex flex-col gap-1">
                     <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
                         configOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
@@ -419,12 +419,17 @@ const Sidebar = () => {
                           <ListItemPrefix className="rounded">
                             <Info className="h-4 w-4" />
                           </ListItemPrefix>
-                          About Us
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            About Us
+                          </Typography>
                         </ListItem>
                       </Link>
                     </div>
                     <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
                         configOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
@@ -448,12 +453,17 @@ const Sidebar = () => {
                           <ListItemPrefix className="rounded">
                             <Siren className="h-4 w-4" />
                           </ListItemPrefix>
-                          Privacy Policy
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Privacy Policy
+                          </Typography>
                         </ListItem>
                       </Link>
                     </div>
                     <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-10 ${
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
                         configOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
@@ -477,7 +487,12 @@ const Sidebar = () => {
                           <ListItemPrefix className="rounded">
                             <Cog className="h-4 w-4" />
                           </ListItemPrefix>
-                          T&C
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
                         </ListItem>
                       </Link>
                     </div>
@@ -731,6 +746,153 @@ const Sidebar = () => {
                     </Typography>
                   </ListItem>
                 </Link>
+              )}
+
+              {canViewConfigurationModule && (
+                <>
+                  <ListItem
+                    onClick={handleConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/configuration")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <FileSliders className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Configuration
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {configOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
+
+                  <Collapse open={configOpen} className="flex flex-col gap-1">
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/aboutus"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/aboutus"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Info className="h-4 w-4" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            About Us
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/privacypolicy"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/privacypolicy"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Siren className="h-4 w-4" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Privacy Policy
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                  </Collapse>
+                </>
               )}
 
               {/* Roles and Permissions */}
