@@ -404,7 +404,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -417,7 +417,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4" />
+                            <Info className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -438,7 +438,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -451,7 +451,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4" />
+                            <Siren className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -472,7 +472,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -485,7 +485,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Cog className="h-4 w-4" />
+                            <Cog className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -799,7 +799,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -812,7 +812,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4" />
+                            <Info className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -833,7 +833,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -846,7 +846,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4" />
+                            <Siren className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -867,7 +867,7 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:text-white focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
@@ -880,7 +880,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Cog className="h-4 w-4" />
+                            <Cog className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
