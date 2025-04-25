@@ -223,27 +223,32 @@ const EditRestaurantModal = ({
           ) : (
             <div className="flex flex-col gap-5">
               <Input
+                required
                 value={businessEmail}
                 label="Business Email"
                 onChange={(e) => setBusinessEmail(e.target.value)}
               />
 
               <Input
+                required
                 value={businessName}
                 label="Business Name"
                 onChange={(e) => setBusinessName(e.target.value)}
               />
               <Input
+                required
                 value={businessStore}
                 label="Business Store"
                 onChange={(e) => setBusinessStore(e.target.value)}
               />
               <Input
+                required
                 value={businessLandline}
                 label="Business Landline"
                 onChange={(e) => setBusinessLandline(e.target.value)}
               />
               <Input
+                required
                 value={businessMobile}
                 label="Business Contact Number"
                 onChange={(e) => setBusinessMobile(e.target.value)}
