@@ -17,7 +17,6 @@ import {
   TrendingUp,
   UserRound,
 } from "lucide-react";
-import Loading from "../../components/layout/Loading";
 
 const Dashboard = () => {
   const [activeCustomers, setActiveCustomers] = useState(0);
@@ -27,21 +26,11 @@ const Dashboard = () => {
   const [customerTrend, setCustomerTrend] = useState(true);
   const [riderTrend, setRiderTrend] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isOrder, setIsOrder] = useState([])
-
-  const fetchStoreMontly = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosClient.get("/admin/dashboard/card-data");
-
-      if (response === 200) {
-      }
-    } catch (e) {
-      console.log(e.error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isOrder, setIsOrder] = useState([]);
+  const [isCentralData, setIsCentralData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [storeData, setStoreData] = useState([]);
+  const [monthlySalesPerStore, setMonthlySalesPerStore] = useState([]);
 
   const fetchDashboardCardData = async () => {
     setLoading(true);
@@ -61,28 +50,37 @@ const Dashboard = () => {
     }
   };
 
-
-    const getOrdersData = async() => {
-      try{
-        console.log('21321312');
-        const response = await axiosClient.get("/admin/orders/rate")
-        console.log('sadsadsa');
-        if (response.status === 200){
-          const orderData =  (response.data)
-          console.log(orderData)
-          setIsOrder(orderData)   
-        }
-      }catch (error){
-        console.error(error)
-      }
-      finally{
-        console.log("Success")
-      }
+  const salesByCentral = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosClient.get(
+        "admin/dashboard/sales-by-central"
+      );
+      setIsCentralData(response.data);
+    } catch (e) {
+      console.error(e.error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const getOrdersData = async () => {
+    try {
+      const response = await axiosClient.get("/admin/orders/rate/list");
+      if (response.status === 200) {
+        const orderData = response.data;
+        setIsOrder(orderData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  };
 
   useEffect(() => {
     fetchDashboardCardData();
     getOrdersData();
+    salesByCentral();
   }, []);
 
   return (
@@ -90,10 +88,13 @@ const Dashboard = () => {
       <div className="m-5 flex flex-col gap-1">
         <div
           id="row1"
-          className="flex flex-grow flex-col justify-center gap-1 border-red-100 sm:flex-row md:flex-col lg:flex-col xl:flex-row"
+          className="flex flex-row flex-wrap justify-center gap-1 border-red-100 sm:flex-row md:flex-row lg:flex-row xl:flex-row xl:flex-nowrap"
         >
-          <Card className="item-center flex max-w-[370px] justify-around rounded-none shadow-none">
-            <div id="div1" className="grid min-w-full grid-cols-2 grid-rows-2 gap-2 p-0">
+          <Card className="item-center mx-auto flex max-w-[370px] justify-around rounded-none shadow-none">
+            <div
+              id="div1"
+              className="grid min-w-full grid-cols-2 grid-rows-2 gap-2 p-0"
+            >
               <div className="flex items-center justify-center rounded-none border">
                 <CardBody className="flex min-h-[175px] flex-col justify-center text-center">
                   <Typography variant="h5" className="mb-2 flex flex-row gap-1">
@@ -117,7 +118,7 @@ const Dashboard = () => {
                     Customer
                   </Typography>
                   {loading ? (
-                      <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                       <div className="h-10 w-10 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
                     </div>
                   ) : (
@@ -147,7 +148,7 @@ const Dashboard = () => {
                   </Typography>
 
                   {loading ? (
-                      <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                       <div className="h-10 w-10 animate-spin rounded-full border-8 border-gray-300 border-t-purple-500" />
                     </div>
                   ) : (
@@ -188,12 +189,13 @@ const Dashboard = () => {
             </div>
           </Card>
           <div className="flex-grow">
-            <SalesByRestaurant />
+            <SalesByRestaurant
+            />
           </div>
         </div>
         <div className="flex flex-col gap-1 md:flex-col lg:flex-row">
           <div className="flex">
-            <SalesByCentral />
+            <SalesByCentral centralData={isCentralData} />
           </div>
           <div className="flex-grow">
             <OrderRate orderData={isOrder}></OrderRate>

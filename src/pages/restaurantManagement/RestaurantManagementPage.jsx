@@ -29,6 +29,8 @@ import {
 import useDebounce from "../../components/UseDebounce";
 import Pagination from "../../components/OrdersPage/Pagination";
 import { ArrowLeftRight } from "lucide-react";
+import EditRestaurantModal from "./EditRestaurantModal";
+import axios from "axios";
 
 const RestaurantManagementPage = () => {
   const navigate = useNavigate();
@@ -38,8 +40,9 @@ const RestaurantManagementPage = () => {
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedStore,setSelectedStore] = useState(null)
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedApplicantId, setSelectedApplicantId] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -48,7 +51,7 @@ const RestaurantManagementPage = () => {
     itemsPerPage: 10,
     isLoading: false,
   });
-  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5, 6]);
+  const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5]);
   const [isRotated, setIsRotated] = useState(false);
 
   const fetchStores = async () => {
@@ -83,6 +86,8 @@ const RestaurantManagementPage = () => {
     } catch (error) {
       // navigate("/notfound");
     }
+
+    
   };
 
   useEffect(() => {
@@ -112,8 +117,9 @@ const RestaurantManagementPage = () => {
     });
   };
 
-  const handleEditOpen = (userId) => {
-    setSelectedUserId(userId);
+  const handleEditOpen = (storeId, applicantId) => {
+    setSelectedStoreId(storeId);
+    setSelectedApplicantId(applicantId);
     setEditOpen(!editOpen);
   };
 
@@ -195,7 +201,7 @@ const RestaurantManagementPage = () => {
             </div>
           </div>
           <div className="flex items-center justify-end gap-4 md:flex-row">
-            <div className="flex gap-2 justify-end w-full rounded-md md:w-72">
+            <div className="flex w-full justify-end gap-2 rounded-md md:w-72">
               <button
                 className="text-gray-500 hover:text-gray-700"
                 onClick={rotateColumns}
@@ -227,26 +233,32 @@ const RestaurantManagementPage = () => {
             <table className="w-full min-w-max table-auto rounded-md text-left">
               <thead>
                 <tr>
-                  {tableHeadOrder.map((colIndex, index) => (
-                    <th
-                      key={TABLE_HEAD[colIndex]}
-                      className={`bg-tableHeaderBg p-4 ${
-                        index === 0 ? "rounded-tl-md rounded-bl-md" : ""
-                      } ${
-                        index === TABLE_HEAD.length - 1
-                          ? "rounded-tr-md rounded-br-md"
-                          : ""
-                      }`}
-                    >
-                      <Typography
-                        variant="small"
-                        color="black"
-                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                  {tableHeadOrder.map((colIndex, index) => {
+                    const columnLabel = TABLE_HEAD[colIndex];
+
+                    return (
+                      <th
+                        key={`${colIndex}-${index}`}
+                        className={`bg-tableHeaderBg p-4 ${
+                          index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                        } ${
+                          index === TABLE_HEAD.length - 1
+                            ? "rounded-tr-md rounded-br-md"
+                            : ""
+                        }`}
                       >
-                        {TABLE_HEAD[colIndex]}
-                      </Typography>
-                    </th>
-                  ))}
+                        {columnLabel && (
+                          <Typography
+                            variant="small"
+                            color="black"
+                            className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                          >
+                            {columnLabel}
+                          </Typography>
+                        )}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
 
@@ -268,7 +280,7 @@ const RestaurantManagementPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {store.id}
+                                  {store.store.id}
                                 </Typography>
                               </div>
                             </td>
@@ -283,7 +295,7 @@ const RestaurantManagementPage = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {store.store_name} {store.store_branch}
+                                    {store.store.store_name} {store.store.store_branch}
                                   </Typography>
                                 </div>
                               </div>
@@ -293,6 +305,22 @@ const RestaurantManagementPage = () => {
                           return (
                             <td className="p-4" key={`col-${colIndex}`}>
                               <div className="space-y-2">
+                              <div className="flex gap-2">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-medium"
+                                  >
+                                    Email:
+                                  </Typography>
+                                  <Typography
+                                    variant="small"
+                                    color="gray"
+                                    className="font-normal"
+                                  >
+                                    {store.email}
+                                  </Typography>
+                                </div>
                                 <div className="flex gap-2">
                                   <Typography
                                     variant="small"
@@ -306,7 +334,7 @@ const RestaurantManagementPage = () => {
                                     color="gray"
                                     className="font-normal"
                                   >
-                                    {store.phone}
+                                    {store.store.phone}
                                   </Typography>
                                 </div>
 
@@ -323,7 +351,7 @@ const RestaurantManagementPage = () => {
                                     color="gray"
                                     className="font-normal"
                                   >
-                                    {store.mobile}
+                                    {store.store.mobile}
                                   </Typography>
                                 </div>
                               </div>
@@ -337,20 +365,20 @@ const RestaurantManagementPage = () => {
                                   variant="ghost"
                                   size="sm"
                                   value={
-                                    store.is_active == 1
+                                    store.store.is_active == 1
                                       ? "Active"
-                                      : store.is_active == 2
+                                      : store.store.is_active == 2
                                       ? "Suspended"
-                                      : store.is_active == 3
+                                      : store.store.is_active == 3
                                       ? "Deleted"
                                       : "Inactive"
                                   }
                                   color={
-                                    store.is_active == 1
+                                    store.store.is_active == 1
                                       ? "green"
-                                      : store.is_active == 2
+                                      : store.store.is_active == 2
                                       ? "orange"
-                                      : store.is_active == 3
+                                      : store.store.is_active == 3
                                       ? "red"
                                       : "blue-gray"
                                   }
@@ -367,7 +395,7 @@ const RestaurantManagementPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {new Date(store.date_created).toLocaleString(
+                                  {new Date(store.store.date_created).toLocaleString(
                                     "en-US",
                                     {
                                       year: "numeric",
@@ -385,7 +413,7 @@ const RestaurantManagementPage = () => {
                               <Tooltip content="Edit Store">
                                 <IconButton
                                   variant="text"
-                                  onClick={() => handleEditOpen(store.id)}
+                                  onClick={() => {handleEditOpen(store.store.id, store.applicant_id); setSelectedStore(store);}}
                                 >
                                   <PencilIcon className="h-4 w-4" />
                                 </IconButton>
@@ -415,6 +443,16 @@ const RestaurantManagementPage = () => {
           />
         </CardFooter>
       </Card>
+
+      {/* MODALS */}
+      <EditRestaurantModal
+        open={editOpen}
+        handleOpen={handleEditOpen}
+        storeId={selectedStoreId}
+        applicantId={selectedApplicantId}
+        fetchStores={fetchStores}
+        selectedStore={selectedStore}
+      />
     </>
   );
 };
