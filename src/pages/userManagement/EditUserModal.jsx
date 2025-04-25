@@ -388,10 +388,13 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                 </>
               ) : userType === "operator" ? (
                 <Input
+                  required={true}
                   label="Local Support Number"
                   type="text"
                   value={localSupportNumber}
                   autoComplete="tel"
+                  minLength={7}
+                  maxLength={15}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
