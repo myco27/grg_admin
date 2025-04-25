@@ -377,7 +377,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     label="Mobile Number"
                     type="text"
                     value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setMobileNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                 </>
@@ -387,7 +392,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                   type="text"
                   value={localSupportNumber}
                   autoComplete="tel"
-                  onChange={(e) => setLocalSupportNumber(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      setLocalSupportNumber(value);
+                    }
+                  }}
                 />
               ) : userType === "central" || userType === "restaurant" ? (
                 <>
@@ -395,14 +405,24 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     label="Business Landline Number"
                     type="text"
                     value={businessLandlineNumber}
-                    onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setBusinessLandlineNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                   <Input
                     label="Business Contact Number"
                     type="text"
                     value={businessContactNumber}
-                    onChange={(e) => setBusinessContactNumber(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setBusinessContactNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                 </>
@@ -788,7 +808,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               <>
                 <div className="flex flex-col gap-5">
                   <Input
-                  className="!bg-gray-100"
+                    className="!bg-gray-100"
                     label="Order Points"
                     type="text"
                     value={points}

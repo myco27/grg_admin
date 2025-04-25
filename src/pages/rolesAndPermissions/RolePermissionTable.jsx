@@ -34,6 +34,8 @@ const RolePermissionTable = () => {
   const { showAlert } = useAlert();
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
+  const [permissionSearch, setPermissionSeach] = useState("");
+  const debounceSearchPermission = UseDebounce({ value: permissionSearch });
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -49,7 +51,7 @@ const RolePermissionTable = () => {
 
   useEffect(() => {
     fetchPermissions();
-  }, []);
+  }, [debounceSearchPermission]);
 
   const { user, fetchUser } = useStateContext();
 
@@ -126,12 +128,19 @@ const RolePermissionTable = () => {
 
   const fetchPermissions = async () => {
     try {
-      const response = await axios.get("/permissions");
+      setPagination({ ...pagination, isLoading: true });
+      const response = await axios.get("/permissions", {
+        params: {
+          filterPermission: permissionSearch,
+        },
+      });
       if (response.status === 200) {
         setPermissions(response.data || []);
       }
     } catch (error) {
       console.error("Error fetching permissions:", error);
+    } finally {
+      setPagination({ ...pagination, isLoading: false });
     }
   };
 
@@ -152,7 +161,9 @@ const RolePermissionTable = () => {
         fetchRoles();
       }
     } catch (error) {
-      console.error("Error toggling permission:", error);
+      if (error.response.data.errors) {
+        showAlert(error.response.data.errors, "error");
+      }
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -195,21 +206,37 @@ const RolePermissionTable = () => {
               )}
             </div>
           </div>
-          <div className="float-end w-full md:w-72">
-            <Input
-              label="Search User"
-              icon={
-                pagination.isLoading ? (
-                  <Spinner className="h-5 w-5" />
-                ) : (
-                  <Search className="h-5 w-5" />
-                )
-              }
-              size="md"
-              className="bg-white"
-              value={searchTerm}
-              onChange={(e) => handleSearchInput(e)}
-            />
+          <div className="flex justify-end w-full">
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-x-4">
+              <Input
+                label="Search Role"
+                icon={
+                  pagination.isLoading ? (
+                    <Spinner className="h-5 w-5" />
+                  ) : (
+                    <Search className="h-5 w-5" />
+                  )
+                }
+                size="md"
+                className="bg-white md:w-72"
+                value={searchTerm}
+                onChange={(e) => handleSearchInput(e)}
+              />
+              <Input
+                label="Search Permissions"
+                icon={
+                  pagination.isLoading ? (
+                    <Spinner className="h-5 w-5" />
+                  ) : (
+                    <Search className="h-5 w-5" />
+                  )
+                }
+                value={permissionSearch}
+                onChange={(e) => setPermissionSeach(e.target.value)}
+                size="md"
+                className="bg-white md:w-72"
+              />
+            </div>
           </div>
         </CardHeader>
         <CardBody className="overflow-scroll p-4">
@@ -224,7 +251,6 @@ const RolePermissionTable = () => {
                   </th>
                   {permissions.map((perm, index) => {
                     // console.log(index);
-
                     return (
                       <th
                         key={perm.id}
@@ -237,7 +263,7 @@ const RolePermissionTable = () => {
                         <Typography
                           variant="small"
                           color="black"
-                          className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                          className="flex items-center justify-center text-center gap-2 font-normal leading-none opacity-70"
                         >
                           {perm.name.charAt(0).toUpperCase() +
                             perm.name.slice(1)}
@@ -269,12 +295,18 @@ const RolePermissionTable = () => {
                         permissions.length > 0 ? (
                           permissions.map((perm) => (
                             <td key={perm.id} className="p-4">
-                              <div className="flex items-center justify-center">
+                              <div
+                                className="flex items-center justify-center"
+                              >
                                 <Switch
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
                                   )}
+                                  disabled={
+                                    role.name === "developer" &&
+                                    perm.name === "view roles and permissions module"
+                                  }
                                   color="green"
                                 />
                               </div>
