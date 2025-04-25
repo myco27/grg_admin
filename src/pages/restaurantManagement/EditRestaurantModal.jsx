@@ -8,9 +8,6 @@ import {
   Dialog,
   DialogHeader,
   IconButton,
-  TabsBody,
-  TabPanel,
-  DialogFooter,
   Input,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
@@ -18,7 +15,6 @@ import { X, PaperclipIcon, Info } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import { Base, Body, Footer, Header, Sidebar } from "../../components/Modal";
 import axios from "axios";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import Loading from "../../components/layout/Loading";
 
 const EditRestaurantModal = ({
@@ -27,7 +23,7 @@ const EditRestaurantModal = ({
   storeId,
   applicantId,
   fetchStores,
-  selectedStore
+  selectedStore,
 }) => {
   const [storesAttachments, setStoresAttachments] = useState({
     businessCertificate: null,
@@ -38,7 +34,7 @@ const EditRestaurantModal = ({
     businessCertificate: null,
     certificateOfRegistration: null,
   });
-  const [userId,setUserId] = useState("")
+  const [userId, setUserId] = useState("");
   const [activeTab, setActiveTab] = useState("Attachments");
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -49,14 +45,12 @@ const EditRestaurantModal = ({
   const [businessStore, setBusinessStore] = useState("");
   const [businessLandline, setBusinessLandline] = useState("");
   const [businessMobile, setBusinessMobile] = useState("");
-  const [businessEmail, setBusinessEmail] = useState("")
-
-
+  const [businessEmail, setBusinessEmail] = useState("");
 
   const fetchRestaurantDetails = async () => {
     try {
-      setUserId(selectedStore.id)
-      setBusinessEmail(selectedStore.email)
+      setUserId(selectedStore.id);
+      setBusinessEmail(selectedStore.email);
       setBusinessName(selectedStore.store.store_name);
       setBusinessStore(selectedStore.store.store_branch);
       setBusinessLandline(selectedStore.store.phone);
@@ -92,7 +86,7 @@ const EditRestaurantModal = ({
     } finally {
     }
   };
-  
+
   const updateStoreDetails = async () => {
     setSaving(true);
     setLoading(true);
@@ -101,22 +95,21 @@ const EditRestaurantModal = ({
       store_branch: businessStore,
       phone: businessLandline,
       mobile: businessMobile,
-      email:businessEmail
+      email: businessEmail,
     };
     try {
       const response = await axiosClient.put(
         `admin/store/updateStore/${storeId}/user/${userId}`,
         data
       );
-      console.log(response)
-      handleOpen()
+
+      handleOpen();
       fetchStores();
       showAlert("Store updated successfully!", "success");
     } catch (e) {
       console.error(e.error);
       showAlert("Failed to Update", "error");
     } finally {
-      
       setLoading(false);
       setSaving(false);
     }
@@ -222,7 +215,7 @@ const EditRestaurantModal = ({
     {
       value: "Information",
       label: "Information",
-      icon: <Info/>,
+      icon: <Info />,
       content: (
         <>
           {loading ? (
@@ -355,12 +348,7 @@ const EditRestaurantModal = ({
 
   return (
     <>
-      <Base
-        open={open}
-        handleOpen={handleOpen}
-        size="lg"
-
-      >
+      <Base open={open} handleOpen={handleOpen} size="lg">
         <Tabs
           value={activeTab}
           className="flex w-full overflow-hidden rounded-lg"
@@ -375,17 +363,18 @@ const EditRestaurantModal = ({
               sidebarTitle="PROFILE"
             />
             <div className="w-full">
-              <Header title={activeTab} onClose={handleOpen}/>
-              <Body tabs={tabs} loading={loading} activeTab={activeTab}/>
-              <Footer 
-              loading={loading}
-              saving={saving}
-              onCancel={handleOpen}
-              onSubmit={activeTab === "Attachments"
-                ? handleSubmit
-                : updateStoreDetails}
-              >
-              </Footer>
+              <Header title={activeTab} onClose={handleOpen} />
+              <Body tabs={tabs} loading={loading} activeTab={activeTab} />
+              <Footer
+                loading={loading}
+                saving={saving}
+                onCancel={handleOpen}
+                onSubmit={
+                  activeTab === "Attachments"
+                    ? handleSubmit
+                    : updateStoreDetails
+                }
+              ></Footer>
             </div>
           </div>
         </Tabs>

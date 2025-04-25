@@ -95,7 +95,7 @@ const AdminManagement = () => {
           page_size: pagination.itemsPerPage,
         },
       });
-      console.log(response.data.data);
+
       if (response.status === 200) {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =

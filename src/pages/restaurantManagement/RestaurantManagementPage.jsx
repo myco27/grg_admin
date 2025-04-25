@@ -118,7 +118,6 @@ const RestaurantManagementPage = () => {
   };
 
   const handleEditOpen = (storeId, applicantId) => {
-    console.log(selectedStore)
     setSelectedStoreId(storeId);
     setSelectedApplicantId(applicantId);
     setEditOpen(!editOpen);
