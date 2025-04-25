@@ -250,13 +250,27 @@ const EditRestaurantModal = ({
                 required
                 value={businessLandline}
                 label="Business Landline"
-                onChange={(e) => setBusinessLandline(e.target.value)}
+                minLength={7}
+                maxLength={15}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setBusinessLandline(e.target.value)
+                  }
+                }}
               />
               <Input
                 required
                 value={businessMobile}
                 label="Business Contact Number"
-                onChange={(e) => setBusinessMobile(e.target.value)}
+                minLength={7}
+                maxLength={15}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    setBusinessMobile(e.target.value)
+                  }
+                }}
               />
             </div>
           )}
