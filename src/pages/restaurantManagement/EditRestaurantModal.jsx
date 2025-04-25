@@ -106,9 +106,14 @@ const EditRestaurantModal = ({
       handleOpen();
       fetchStores();
       showAlert("Store updated successfully!", "success");
-    } catch (e) {
-      console.error(e.error);
-      showAlert("Failed to Update", "error");
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => showAlert(errorMessage, "error"));
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
     } finally {
       setLoading(false);
       setSaving(false);
