@@ -405,8 +405,11 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               ) : userType === "central" || userType === "restaurant" ? (
                 <>
                   <Input
+                    required={true}
                     label="Business Landline Number"
                     type="text"
+                    minLength={7}
+                    maxLength={15}
                     value={businessLandlineNumber}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -417,9 +420,12 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
                     autoComplete="tel"
                   />
                   <Input
+                    required={true}
                     label="Business Contact Number"
                     type="text"
                     value={businessContactNumber}
+                    minLength={7}
+                    maxLength={15}
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d*$/.test(value)) {
