@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Typography,
   List,
@@ -25,8 +25,13 @@ import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
 
 const Sidebar = () => {
-  const { user, sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } =
-    useStateContext();
+  const {
+    user,
+    sidebarCollapsed,
+    mobileMenuOpen,
+    setMobileMenuOpen,
+    fetchUser,
+  } = useStateContext();
   const location = useLocation();
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
@@ -52,6 +57,10 @@ const Sidebar = () => {
     user?.all_permissions?.includes("view restaurant module") || false;
   const canViewConfigurationModule =
     user?.all_permissions?.includes("view configuration module") || false;
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <>

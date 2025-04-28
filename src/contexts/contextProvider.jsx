@@ -42,24 +42,26 @@ export const ContextProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       const response = await axiosClient.get("/user");
-      setUser(response.data.user);
+      _setUser(response.data.user);
     } catch (err) {
-      setUser(null);
+      _setUser(null);
     }
   };
 
   return (
-    <stateContext.Provider value={{ 
-      user, 
-      token, 
-      sidebarCollapsed,
-      mobileMenuOpen,
-      setSidebarCollapsed,
-      setMobileMenuOpen,
-      setUser, 
-      setToken,
-      fetchUser
-    }}>
+    <stateContext.Provider
+      value={{
+        user,
+        token,
+        sidebarCollapsed,
+        mobileMenuOpen,
+        setSidebarCollapsed,
+        setMobileMenuOpen,
+        setUser,
+        setToken,
+        fetchUser,
+      }}
+    >
       {children}
     </stateContext.Provider>
   );
