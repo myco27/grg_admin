@@ -438,14 +438,14 @@ const ApplicationsPage = () => {
                                     >
                                       View
                                     </MenuItem>
-                                    {user.status == "pending" && (
+                                    {/* {user.status == "pending" && (
                                       <>
                                         <MenuItem>Accept</MenuItem>
                                         <MenuItem className="text-red-500">
                                           Reject
                                         </MenuItem>
                                       </>
-                                    )}
+                                    )} */}
                                   </MenuList>
                                 </Menu>
                               </Tooltip>
