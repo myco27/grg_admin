@@ -1,4 +1,4 @@
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
+import { PencilIcon} from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -22,12 +22,14 @@ import {
   Collapse,
 } from "@material-tailwind/react";
 import { format } from "date-fns";
-import { DayPicker } from "react-day-picker";
-import { useEffect, useState } from "react";
+import { DayPicker, getDefaultClassNames} from "react-day-picker";
+import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
+import "react-day-picker/style.css";
 import {
   Bike,
+  CalendarRangeIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   FilterIcon,
@@ -78,11 +80,9 @@ const UserManagementPage = () => {
       setEndDate(null);
     }
   };
-
   const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5, 6]);
   const [isRotated, setIsRotated] = useState(false);
   const [openPrevCal, setOpenPrevCal] = useState(false);
-  const [openCurrCal, setOpenCurrCal] = useState(false);
   const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
@@ -99,9 +99,8 @@ const UserManagementPage = () => {
         const response = await axiosClient.get("admin/users/get");
         const responseData = response.data.data;
     
-        setUsers(responseData.data); // Actual user list
+        setUsers(responseData.data); 
     
-        // Correct pagination info from API
         const { current_page, last_page, total, links, per_page } = responseData;
     
         setPagination({
@@ -119,7 +118,7 @@ const UserManagementPage = () => {
     
   const fetchUsers = async (
     customPagination = pagination,
-    customSearch = searchTerm
+    customSearch = searchTerm,
   ) => {
     try {
       console.log(startDate, endDate);
@@ -173,6 +172,9 @@ const UserManagementPage = () => {
     } catch (error) {
       console.error(error.response?.data || error.message);
     }
+  finally{
+    setOpenPrevCal(!openPrevCal) 
+  }
   };
 
   useEffect(() => {
@@ -270,6 +272,8 @@ const UserManagementPage = () => {
     "Action",
   ];
 
+  const defaultClassNames = getDefaultClassNames();
+
   return (
     <>
       {canViewUserModule && (
@@ -306,21 +310,23 @@ const UserManagementPage = () => {
                   ))}
                 </TabsHeader>
               </Tabs>
-              <div className="flex w-full flex-row items-center gap-2 rounded-md md:w-72">
-                <Menu dismiss={{ itemPress: false }} placement="bottom-start">
-                  <MenuHandler>
+              <div className="flex w-full items-center gap-2 rounded-md md:w-72">
+                <Menu dismiss={{ itemPress: false }} placement="bottom-start" className="hover:none">
+                  <MenuHandler >
                     <IconButton variant="text">
                       <FilterIcon />
                     </IconButton>
                   </MenuHandler>
-                  <MenuList className="flex space-y-2">
+                  <MenuList className="max-h-max max-w-max space-y-2">
                     {/* Filter by Date */}
                     <MenuItem className="flex flex-col items-center justify-center gap-1">
                       <span className="mb-2 font-medium">Filter by Date</span>
                       <div>
                         <Input
-                          label="Select Starting Date"
-                          className="mb-5 min-w-48 text-center"
+                        className="flex items-center justify-center text-center"
+                        icon={<CalendarRangeIcon/>}
+                          label="Select Date"
+                
                           value={
                             startDate && endDate
                               ? `${format(startDate, "PPP")} → ${format(
@@ -337,59 +343,35 @@ const UserManagementPage = () => {
                           open={openPrevCal}
                           className="flex w-full justify-center"
                         >
-                          <DayPicker
-                            mode="range"
-                            selected={{ from: startDate, to: endDate }}
-                            onSelect={handleDateSelect}
-                            showOutsideDays
-                            className="w-full max-w-md rounded-xl border-none bg-white p-10"
-                            classNames={{
-                              table: "w-full table-fixed flex justify-center items-center",
-                              caption:
-                                "flex justify-between items-center mb-4 px-2 text-gray-800 font-semibold",
-                              caption_label: "text-base",
-                              nav: "flex items-center justify-center justify-between gap-2",
-                              nav_button:
-                                "p-2 hover:bg-gray-100 rounded-full transition duration-150 ease-in-out",
-                              nav_button_previous: "ml-2",
-                              nav_button_next: "mr-2",
-                              head_row: "flex justify-center items-center",
-                              selected: "text-red",
-                              head_cell:
-                                "flex items-center justify-center text-xs font-medium text-center text-gray-600",
-                              row: "",
-                              cell: " flex justify-center items-center h-12 w-12 text-center align-middle",
-                              day: " items-center justify-center h-10 w-10 rounded-full text-sm hover:bg-gray-100 transition duration-150 ease-in-out",
-                              day_selected:
-                                "text-red",
-                              day_range_end:
-                                "bg-gray-900 text-white font-semibold rounded-full",
-                              day_today: "bg-gray-200 text-gray-900 font-bold",
-                              day_outside: "text-gray-400 opacity-50",
-                              day_disabled: "text-gray-400 opacity-30",
-                              day_hidden: "invisible",
-                            }}
-                            components={{
-                              IconLeft: ({ ...props }) => (
-                                <ChevronLeftIcon
-                                  {...props}
-                                  className="h-5 w-5 stroke-2"
-                                />
-                              ),
-                              IconRight: ({ ...props }) => (
-                                <ChevronRightIcon
-                                  {...props}
-                                  className="h-5 w-5 stroke-2"
-                                />
-                              ),
-                            }}
-                          />
+                            <DayPicker
+                          
+                            captionLayout="label"
+                              mode="range"
+                              selected={{ from: startDate, to: endDate }}
+                              onSelect={handleDateSelect}
+                              showOutsideDays
+                           
+                              components={{
+                                IconLeft: ({ ...props }) => (
+                                  <ChevronLeftIcon
+                                    {...props}
+                                    className="h-5 w-5 stroke-2"
+                                  />
+                                ),
+                                IconRight: ({ ...props }) => (
+                                  <ChevronRightIcon
+                                    {...props}
+                                    className="h-5 w-5 stroke-2"
+                                  />
+                                ),
+                              }}
+                            />
                         </Collapse>
                       </div>
                     </MenuItem>
                     <hr className="my-3" />
                     {/* Filter by Status */}
-                    <MenuItem className="flex w-80 flex-col items-start">
+                    <MenuItem className="flex w-full flex-col items-start">
                       <span className="mb-2 font-medium">Filter by Status</span>
                       {Object.entries(statusFilter).map(([key, value]) => (
                         <div
