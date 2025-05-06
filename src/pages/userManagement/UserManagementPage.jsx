@@ -99,7 +99,7 @@ const UserManagementPage = () => {
           end_date: formattedEndDate,
           active: statusFilter.active,
           inactive: statusFilter.inactive,
-          delete: statusFilter.deleted,
+          deleted: statusFilter.deleted,
           suspended: statusFilter.suspended
         };
         
