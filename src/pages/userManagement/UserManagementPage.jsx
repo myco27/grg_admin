@@ -323,6 +323,7 @@ const UserManagementPage = () => {
                       <span className="mb-2 font-medium">Filter by Date</span>
                       <div>
                         <Input
+                        readOnly={true}
                         className="flex items-center justify-center text-center"
                         icon={<CalendarRangeIcon/>}
                           label="Select Date"
