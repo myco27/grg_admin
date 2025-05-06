@@ -19,15 +19,11 @@ import {
   MenuList,
   MenuItem,
   Checkbox,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
   Collapse,
 } from "@material-tailwind/react";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
 import {
@@ -48,17 +44,16 @@ import { useStateContext } from "../../contexts/contextProvider";
 import { ArrowLeftRight } from "lucide-react";
 
 const UserManagementPage = () => {
-  const [prevDate, setPrevDate] = useState({ from: null, to: null });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [users, setUsers] = useState([]);
   const [status, setStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = useDebounce({ value: searchTerm });
-  const [editOpen, setEditOpen] = useState(false);  
+  const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [dateCur, setDateCur] = useState(false)
+  const [dateCur, setDateCur] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -80,71 +75,109 @@ const UserManagementPage = () => {
       setEndDate(range.to);
     } else if (range.from) {
       setStartDate(range.from);
-      setEndDate(null); 
+      setEndDate(null);
     }
   };
-  
+
   const [tableHeadOrder, setTableHeadOrder] = useState([0, 1, 2, 3, 4, 5, 6]);
   const [isRotated, setIsRotated] = useState(false);
   const [openPrevCal, setOpenPrevCal] = useState(false);
-  const [openCurrCal,setOpenCurrCal] = useState(false);
+  const [openCurrCal, setOpenCurrCal] = useState(false);
   const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
-
-    
-    const fetchUsers = async (customPagination = pagination, customSearch = searchTerm) => {
+    const handleClearFilter = async () => {
+      setStartDate(null);
+      setEndDate(null);
+      setFilterStatus({
+        active: false,
+        inactive: false,
+        suspended: false,
+        deleted: false,
+      });
       try {
-        console.log(startDate,endDate)
-        setPagination(prev => ({ ...prev, isLoading: true }));
+        const response = await axiosClient.get("admin/users/get");
+        const responseData = response.data.data;
     
-        const formattedStartDate = startDate ? new Date(startDate).toISOString().split("T")[0] : null;
-        const formattedEndDate = endDate ? new Date(endDate).toISOString().split("T")[0] : null;
+        setUsers(responseData.data); // Actual user list
     
-        const data = {
-          user_type: status,
-          search: debounceSearch,
-          page: pagination.page || 1,
-          page_size: pagination.itemsPerPage || 10,
-          start_date: formattedStartDate,
-          end_date: formattedEndDate,
-          active: statusFilter.active,
-          inactive: statusFilter.inactive,
-          deleted: statusFilter.deleted,
-          suspended: statusFilter.suspended
-        };
-        
+        // Correct pagination info from API
+        const { current_page, last_page, total, links, per_page } = responseData;
     
-        const response = await axiosClient.get("/admin/users", { params: data });
-    
-        if (response.status === 200) {
-          const responseData = response.data.data;
-          const { current_page, last_page, total, links, per_page } = responseData;
-          console.log(responseData.data)
-          console.log(data)
-          setUsers(responseData.data);
-          setPagination(prev => ({
-            ...prev,
-            page: current_page,
-            totalPages: last_page,
-            totalItems: total,
-            links,
-            itemsPerPage: per_page,
-            isLoading: false,
-          }));
-        }
+        setPagination({
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links: links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        });
       } catch (error) {
-        console.error(error.response?.data || error.message);
+        console.error("Failed to clear filters:", error);
       }
     };
     
-    
-    
+  const fetchUsers = async (
+    customPagination = pagination,
+    customSearch = searchTerm
+  ) => {
+    try {
+      console.log(startDate, endDate);
+      setPagination((prev) => ({ ...prev, isLoading: true }));
+
+      const formattedStartDate = startDate
+        ? new Date(startDate).toISOString().split("T")[0]
+        : null;
+      const formattedEndDate = endDate
+        ? new Date(endDate).toISOString().split("T")[0]
+        : null;
+        
+        const filteredStatus = [];
+
+        if (statusFilter.inactive) filteredStatus.push(0);
+        if (statusFilter.active) filteredStatus.push(1);
+        if (statusFilter.suspended) filteredStatus.push(2);
+        if (statusFilter.deleted) filteredStatus.push(3);
+        
+        console.log(filteredStatus);
+        
+      const data = {
+        user_type: status,
+        search: debounceSearch,
+        page: pagination.page || 1,
+        page_size: pagination.itemsPerPage || 10,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+        status_filter: filteredStatus
+      };
+
+      const response = await axiosClient.get("/admin/users", { params: data });
+
+      if (response.status === 200) {
+        const responseData = response.data.data;
+        const { current_page, last_page, total, links, per_page } =
+          responseData;
+        console.log(responseData.data);
+        console.log(data);
+        setUsers(responseData.data);
+        setPagination((prev) => ({
+          ...prev,
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        }));
+      }
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
   }, [status, debounceSearch, pagination.page, pagination.itemsPerPage]);
-
 
   const handleClickStatus = (value) => {
     setPagination({ ...pagination, page: 1, itemsPerPage: 10 });
@@ -160,19 +193,12 @@ const UserManagementPage = () => {
       itemsPerPage: 10,
     });
   };
-const handlePageChange = (newPage) => {
-  const newPagination = { ...pagination, page: newPage };
-  setPagination(newPagination);
+  const handlePageChange = (newPage) => {
+    const newPagination = { ...pagination, page: newPage };
+    setPagination(newPagination);
 
-
-  fetchUsers({ ...newPagination, search: searchTerm, ...filter });
-};
-
-  
-  
-  
-
-
+    fetchUsers({ ...newPagination, search: searchTerm, ...filter });
+  };
 
   const handleEditOpen = (userId, userType) => {
     setSelectedUserId(userId);
@@ -205,7 +231,6 @@ const handlePageChange = (newPage) => {
     setIsRotated(!isRotated); // Toggle the rotation state
   };
   // EVENT LISTENERS END
-
 
   const TABS = [
     {
@@ -282,89 +307,89 @@ const handlePageChange = (newPage) => {
                 </TabsHeader>
               </Tabs>
               <div className="flex w-full flex-row items-center gap-2 rounded-md md:w-72">
-                <Menu dismiss={{ itemPress: false }}>
+                <Menu dismiss={{ itemPress: false }} placement="bottom-start">
                   <MenuHandler>
                     <IconButton variant="text">
                       <FilterIcon />
                     </IconButton>
                   </MenuHandler>
-                  <MenuList className="space-y-2">
+                  <MenuList className="flex space-y-2">
                     {/* Filter by Date */}
                     <MenuItem className="flex flex-col items-center justify-center gap-1">
                       <span className="mb-2 font-medium">Filter by Date</span>
                       <div>
                         <Input
                           label="Select Starting Date"
+                          className="mb-5 min-w-48 text-center"
                           value={
                             startDate && endDate
-                              ? `${format(startDate, "PPP")} → ${format(endDate, "PPP")}`
+                              ? `${format(startDate, "PPP")} → ${format(
+                                  endDate,
+                                  "PPP"
+                                )}`
                               : startDate
                               ? `${format(startDate, "PPP")} → ...`
                               : ""
                           }
-                          className="mb-2"
                           onClick={() => setOpenPrevCal(!openPrevCal)}
                         />
-                        <Collapse open={openPrevCal}>
+                        <Collapse
+                          open={openPrevCal}
+                          className="flex w-full justify-center"
+                        >
                           <DayPicker
                             mode="range"
                             selected={{ from: startDate, to: endDate }}
                             onSelect={handleDateSelect}
                             showOutsideDays
-                            className="border-0"
+                            className="w-full max-w-md rounded-xl border-none bg-white p-10"
                             classNames={{
+                              table: "w-full table-fixed flex justify-center items-center",
                               caption:
-                                "flex justify-center py-2 mb-4 relative items-center",
-                              caption_label:
-                                "text-sm font-medium text-gray-900",
-                              nav: "flex items-center",
+                                "flex justify-between items-center mb-4 px-2 text-gray-800 font-semibold",
+                              caption_label: "text-base",
+                              nav: "flex items-center justify-center justify-between gap-2",
                               nav_button:
-                                "h-6 w-6 bg-transparent hover:bg-blue-gray-50 p-1 rounded-md transition-colors duration-300",
-                              nav_button_previous: "absolute left-1.5",
-                              nav_button_next: "absolute right-1.5",
-                              table: "w-full border-collapse",
-                              head_row: "flex font-medium text-gray-900",
-                              head_cell: "m-0.5 w-9 font-normal text-sm",
-                              row: "flex w-full mt-2",
-                              cell: "text-gray-600 rounded-md h-9 w-9 text-center text-sm p-0 m-0.5 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-900/20 [&:has([aria-selected].day-outside)]:text-white [&:has([aria-selected])]:bg-gray-900/50 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                              day: "h-9 w-9 p-0 font-normal",
-                              day_range_end: "day-range-end",
+                                "p-2 hover:bg-gray-100 rounded-full transition duration-150 ease-in-out",
+                              nav_button_previous: "ml-2",
+                              nav_button_next: "mr-2",
+                              head_row: "flex justify-center items-center",
+                              selected: "text-red",
+                              head_cell:
+                                "flex items-center justify-center text-xs font-medium text-center text-gray-600",
+                              row: "",
+                              cell: " flex justify-center items-center h-12 w-12 text-center align-middle",
+                              day: " items-center justify-center h-10 w-10 rounded-full text-sm hover:bg-gray-100 transition duration-150 ease-in-out",
                               day_selected:
-                                "rounded-md bg-gray-900 text-white hover:bg-gray-900 hover:text-white focus:bg-gray-900 focus:text-white",
-                              day_today: "rounded-md bg-gray-200 text-gray-900",
-                              day_outside:
-                                "day-outside text-gray-500 opacity-50 aria-selected:bg-gray-500 aria-selected:text-gray-900 aria-selected:bg-opacity-10",
-                              day_disabled: "text-gray-500 opacity-50",
+                                "text-red",
+                              day_range_end:
+                                "bg-gray-900 text-white font-semibold rounded-full",
+                              day_today: "bg-gray-200 text-gray-900 font-bold",
+                              day_outside: "text-gray-400 opacity-50",
+                              day_disabled: "text-gray-400 opacity-30",
                               day_hidden: "invisible",
                             }}
                             components={{
                               IconLeft: ({ ...props }) => (
                                 <ChevronLeftIcon
                                   {...props}
-                                  className="h-4 w-4 stroke-2"
+                                  className="h-5 w-5 stroke-2"
                                 />
                               ),
                               IconRight: ({ ...props }) => (
                                 <ChevronRightIcon
                                   {...props}
-                                  className="h-4 w-4 stroke-2"
+                                  className="h-5 w-5 stroke-2"
                                 />
                               ),
                             }}
                           />
                         </Collapse>
-                        </div>
-                        
-                       
-                  
-
+                      </div>
                     </MenuItem>
-                    
-
                     <hr className="my-3" />
-
                     {/* Filter by Status */}
-                    <MenuItem className="flex flex-col items-start">
+                    <MenuItem className="flex w-80 flex-col items-start">
                       <span className="mb-2 font-medium">Filter by Status</span>
                       {Object.entries(statusFilter).map(([key, value]) => (
                         <div
@@ -384,7 +409,17 @@ const handlePageChange = (newPage) => {
                           />
                         </div>
                       ))}
-                      <Button className="mt-3 w-full" onClick={fetchUsers}>Filter</Button>
+                      <div className="flex w-full flex-col gap-1">
+                        <Button
+                          className="mt-3 w-full bg-primary"
+                          onClick={fetchUsers}
+                        >
+                          Filter
+                        </Button>
+                        <Button className="w-full" onClick={handleClearFilter}>
+                          Clear Filter
+                        </Button>
+                      </div>
                     </MenuItem>
                   </MenuList>
                 </Menu>
@@ -535,7 +570,7 @@ const handlePageChange = (newPage) => {
                                         ? "Suspended"
                                         : user.is_active == 3
                                         ? "Deleted"
-                                        : "Inactive"          
+                                        : "Inactive"
                                     }
                                     color={
                                       user.is_active == 1
