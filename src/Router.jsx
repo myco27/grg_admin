@@ -13,7 +13,6 @@ import AdminManagement from "./pages/adminManagement/AdminManagement";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import EmailCode from "./pages/ForgotPassword/EmailCode";
 import ResetPassword from "./pages/ForgotPassword/ResetPassword";
-
 import { useStateContext } from "./contexts/contextProvider";
 import RolePermissionTable from "./pages/rolesAndPermissions/RolePermissionTable";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -21,6 +20,12 @@ import UnauthorizedPage from "./components/Views/UnauthorizedPage";
 import Dashboard from "./pages/dashboard/Dashboard";
 import ApplicationsPage from "./pages/applicationsManagement/ApplicationsPage";
 import Settings from "./pages/settingsTable/settings";
+import RestaurantManagement from "./pages/restaurantManagement/RestaurantManagementPage";
+import Configuration from "./pages/Configuration/Configuration";
+import TermsAndConditions from "./pages/Configuration/TermsAndConditions";
+import AboutUs from "./pages/Configuration/AboutUs";
+import PrivacyPolicy from "./pages/Configuration/PrivacyPolicies";
+
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -110,6 +115,47 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view settings module">
             <Settings />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "restaurant-management",
+        element: (
+          <ProtectedRoute requiredPermission="view restaurant module">
+            <RestaurantManagement />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "configuration/privacypolicy",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <PrivacyPolicy/>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "configuration/termsandconditions",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <TermsAndConditions/>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "configuration/aboutus",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <AboutUs/>
+          </ProtectedRoute>
+        ),
+      },
+  
+      {
+        path: "configuration",
+        element: (
+          <ProtectedRoute requiredPermission="view configuration module">
+            <Configuration/>
           </ProtectedRoute>
         ),
       },

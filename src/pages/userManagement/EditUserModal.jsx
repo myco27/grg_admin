@@ -374,35 +374,67 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               {userType === "rider" || userType === "customer" ? (
                 <>
                   <Input
+                    required={true}
                     label="Mobile Number"
                     type="text"
                     value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
+                    minLength={7}
+                    maxLength={15}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setMobileNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                 </>
               ) : userType === "operator" ? (
                 <Input
+                  required={true}
                   label="Local Support Number"
                   type="text"
                   value={localSupportNumber}
                   autoComplete="tel"
-                  onChange={(e) => setLocalSupportNumber(e.target.value)}
+                  minLength={7}
+                  maxLength={15}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      setLocalSupportNumber(value);
+                    }
+                  }}
                 />
               ) : userType === "central" || userType === "restaurant" ? (
                 <>
                   <Input
+                    required={true}
                     label="Business Landline Number"
                     type="text"
+                    minLength={7}
+                    maxLength={15}
                     value={businessLandlineNumber}
-                    onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setBusinessLandlineNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                   <Input
+                    required={true}
                     label="Business Contact Number"
                     type="text"
                     value={businessContactNumber}
-                    onChange={(e) => setBusinessContactNumber(e.target.value)}
+                    minLength={7}
+                    maxLength={15}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        setBusinessContactNumber(value);
+                      }
+                    }}
                     autoComplete="tel"
                   />
                 </>
@@ -788,7 +820,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               <>
                 <div className="flex flex-col gap-5">
                   <Input
-                  className="!bg-gray-100"
+                    className="!bg-gray-100"
                     label="Order Points"
                     type="text"
                     value={points}

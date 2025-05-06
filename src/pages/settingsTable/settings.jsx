@@ -9,6 +9,7 @@ import {
   IconButton,
   Input,
   Spinner,
+  Switch,
   Tooltip,
   Typography,
 } from "@material-tailwind/react";
@@ -20,10 +21,16 @@ import UseDebounce from "../../components/UseDebounce";
 
 import AddSetting from "./AddSetting";
 import EditSetting from "./EditSetting";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
+import { useAlert } from "../../contexts/alertContext";
 
 const settings = () => {
   const [settingData, setSettingData] = useState([]);
   const [settingType, setSettingType] = useState("all");
+  const [settingId, setSettingId] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
@@ -34,6 +41,7 @@ const settings = () => {
   const [selectedSettingName, setSelectedSettingName] = useState(null);
 
   const [isColumnReversed, setisColumnReversed] = useState(false);
+   const { showAlert } = useAlert();
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -48,6 +56,7 @@ const settings = () => {
     "Setting Name",
     "Setting Value 1",
     "Setting Value 2",
+    // "Status",
     "Action",
   ];
 
@@ -73,7 +82,7 @@ const settings = () => {
         },
       });
       const responseData = response.data.data.data;
-
+      
       if (response.status === 200) {
         setSettingData(responseData);
         const { current_page, last_page, total, links, per_page } =
@@ -99,6 +108,25 @@ const settings = () => {
   useEffect(() => {
     fetchSettings();
   }, [debounceSearch, pagination.page, pagination.itemsPerPage]);
+
+  const confirmToggleStatus = async () => {
+    setConfirmationLoading(true);
+    try {
+      const response = await axiosClient.put(`/admin/setting/status/${settingId}/update`, {
+        status_id: status,
+      });
+
+      if (response.status === 200) {
+        showAlert(response.data.message, "success");
+        fetchSettings();
+      }
+    } catch (error) {
+      console.error("Error toggling permission:", error);
+    } finally {
+      setOpenConfirmation(false);
+      setConfirmationLoading(false);
+    }
+  };
 
   // EVENT LISTENERS START
   const handleSearchInput = (event) => {
@@ -135,6 +163,12 @@ const settings = () => {
       page: 1,
       itemsPerPage: Number(newSize),
     });
+  };
+
+  const handleSwitch = (settingId, statusId) => {
+    setSettingId(settingId);
+    setStatus(statusId);
+    setOpenConfirmation(true);
   };
 
   return (
@@ -257,6 +291,28 @@ const settings = () => {
                       ),
                       className: "p-4",
                     },
+                    // {
+                    //   key: "status_id",
+                    //   value: (
+                    //     <div className="items-center p-4">
+                    //       {setting.status && typeof setting.status === "object" && (
+                    //         <Tooltip
+                    //           className="text-xs"
+                    //           content={setting.status.name.toUpperCase()}
+                    //         >
+                    //           <Switch
+                    //             onChange={() =>
+                    //               handleSwitch(setting.setting_id, setting.status_id)
+                    //             }
+                    //             checked={setting.status.name === "active"}
+                    //             color="green"
+                    //           />
+                    //         </Tooltip>
+                    //       )}
+                    //     </div>
+                    //   ),
+                    //   className: "p-4",
+                    // },
                     {
                       key: "actions",
                       value: (
@@ -332,6 +388,19 @@ const settings = () => {
         settingId={selectedSettingId}
         settingName={selectedSettingName}
         fetchSettings={fetchSettings}
+      />
+
+       {/* CONFIRMATION DIALOG BOX */}
+       <ConfirmationDialog
+        open={openConfirmation}
+        onClose={() => setOpenConfirmation(false)}
+        onConfirm={confirmToggleStatus}
+        isLoading={confirmationLoading}
+        message={
+          status == 1
+            ? `Are you sure you want to deactivate this setting?`
+            : `Are you sure you want to activate this setting?`
+        }
       />
     </>
   );

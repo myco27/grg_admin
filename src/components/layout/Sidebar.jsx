@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Typography,
   List,
   ListItem,
   ListItemPrefix,
+  Collapse,
 } from "@material-tailwind/react";
 import {
   UserRound,
@@ -12,15 +13,32 @@ import {
   LayoutDashboard,
   Newspaper,
   Settings,
+  Utensils,
+  FileSliders,
+  ChevronDown,
+  ChevronRight,
+  Cog,
+  Info,
+  Siren,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
 
 const Sidebar = () => {
-  const { user, sidebarCollapsed, mobileMenuOpen, setMobileMenuOpen } =
-    useStateContext();
+  const {
+    user,
+    sidebarCollapsed,
+    mobileMenuOpen,
+    setMobileMenuOpen,
+    fetchUser,
+  } = useStateContext();
   const location = useLocation();
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [configOpen, setConfigOpen] = useState(false);
+
+  const handleConfig = () => {
+    setConfigOpen(!configOpen);
+  };
 
   const canViewDashboardModule =
     user?.all_permissions?.includes("view dashboard module") || false;
@@ -35,6 +53,14 @@ const Sidebar = () => {
     user?.all_permissions?.includes("view application module") || false;
   const canViewSettingsModule =
     user?.all_permissions?.includes("view settings module") || false;
+  const canViewRestaurantModule =
+    user?.all_permissions?.includes("view restaurant module") || false;
+  const canViewConfigurationModule =
+    user?.all_permissions?.includes("view configuration module") || false;
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <>
@@ -50,7 +76,7 @@ const Sidebar = () => {
         onMouseLeave={() => setSidebarHovered(false)}
       >
         {/* Background pattern as a fixed element */}
-        <div className="absolute inset-0 w-64 pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 w-64">
           <img
             src="/sidebar_pattern.png"
             alt=""
@@ -74,7 +100,7 @@ const Sidebar = () => {
               <img
                 src="/logo.png"
                 alt="logo"
-                className="w-10 h-10 min-w-[40px]"
+                className="h-10 w-10 min-w-[40px]"
               />
             </div>
             <div
@@ -130,7 +156,7 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         Dashboard
                       </Typography>
@@ -171,9 +197,50 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         User Management
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Restaurant Management */}
+              {canViewRestaurantModule && (
+                <Link to="/restaurant-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/restaurant-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Utensils
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/restaurant-management"
+                            ? ""
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Restaurant Management
                       </Typography>
                     </div>
                   </ListItem>
@@ -210,7 +277,7 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         Admin Management
                       </Typography>
@@ -249,7 +316,7 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         Applications
                       </Typography>
@@ -286,13 +353,160 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         Settings
                       </Typography>
                     </div>
                   </ListItem>
                 </Link>
+              )}
+
+              {canViewConfigurationModule && (
+                <>
+                  <ListItem
+                    onClick={handleConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/configuration")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <FileSliders className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Configuration
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {configOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
+
+                  <Collapse open={configOpen} className="flex flex-col">
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/aboutus"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/aboutus"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Info className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            About Us
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/privacypolicy"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/privacypolicy"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Siren className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Privacy Policy
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                  </Collapse>
+                </>
               )}
 
               {/* Roles and Permissions */}
@@ -327,7 +541,7 @@ const Sidebar = () => {
                     >
                       <Typography
                         color="white"
-                        className="font-normal text-sm whitespace-nowrap"
+                        className="whitespace-nowrap text-sm font-normal"
                       >
                         Roles And Permissions
                       </Typography>
@@ -347,7 +561,7 @@ const Sidebar = () => {
           ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Background pattern as a fixed element */}
-        <div className="absolute inset-0 w-64 pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 w-64">
           <img
             src="/sidebar_pattern.png"
             alt=""
@@ -358,13 +572,13 @@ const Sidebar = () => {
         {/* Content container with z-index to appear above the background */}
         <div className="relative z-10 h-full">
           {/* Header with logo */}
-          <div className="p-5 flex items-center justify-between border-b-2 border-white border-opacity-30 mx-5">
+          <div className="mx-5 flex items-center justify-between border-b-2 border-white border-opacity-30 p-5">
             <div className="flex items-center">
-              <img src="/logo.png" alt="logo" className="w-10 h-10" />
+              <img src="/logo.png" alt="logo" className="h-10 w-10" />
               <Typography
                 variant="h5"
                 color="white"
-                className="whitespace-nowrap ml-3"
+                className="ml-3 whitespace-nowrap"
               >
                 Back Office
               </Typography>
@@ -390,7 +604,7 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       Dashboard
                     </Typography>
                   </ListItem>
@@ -419,9 +633,50 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       User Management
                     </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Restaurant Management */}
+              {canViewRestaurantModule && (
+                <Link to="/restaurant-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/restaurant-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Utensils
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/restaurant-management"
+                            ? ""
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Restaurant Management
+                      </Typography>
+                    </div>
                   </ListItem>
                 </Link>
               )}
@@ -446,7 +701,7 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       Admin Management
                     </Typography>
                   </ListItem>
@@ -473,7 +728,7 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       Applications
                     </Typography>
                   </ListItem>
@@ -495,11 +750,158 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       Settings
                     </Typography>
                   </ListItem>
                 </Link>
+              )}
+
+              {canViewConfigurationModule && (
+                <>
+                  <ListItem
+                    onClick={handleConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/configuration")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <FileSliders className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Configuration
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {configOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
+
+                  <Collapse open={configOpen} className="flex flex-col gap-1">
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/aboutus"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/aboutus"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Info className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            About Us
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/privacypolicy"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/privacypolicy"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Siren className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Privacy Policy
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        configOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                  </Collapse>
+                </>
               )}
 
               {/* Roles and Permissions */}
@@ -524,7 +926,7 @@ const Sidebar = () => {
                         }`}
                       />
                     </ListItemPrefix>
-                    <Typography color="white" className="font-normal text-sm">
+                    <Typography color="white" className="text-sm font-normal">
                       Roles And Permissions
                     </Typography>
                   </ListItem>
@@ -538,7 +940,7 @@ const Sidebar = () => {
       {/* Overlay for mobile */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}

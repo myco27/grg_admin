@@ -125,6 +125,8 @@ export default function Header() {
         return "Dashboard";
       case "/user-management":
         return "User Management";
+      case "/restaurant-management":
+        return "Restaurant Management";
       case "/admin-management":
         return "Admin Management";
       case "/applications":
@@ -133,6 +135,8 @@ export default function Header() {
         return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
+        case "/configuration":
+          return "Configuration";
       default:
         return "Dashboard";
     }
@@ -175,7 +179,7 @@ export default function Header() {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    e.target.src = '/rockygo_logo.png';
+                    e.target.src = "/rockygo_logo.png";
                     e.target.onerror = null;
                   }}
                 />

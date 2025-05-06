@@ -17,6 +17,7 @@ import {
 import { Tabs } from "@material-tailwind/react";
 import { Body, Base, Footer, Header, Sidebar } from "../../components/Modal";
 import { UserRoundCog } from "lucide-react";
+
 const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
@@ -25,7 +26,9 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
     email: "",
     role: "",
     permissions: "",
+    profile_picture: "",
   });
+  const [profileImage, setProfileImage] = useState(null);
   const [activeTab, setActiveTab] = useState("User Details");
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +53,6 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
     setLoading(true);
     try {
       const response = await axiosClient.get(`/admin/users/${adminId}/roles`);
-
       if (response.status === 200) {
         const responseData = response.data.user;
         setFormData({
@@ -59,7 +61,13 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
           email: responseData.email,
           role: responseData.roles?.[0]?.name || "",
           permissions: responseData.all_permissions,
+          profile_picture: responseData.profile_picture || "",
         });
+        if (responseData.profile_picture) {
+          setProfileImage(`${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${responseData.profile_picture}`);
+        } else {
+          setProfileImage('/rocky_go_logo.png');
+        }
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -71,6 +79,8 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
   useEffect(() => {
     if (viewOpen) {
       fetchAdminDetails();
+    } else {
+      setProfileImage(null);
     }
   }, [viewOpen, adminId]);
 
@@ -82,23 +92,37 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
       content: (
         <>
           <div className="flex h-full w-full flex-col gap-5 overflow-auto p-2">
-            <div className="flex flex-col gap-5 gap-x-20 sm:flex-row">
-              <div className="flex flex-col">
-                <Input
-                  readOnly={true}
-                  label="First Name"
-                  value={formData.first_name}
-                  className="rounded-md border border-gray-500 bg-gray-300 p-3"
+            <div className="flex items-center gap-5 px-4">
+              <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center">
+                <img
+                  src={profileImage || '/rocky_go_logo.png'}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.src = '/rocky_go_logo.png';
+                    e.target.onerror = null;
+                  }}
                 />
               </div>
-              <div className="flex flex-col">
-                <Input
-                  readOnly={true}
-                  label="Last Name"
-                  value={formData.last_name}
-                  className="rounded-md border border-gray-500 bg-gray-300 p-3"
-                />
+              <div>
+                <Typography variant="small" className="text-xs font-semibold text-blue-gray-700">Profile Picture</Typography>
               </div>
+            </div>
+            <div className="flex gap-5">
+              <Input
+                readOnly={true}
+                label="First Name"
+                value={formData.first_name}
+                className="rounded-md border border-gray-500 bg-gray-300 p-3"
+              />
+              <Input
+                readOnly={true}
+                label="Last Name"
+                value={formData.last_name}
+                className="rounded-md border border-gray-500 bg-gray-300 p-3"
+              />
             </div>
             <div>
               <Input

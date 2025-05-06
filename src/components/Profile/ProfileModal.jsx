@@ -172,6 +172,15 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   const updateUser = async (event) => {
     event.preventDefault();
     setLoading(true);
+    
+    // Mobile number validation
+    const trimmedMobile = mobileNumber.trim();
+    if (trimmedMobile.length < 7 || trimmedMobile.length > 15 || !/^\d+$/.test(trimmedMobile)) {
+      showAlert("Mobile number must be between 7 and 15 digits and contain only numbers.", "error");
+      setLoading(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('first_name', firstName);
@@ -240,7 +249,6 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
   }, [open, userId]);
 
   // Define tabs for the sidebar
-
   const tabs = [
     {
       value: "basic_setting",
@@ -262,7 +270,7 @@ const ProfileModal = ({ open, handleOpen, userId, userType }) => {
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    e.target.src = '/rockygo_logo.png';
+                    e.target.src = '/rocky_go_logo.png';
                     e.target.onerror = null;
                   }}
                 />

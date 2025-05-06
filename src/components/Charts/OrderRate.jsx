@@ -1,23 +1,17 @@
 import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
+export default function OrderRate({orderData}) {
+
 const chartConfig = {
   type: "line",
   height: 240,
   series: [
-    {
+    { 
       name: "Sales",
-      data: [
-        [new Date("2024-04-01").getTime(), 50],
-        [new Date("2024-04-02").getTime(), 40],
-        [new Date("2024-04-03").getTime(), 300],
-        [new Date("2024-04-04").getTime(), 320],
-        [new Date("2024-04-05").getTime(), 500],
-        [new Date("2024-04-06").getTime(), 350],
-        [new Date("2024-04-07").getTime(), 200],
-        [new Date("2024-04-08").getTime(), 230],
-        [new Date("2024-04-09").getTime(), 500],
-      ],
+      data: orderData.map((order)=>{
+        return [order.date, order.order_count]
+      }),
     },
   ],
   options: {
@@ -71,15 +65,14 @@ const chartConfig = {
     tooltip: {
       theme: "light",
       x: {
-        format: "MMM dd", // Tooltip format (e.g., "Apr 01")
+        format: "MMM dd", 
       },
     },
   },
 };
 
 
-// Component
-export default function OrderRate() {
+
   return (
     <Card className="rounded-none border shadow-none">
       <CardHeader

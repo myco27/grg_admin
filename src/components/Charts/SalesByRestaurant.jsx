@@ -9,18 +9,24 @@ import {
 import axiosClient from "../../axiosClient";
 import Chart from "react-apexcharts";
 import Loading from "../layout/Loading";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 export default function SalesByRestaurant() {
-  const [storeData, setStoreData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedStore, setSelectedStore] = useState("All");
-  const [chartSeries, setChartSeries] = useState([]);
+  const allMonths = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
-  
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [storeData, setStoreData] = useState([]);
+  const [monthlySalesPerStore, setMonthlySalesPerStore] = useState([]);
+  const [selectedStore, setSelectedStore] = useState("All");
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
   const [chartOptions, setChartOptions] = useState({
     chart: {
       type: "bar",
@@ -82,28 +88,46 @@ export default function SalesByRestaurant() {
       },
     },
   });
-  
-  // Filter stores based on search term
-  const filteredStores = storeData.filter(store => 
-    (store.central_store_name + store.store_name)
-      .toLowerCase()
-      .replace(/[:\s]/g, "")  
-      .includes(searchTerm.toLowerCase().replace(/\s/g, ""))  
-  );
-  
-  const selectStore = (userId, storeName) => {
-    setSelectedStore(storeName);
+  const [chartSeries, setChartSeries] = useState( [
+
+    
+    {
+      name: 'Sales by Month', 
+      data: monthlyData.map((entry) => ({
+        x: entry.month, 
+        y: Math.trunc(entry.total_sales), 
+        fillColor: "#612B9B", 
+        strokeColor: "blue", 
+      }))
+    }
+  ]);
+
+  const selectStore = (storeId, storeName, storeBranch) => {
+    setSelectedStoreId(storeId);
+    storeName === "All"?setSelectedStore(storeName):setSelectedStore(`${storeBranch} ${storeName}`)
     setSearchTerm("");
     setIsDropdownOpen(false);
-  };
+  
+    if (storeId === "All") {
+      fetchMonthlyData(); 
+    } else {
+      fetchMonthlyPerStore(storeId); 
+    }
 
+  };
+  
+  const filteredStores = storeData.filter((store) =>
+    (store.store_branch + store.store_name)
+      .toLowerCase()
+      .replace(/[:\s]/g, "")
+      .includes(searchTerm.toLowerCase().replace(/\s/g, ""))
+  );
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     if (!isDropdownOpen) {
       setIsDropdownOpen(true);
     }
   };
-
   const handleInputClick = () => {
     setIsDropdownOpen(!isDropdownOpen);
     setTimeout(() => {
@@ -113,18 +137,65 @@ export default function SalesByRestaurant() {
     }, 0);
   };
 
+
+  
+
+  useEffect(() => {
+    const allMonths = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+  
+    const dataToMap = selectedStore === "All" ? monthlyData : monthlySalesPerStore;
+  
+    const currentYear = new Date().getFullYear();
+  
+    const filtered = dataToMap.filter(entry => {
+      const date = new Date(entry.date || entry.month);
+      return date.getFullYear() === currentYear;
+    });
+  
+    const monthlyTotals = Array(12).fill(0);
+  
+    filtered.forEach(entry => {
+      const date = new Date(entry.date || entry.month);
+      const monthIndex = date.getMonth(); 
+      monthlyTotals[monthIndex] += Math.trunc(entry.total_sales);
+    });
+  
+    const chartData = allMonths.map((month, i) => ({
+      x: month,
+      y: monthlyTotals[i] ?? 0,
+      fillColor: "#612B9B",
+      strokeColor: "blue",
+    }));
+  
+    setChartSeries([
+      {
+        name: "Sales by Month",
+        data: chartData,
+      },
+    ]);
+  }, [monthlyData, monthlySalesPerStore, selectedStore]);
+  
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     }
-    
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
+
+  
+  useEffect(()=>{
+    fetchStoreMonthly();
+    fetchMonthlyData();
+
+  },[selectedStoreId,selectedStore])
 
   const fetchStoreMonthly = async () => {
     try {
@@ -133,39 +204,8 @@ export default function SalesByRestaurant() {
         "admin/dashboard/sales-by-restaurant"
       );
       if (response.status === 200) {
-        const array = Object.values(response.data.data);
-        setStoreData(array);
-        const sortedData = array.sort((a, b) => b.totalSales - a.totalSales);
-        const top10Stores = sortedData.slice(0, 10);
-        const months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-
-        const formattedData = top10Stores.map((store, index) => ({
-          x: months[index % months.length], // This will cycle through months
-          y: Math.floor(store.totalSales),
-          goals: [
-            {
-              name: "Expected",
-              value: store.totalNetSales,
-              strokeWidth: 15,
-              strokeColor: "#612B9B4D",
-            },
-          ],
-        }));
-        
-        setChartSeries([{ name: "Actual", data: formattedData }]);
+        const arrayStore = Object.values(response.data.data);
+        setStoreData(arrayStore);
       }
     } catch (e) {
       console.error(
@@ -176,73 +216,95 @@ export default function SalesByRestaurant() {
       setLoading(false);
     }
   };
+
+  const fetchMonthlyPerStore = async (selectedStoreId) => {
+    const response = await axiosClient.get(
+      `admin/dashboard/montlySalesPerStore?store_id=${selectedStoreId}`
+    );
+    setMonthlySalesPerStore(response.data);
+  };
   
-  useEffect(() => {
-    fetchStoreMonthly();
-  }, []);
+  const fetchMonthlyData = async () => {
+    try {
+      const response = await axiosClient.get("admin/dashboard/allStoreSales");
+      setMonthlyData(response.data);
+    } catch (e) {
+      e.error;
+    }
+  };
 
   return (
-    <Card className="rounded-none border shadow-none">
+    <Card className="max-w-[375px] rounded-none border shadow-none sm:max-w-none">
       <CardHeader
         floated={false}
         shadow={false}
         color="transparent"
-        className="overflow flex flex-col gap-4 overflow-visible rounded-none md:flex-row md:items-center"
+        flex-
+        className="overflow flex flex-col gap-4 overflow-visible rounded-none sm:flex-col md:flex-col md:items-center lg:flex-row"
       >
         <div className="flex-grow overflow-visible">
           <Typography color="black" variant="h5" className="min-w-[350px]">
-            Sales by Restaurant
+            Sales by {selectedStore}
           </Typography>
           <Typography>{selectedStore}</Typography>
         </div>
-      
+
         <div className="relative" ref={dropdownRef}>
-          <Input 
+          <Input
             inputRef={inputRef}
             label={selectedStore}
-            icon={<ChevronDown onClick={handleInputClick} className="cursor-pointer" />}
-            placeholder={selectedStore} 
-            value={searchTerm} 
+            icon={isDropdownOpen?
+              <ChevronDown
+                onClick={handleInputClick}
+                className="cursor-pointer"
+              />:<ChevronRight/>
+            }
+            placeholder={selectedStore}
+            value={searchTerm}
             onChange={handleSearchChange}
             onFocus={() => setIsDropdownOpen(true)}
             className="cursor-pointer"
           />
-          
           {isDropdownOpen && (
-            <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+            <div className="absolute z-50 mt-1 max-h-72 w-full overflow-auto overflow-x-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
               <div className="py-1">
-                <div 
-                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
-                  onClick={() => selectStore("All", "All")}
+                <div
+                  className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                 onClick={()=>selectStore("All", "All")}
                 >
                   All
                 </div>
                 <hr className="my-1" />
                 {filteredStores.length > 0 ? (
                   filteredStores.map((store) => (
-                    <div 
+                    <div
                       key={store.id}
                       className="cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => selectStore(store.id, store.store_name)}
+                      onClick={() => {
+                        selectStore(store.id, store.store_name, store.store_branch);
+                        
+                      }}
                     >
-                      {store.central_store_name + ":" + store.store_name}
+                      {store.store_branch + ":" + store.store_name}
                     </div>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500">No matching stores found</div>
+                  <div className="px-4 py-2 text-sm text-gray-500">
+                    No matching stores found
+                  </div>
                 )}
               </div>
             </div>
           )}
         </div>
-      
       </CardHeader>
       <CardBody className="px-2 pb-0">
         {loading ? (
-          <Loading />
+          <div className="min-h-[50px]">
+            <Loading height={"min-h-[271px]"} />
+          </div>
         ) : (
           <Chart
-            
             type="bar"
             height={250}
             series={chartSeries}

@@ -145,17 +145,33 @@ const EditStoreBranchesModal = ({
               onChange={(e) => setLastName(e.target.value)}
             />
             <Input
+              required={true}
               label="Business Landline Number"
               type="text"
               value={businessLandlineNumber}
-              onChange={(e) => setBusinessLandlineNumber(e.target.value)}
+              minLength={7}
+              maxLength={15}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                  setBusinessLandlineNumber(e.target.value)
+                }
+              }}
               autoComplete="tel"
             />
             <Input
+              required={true}
               label="Business Contact Number"
               type="text"
               value={businessContactNumber}
-              onChange={(e) => setBusinessContactNumber(e.target.value)}
+              minLength={7}
+              maxLength={15}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                  setBusinessContactNumber(e.target.value)
+                }
+              }}
               autoComplete="tel"
             />
 
