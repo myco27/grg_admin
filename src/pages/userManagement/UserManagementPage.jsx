@@ -55,7 +55,6 @@ const UserManagementPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [dateCur, setDateCur] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
