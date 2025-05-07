@@ -166,6 +166,7 @@ const UserManagementPage = () => {
       console.error(error.response?.data || error.message);
     } finally {
       setOpenPrevCal(!openPrevCal);
+      setPagination((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
