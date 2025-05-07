@@ -116,10 +116,7 @@ const UserManagementPage = () => {
     }
   };
 
-  const fetchUsers = async (
-    customPagination = pagination,
-    customSearch = searchTerm
-  ) => {
+  const fetchUsers = async () => {
     try {
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
