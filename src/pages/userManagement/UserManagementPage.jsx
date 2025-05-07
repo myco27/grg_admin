@@ -1,4 +1,4 @@
-import { PencilIcon} from "@heroicons/react/24/solid";
+import { PencilIcon } from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
@@ -22,7 +22,7 @@ import {
   Collapse,
 } from "@material-tailwind/react";
 import { format } from "date-fns";
-import { DayPicker, getDefaultClassNames} from "react-day-picker";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
@@ -86,42 +86,41 @@ const UserManagementPage = () => {
   const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
-    const handleClearFilter = async () => {
-      setStartDate(null);
-      setEndDate(null);
-      setFilterStatus({
-        active: false,
-        inactive: false,
-        suspended: false,
-        deleted: false,
+  const handleClearFilter = async () => {
+    setStartDate(null);
+    setEndDate(null);
+    setFilterStatus({
+      active: false,
+      inactive: false,
+      suspended: false,
+      deleted: false,
+    });
+    try {
+      const response = await axiosClient.get("admin/users/get");
+      const responseData = response.data.data;
+
+      setUsers(responseData.data);
+
+      const { current_page, last_page, total, links, per_page } = responseData;
+
+      setPagination({
+        page: current_page,
+        totalPages: last_page,
+        totalItems: total,
+        links: links,
+        itemsPerPage: per_page,
+        isLoading: false,
       });
-      try {
-        const response = await axiosClient.get("admin/users/get");
-        const responseData = response.data.data;
-    
-        setUsers(responseData.data); 
-    
-        const { current_page, last_page, total, links, per_page } = responseData;
-    
-        setPagination({
-          page: current_page,
-          totalPages: last_page,
-          totalItems: total,
-          links: links,
-          itemsPerPage: per_page,
-          isLoading: false,
-        });
-      } catch (error) {
-        console.error("Failed to clear filters:", error);
-      }
-    };
-    
+    } catch (error) {
+      console.error("Failed to clear filters:", error);
+    }
+  };
+
   const fetchUsers = async (
     customPagination = pagination,
-    customSearch = searchTerm,
+    customSearch = searchTerm
   ) => {
     try {
-      console.log(startDate, endDate);
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const formattedStartDate = startDate
@@ -130,16 +129,14 @@ const UserManagementPage = () => {
       const formattedEndDate = endDate
         ? new Date(endDate).toISOString().split("T")[0]
         : null;
-        
-        const filteredStatus = [];
 
-        if (statusFilter.inactive) filteredStatus.push(0);
-        if (statusFilter.active) filteredStatus.push(1);
-        if (statusFilter.suspended) filteredStatus.push(2);
-        if (statusFilter.deleted) filteredStatus.push(3);
-        
-        console.log(filteredStatus);
-        
+      const filteredStatus = [];
+
+      if (statusFilter.inactive) filteredStatus.push(0);
+      if (statusFilter.active) filteredStatus.push(1);
+      if (statusFilter.suspended) filteredStatus.push(2);
+      if (statusFilter.deleted) filteredStatus.push(3);
+
       const data = {
         user_type: status,
         search: debounceSearch,
@@ -147,7 +144,7 @@ const UserManagementPage = () => {
         page_size: pagination.itemsPerPage || 10,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
-        status_filter: filteredStatus
+        status_filter: filteredStatus,
       };
 
       const response = await axiosClient.get("/admin/users", { params: data });
@@ -156,8 +153,7 @@ const UserManagementPage = () => {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
           responseData;
-        console.log(responseData.data);
-        console.log(data);
+
         setUsers(responseData.data);
         setPagination((prev) => ({
           ...prev,
@@ -171,10 +167,9 @@ const UserManagementPage = () => {
       }
     } catch (error) {
       console.error(error.response?.data || error.message);
+    } finally {
+      setOpenPrevCal(!openPrevCal);
     }
-  finally{
-    setOpenPrevCal(!openPrevCal) 
-  }
   };
 
   useEffect(() => {
@@ -311,8 +306,12 @@ const UserManagementPage = () => {
                 </TabsHeader>
               </Tabs>
               <div className="flex w-full items-center gap-2 rounded-md md:w-72">
-                <Menu dismiss={{ itemPress: false }} placement="bottom-start" className="hover:none">
-                  <MenuHandler >
+                <Menu
+                  dismiss={{ itemPress: false }}
+                  placement="bottom-start"
+                  className="hover:none"
+                >
+                  <MenuHandler>
                     <IconButton variant="text">
                       <FilterIcon />
                     </IconButton>
@@ -323,11 +322,10 @@ const UserManagementPage = () => {
                       <span className="mb-2 font-medium">Filter by Date</span>
                       <div>
                         <Input
-                        readOnly={true}
-                        className="flex items-center justify-center text-center"
-                        icon={<CalendarRangeIcon/>}
+                          readOnly={true}
+                          className="flex items-center justify-center text-center"
+                          icon={<CalendarRangeIcon />}
                           label="Select Date"
-                
                           value={
                             startDate && endDate
                               ? `${format(startDate, "PPP")} → ${format(
@@ -344,29 +342,27 @@ const UserManagementPage = () => {
                           open={openPrevCal}
                           className="flex w-full justify-center"
                         >
-                            <DayPicker
-                          
+                          <DayPicker
                             captionLayout="label"
-                              mode="range"
-                              selected={{ from: startDate, to: endDate }}
-                              onSelect={handleDateSelect}
-                              showOutsideDays
-                           
-                              components={{
-                                IconLeft: ({ ...props }) => (
-                                  <ChevronLeftIcon
-                                    {...props}
-                                    className="h-5 w-5 stroke-2"
-                                  />
-                                ),
-                                IconRight: ({ ...props }) => (
-                                  <ChevronRightIcon
-                                    {...props}
-                                    className="h-5 w-5 stroke-2"
-                                  />
-                                ),
-                              }}
-                            />
+                            mode="range"
+                            selected={{ from: startDate, to: endDate }}
+                            onSelect={handleDateSelect}
+                            showOutsideDays
+                            components={{
+                              IconLeft: ({ ...props }) => (
+                                <ChevronLeftIcon
+                                  {...props}
+                                  className="h-5 w-5 stroke-2"
+                                />
+                              ),
+                              IconRight: ({ ...props }) => (
+                                <ChevronRightIcon
+                                  {...props}
+                                  className="h-5 w-5 stroke-2"
+                                />
+                              ),
+                            }}
+                          />
                         </Collapse>
                       </div>
                     </MenuItem>
