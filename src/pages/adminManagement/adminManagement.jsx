@@ -112,7 +112,6 @@ const AdminManagement = () => {
         setPagination(newPagination);
       }
     } catch (error) {
-      // navigate("/notfound");
     } finally {
       setLoading(false);
     }
@@ -300,7 +299,7 @@ const AdminManagement = () => {
                                   ? "green"
                                   : "red"
                               }
-                              className="absolute h-[15px] w-[15px] top-4 right-1.5 border-2 border-white"
+                              className="absolute right-1.5 top-4 h-[15px] w-[15px] border-2 border-white"
                             />
                           </div>
                           <div>

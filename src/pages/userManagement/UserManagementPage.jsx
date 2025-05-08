@@ -116,12 +116,9 @@ const UserManagementPage = () => {
       }
     };
     
-  const fetchUsers = async (
-    customPagination = pagination,
-    customSearch = searchTerm,
-  ) => {
+  const fetchUsers = async () => {
     try {
-      console.log(startDate, endDate);
+      console.log(pagination)
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const formattedStartDate = startDate
@@ -137,8 +134,7 @@ const UserManagementPage = () => {
         if (statusFilter.active) filteredStatus.push(1);
         if (statusFilter.suspended) filteredStatus.push(2);
         if (statusFilter.deleted) filteredStatus.push(3);
-        
-        console.log(filteredStatus);
+  
         
       const data = {
         user_type: status,
@@ -156,8 +152,6 @@ const UserManagementPage = () => {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
           responseData;
-        console.log(responseData.data);
-        console.log(data);
         setUsers(responseData.data);
         setPagination((prev) => ({
           ...prev,
@@ -195,25 +189,23 @@ const UserManagementPage = () => {
       itemsPerPage: 10,
     });
   };
+  
   const handlePageChange = (newPage) => {
-    const newPagination = { ...pagination, page: newPage };
+    const newPagination = { ...pagination, page: newPage, };
     setPagination(newPagination);
-
     fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
   const handleEditOpen = (userId, userType) => {
-    setSelectedUserId(userId);
+  setSelectedUserId(userId);
     setSelectedUser(userType);
     setEditOpen(!editOpen);
   };
 
   const handlePageSizeChange = (newSize) => {
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: Number(newSize),
-    });
+    const newPagination = { ...pagination,page:1, itemsPerPage:Number(newSize) }
+    setPagination(newPagination)
+    fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
   const rotateColumns = () => {
@@ -623,7 +615,7 @@ const UserManagementPage = () => {
               totalPages={pagination.totalPages}
               onPageChange={(newPage) => handlePageChange(newPage)}
               isLoading={pagination.isLoading}
-              onPageSizeChange={handlePageSizeChange}
+              onPageSizeChange={(newSize) => handlePageSizeChange(newSize)}
             />
           </CardFooter>
         </Card>

@@ -13,19 +13,27 @@ import {
 } from "@material-tailwind/react";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useAlert } from "../../contexts/alertContext";
-import { UserPlusIcon, ShieldCheckIcon, Search, Circle } from "lucide-react";
+import {
+  UserPlusIcon,
+  ShieldCheckIcon,
+  Search,
+  Circle,
+  Edit2Icon,
+} from "lucide-react";
 import RoleDialog from "./RoleDialog";
 import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
 import Loading from "../../components/layout/Loading";
 import UseDebounce from "../../components/UseDebounce";
 import { useStateContext } from "../../contexts/contextProvider";
+import axiosClient from "../../axiosClient";
 
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [openConfirm, setOpenConfirm] = useState(false)
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +43,11 @@ const RolePermissionTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
   const [permissionSearch, setPermissionSeach] = useState("");
+  const [userId, setUserId] = useState(0);
+  const [permissionId, setPermissionId] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const debounceSearchPermission = UseDebounce({ value: permissionSearch });
+  const [selectedPermName, setSelectedPermName] = useState(null)
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -51,7 +63,7 @@ const RolePermissionTable = () => {
 
   useEffect(() => {
     fetchPermissions();
-  }, [debounceSearchPermission]);
+  }, [debounceSearchPermission, setSelectedPermission]);
 
   const { user, fetchUser } = useStateContext();
 
@@ -60,11 +72,39 @@ const RolePermissionTable = () => {
   const handleSwitch = (role, permission) => {
     setSelectedRole(role);
     setSelectedPermission(permission);
-
     const hasPermission = role.permissions.some((p) => p.name === permission);
     setIsAdding(!hasPermission);
 
     setOpen(true);
+  };
+
+  const handleStatusChange = (permissionId, status, selectedPerm) => {
+    setPermissionId(permissionId);
+    setSelectedStatus(status ? 0 : 1);
+    setSelectedPermName(selectedPerm);
+
+    setOpenConfirm(true)
+  };
+
+  const changeStatus = async () => {
+    try {
+      setIsLoading(true)
+      const payload = { permision_id: permissionId, status: selectedStatus};
+      const response = await axiosClient.put(`admin/change/${permissionId}`, payload);
+      if (response.status ==200){
+        setPermissions((prev) =>
+          prev.map((perm) =>
+            perm.id === permissionId ? { ...perm, status: perm.status === 1 ? 0 : 1 } : perm
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to change status:", error);
+    }
+    finally{
+      setIsLoading(false)
+      setOpenConfirm(false)
+    }
   };
 
   const handleOpenRoleDialog = () => {
@@ -172,8 +212,9 @@ const RolePermissionTable = () => {
     }
   };
 
+  const permissionHead = ["NAME", "STATUS", "UPDATE_AT", "ACTION"];
   return (
-    <>
+    <div className="flex flex-col gap-5">
       <Card className="h-full w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
@@ -206,8 +247,8 @@ const RolePermissionTable = () => {
               )}
             </div>
           </div>
-          <div className="flex justify-end w-full">
-            <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-x-4">
+          <div className="flex w-full justify-end">
+            <div className="flex w-full flex-col gap-x-4 sm:w-auto sm:flex-row">
               <Input
                 label="Search Role"
                 icon={
@@ -249,28 +290,24 @@ const RolePermissionTable = () => {
                   <th className="rounded-bl-md rounded-tl-md bg-tableHeaderBg p-4">
                     Role
                   </th>
-                  {permissions.map((perm, index) => {
-                    // console.log(index);
-                    return (
-                      <th
-                        key={perm.id}
-                        className={`bg-tableHeaderBg p-4 ${
-                          index === permissions.length - 1
-                            ? "rounded-tr-md rounded-br-md"
-                            : ""
-                        }`}
+                  {permissions.map((perm, index) => (
+                    <th
+                      key={perm.id}
+                      className={`bg-tableHeaderBg p-4 ${
+                        index === permissions.length - 1
+                          ? "rounded-tr-md rounded-br-md"
+                          : ""
+                      }`}
+                    >
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="flex items-center justify-center gap-2 text-center font-normal leading-none opacity-70"
                       >
-                        <Typography
-                          variant="small"
-                          color="black"
-                          className="flex items-center justify-center text-center gap-2 font-normal leading-none opacity-70"
-                        >
-                          {perm.name.charAt(0).toUpperCase() +
-                            perm.name.slice(1)}
-                        </Typography>
-                      </th>
-                    );
-                  })}
+                        {perm.name.charAt(0).toUpperCase() + perm.name.slice(1)}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -290,24 +327,30 @@ const RolePermissionTable = () => {
                           {role.name.charAt(0).toUpperCase() +
                             role.name.slice(1)}
                         </td>
-
                         {Array.isArray(permissions) &&
                         permissions.length > 0 ? (
                           permissions.map((perm) => (
                             <td key={perm.id} className="p-4">
-                              <div
-                                className="flex items-center justify-center"
-                              >
+                              <div className="flex items-center justify-center">
                                 <Switch
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
                                     (p) => p.name === perm.name
                                   )}
                                   disabled={
-                                    role.name === "developer" &&
-                                    perm.name === "view roles and permissions module"
+                                    perm.status === 0 ||
+                                    (role.name === "developer" &&
+                                      perm.name ===
+                                        "view roles and permissions module")
                                   }
-                                  color="green"
+                                  color={
+                                    perm.status === 0 ? "#632B9B" : "green"
+                                  }
+                                  className={
+                                    perm.status === 0
+                                      ? " disabled:bg-primary"
+                                      : "green"
+                                  }
                                 />
                               </div>
                             </td>
@@ -340,6 +383,51 @@ const RolePermissionTable = () => {
         </CardFooter>
       </Card>
 
+      <Card className="h-full w-full">
+        <CardHeader floated={false} shadow={false}>
+          <Typography variant="h3">Permissions</Typography>
+        </CardHeader>
+        <CardBody>
+          <table className="w-full min-w-max table-auto rounded-md">
+            <thead className="h-16 bg-gray-200 text-left">
+              <tr>
+                {permissionHead.map((permissions) => {
+                  return <th>{permissions}</th>;
+                })}
+              </tr>
+            </thead>
+            <tbody className="">
+              {permissions.map((perm) => {
+                const readableDate = new Date(perm.updated_at).toLocaleString();
+                return (
+                  <tr className="m-24 h-16 border-b" key={perm.id}>
+                    <td className="max-w-48 px-4 py-2 text-left">
+                      {perm.name}
+                    </td>
+                    <td>
+                      <Switch
+                        color="green"
+                        onChange={() =>
+                          handleStatusChange(perm.id, perm.status, perm.name)
+                        }
+                        checked={perm.status===1}
+                
+                      />
+                    </td>
+                    <td className="max-w-48 px-4 py-2 text-left">
+                      {readableDate}
+                    </td>
+                    <td className="px-4 py-2 text-center">
+                      <Edit2Icon />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </CardBody>
+      </Card>
+
       {/* CONFIRMATION DIALOG BOX */}
       <ConfirmationDialog
         open={open}
@@ -350,6 +438,15 @@ const RolePermissionTable = () => {
           isAdding
             ? `Are you sure you want to grant the "${selectedPermission}" permission to the "${selectedRole?.name}" role?`
             : `Are you sure you want to revoke the "${selectedPermission}" permission from the "${selectedRole?.name}" role?`
+        }
+      />
+       <ConfirmationDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(!openConfirm)}
+        onConfirm={changeStatus}
+        isLoading={isLoading}
+        message={
+          selectedStatus?`Would You Like to Enable ${selectedPermName}?`:`Would you Like to Disable? ${selectedPermName}`
         }
       />
       <RoleDialog
@@ -365,7 +462,7 @@ const RolePermissionTable = () => {
         fetchRoles={fetchRoles}
         fetchPermissions={fetchPermissions}
       />
-    </>
+    </div>
   );
 };
 
