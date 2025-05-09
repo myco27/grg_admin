@@ -85,6 +85,7 @@ const UserManagementPage = () => {
   const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
+<<<<<<< HEAD
   const handleClearFilter = async () => {
     setStartDate(null);
     setEndDate(null);
@@ -117,6 +118,41 @@ const UserManagementPage = () => {
 
   const fetchUsers = async () => {
     try {
+=======
+    const handleClearFilter = async () => {
+      setStartDate(null);
+      setEndDate(null);
+      setFilterStatus({
+        active: false,
+        inactive: false,
+        suspended: false,
+        deleted: false,
+      });
+      try {
+        const response = await axiosClient.get("admin/users/get");
+        const responseData = response.data.data;
+    
+        setUsers(responseData.data); 
+    
+        const { current_page, last_page, total, links, per_page } = responseData;
+    
+        setPagination({
+          page: current_page,
+          totalPages: last_page,
+          totalItems: total,
+          links: links,
+          itemsPerPage: per_page,
+          isLoading: false,
+        });
+      } catch (error) {
+        console.error("Failed to clear filters:", error);
+      }
+    };
+    
+  const fetchUsers = async () => {
+    try {
+      console.log(pagination)
+>>>>>>> 04c93704ee7d7581963886c15264ab97d1ac9983
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const formattedStartDate = startDate
@@ -126,13 +162,12 @@ const UserManagementPage = () => {
         ? new Date(endDate).toISOString().split("T")[0]
         : null;
 
-      const filteredStatus = [];
-
-      if (statusFilter.inactive) filteredStatus.push(0);
-      if (statusFilter.active) filteredStatus.push(1);
-      if (statusFilter.suspended) filteredStatus.push(2);
-      if (statusFilter.deleted) filteredStatus.push(3);
-
+        if (statusFilter.inactive) filteredStatus.push(0);
+        if (statusFilter.active) filteredStatus.push(1);
+        if (statusFilter.suspended) filteredStatus.push(2);
+        if (statusFilter.deleted) filteredStatus.push(3);
+  
+        
       const data = {
         user_type: status,
         search: debounceSearch,
@@ -149,7 +184,10 @@ const UserManagementPage = () => {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
           responseData;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 04c93704ee7d7581963886c15264ab97d1ac9983
         setUsers(responseData.data);
         setPagination((prev) => ({
           ...prev,
@@ -187,25 +225,23 @@ const UserManagementPage = () => {
       itemsPerPage: 10,
     });
   };
+  
   const handlePageChange = (newPage) => {
-    const newPagination = { ...pagination, page: newPage };
+    const newPagination = { ...pagination, page: newPage, };
     setPagination(newPagination);
-
     fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
   const handleEditOpen = (userId, userType) => {
-    setSelectedUserId(userId);
+  setSelectedUserId(userId);
     setSelectedUser(userType);
     setEditOpen(!editOpen);
   };
 
   const handlePageSizeChange = (newSize) => {
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: Number(newSize),
-    });
+    const newPagination = { ...pagination,page:1, itemsPerPage:Number(newSize) }
+    setPagination(newPagination)
+    fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
   const rotateColumns = () => {
@@ -616,7 +652,7 @@ const UserManagementPage = () => {
               totalPages={pagination.totalPages}
               onPageChange={(newPage) => handlePageChange(newPage)}
               isLoading={pagination.isLoading}
-              onPageSizeChange={handlePageSizeChange}
+              onPageSizeChange={(newSize) => handlePageSizeChange(newSize)}
             />
           </CardFooter>
         </Card>
