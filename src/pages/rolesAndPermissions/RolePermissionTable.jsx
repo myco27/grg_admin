@@ -19,7 +19,7 @@ import {
   ShieldCheckIcon,
   Search,
   Trash,
-  TrashIcon,
+  Trash2,
 } from "lucide-react";
 import RoleDialog from "./RoleDialog";
 import PermissionDialog from "./PermissionDialog";
@@ -483,7 +483,7 @@ const RolePermissionTable = () => {
                       </td>
                       <td className="px-4 py-2 text-center">
                         <Tooltip content="Delete">
-                          <TrashIcon
+                          <Trash2
                             className="h-4 w-4 cursor-pointer "
                             color="red"
                             onClick={() => handleDelete(perm.id, perm.name)}
