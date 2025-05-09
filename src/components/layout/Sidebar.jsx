@@ -40,36 +40,43 @@ const Sidebar = () => {
     setConfigOpen(!configOpen);
   };
 
-  const canViewDashboardModule =
-    user?.all_permissions?.some((p) => p.name === "view dashboard module") ||
-    false;
+  const canViewDashboardModule = user?.all_permissions?.some(
+    (p) => p.name === "view dashboard module" && p.status_id === 1
+  );
 
   const canViewUserModule =
-    user?.all_permissions?.some((p) => p.name === "view user module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view user module" && p.status_id === 1
+    ) || false;
 
   const canViewAdminModule =
-    user?.all_permissions?.some((p) => p.name === "view admin module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view admin module" && p.status_id === 1
+    ) || false;
 
   const canViewRolesAndPermissionsModule =
     user?.all_permissions?.some(
-      (p) => p.name === "view roles and permissions module"
+      (p) => p.name === "view roles and permissions module" && p.status_id === 1
     ) || false;
 
   const canViewApplicationsModule =
-    user?.all_permissions?.some((p) => p.name === "view application module") ||
-    false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view application module" && p.status_id === 1
+    ) || false;
 
   const canViewSettingsModule =
-    user?.all_permissions?.some((p) => p.name === "view settings module") ||
-    false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view settings module" && p.status_id === 1
+    ) || false;
 
   const canViewRestaurantModule =
-    user?.all_permissions?.some((p) => p.name === "view restaurant module") ||
-    false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view restaurant module" && p.status_id === 1
+    ) || false;
 
   const canViewConfigurationModule =
     user?.all_permissions?.some(
-      (p) => p.name === "view configuration module"
+      (p) => p.name === "view configuration module" && p.status_id === 1
     ) || false;
 
   useEffect(() => {

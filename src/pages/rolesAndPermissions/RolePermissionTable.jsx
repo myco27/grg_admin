@@ -9,6 +9,7 @@ import {
   Input,
   Spinner,
   Switch,
+  Tooltip,
   Typography,
 } from "@material-tailwind/react";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
@@ -17,8 +18,8 @@ import {
   UserPlusIcon,
   ShieldCheckIcon,
   Search,
-  Circle,
-  Edit2Icon,
+  Trash,
+  TrashIcon,
 } from "lucide-react";
 import RoleDialog from "./RoleDialog";
 import PermissionDialog from "./PermissionDialog";
@@ -34,6 +35,7 @@ const RolePermissionTable = () => {
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +50,8 @@ const RolePermissionTable = () => {
   const [selectedStatus, setSelectedStatus] = useState(null);
   const debounceSearchPermission = UseDebounce({ value: permissionSearch });
   const [selectedPermName, setSelectedPermName] = useState(null);
+  const [selectedPermissionId, setSelectedPermissionId] = useState(null);
+
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -68,7 +72,13 @@ const RolePermissionTable = () => {
   const { user, fetchUser } = useStateContext();
 
   const canAddPermission =
-    user?.all_permissions?.includes("can add permission") || false;
+    user?.all_permissions?.some((p) => p.name === "can add permission") ||
+    false;
+
+  const viewPermissionTable =
+    user?.all_permissions?.some((p) => p.name === "view permission table") ||
+    false;
+
   const handleSwitch = (role, permission) => {
     setSelectedRole(role);
     setSelectedPermission(permission);
@@ -76,6 +86,12 @@ const RolePermissionTable = () => {
     setIsAdding(!hasPermission);
 
     setOpen(true);
+  };
+
+  const handleDelete = (permissionId, permissionName) => {
+    setSelectedPermissionId(permissionId);
+    setSelectedPermName(permissionName);
+    setOpenDeleteConfirmation(true);
   };
 
   const handleStatusChange = (permissionId, status_id, selectedPerm) => {
@@ -96,7 +112,7 @@ const RolePermissionTable = () => {
         payload
       );
       showAlert(response.data.message, "success");
-       fetchUser();
+      fetchUser();
       fetchPermissions();
     } catch (error) {
       console.error("Failed to change status:", error);
@@ -208,7 +224,29 @@ const RolePermissionTable = () => {
     }
   };
 
-  const permissionHead = ["NAME", "STATUS", "UPDATE_AT", "ACTION"];
+  const confirmDeletePermission = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `permissions/delete/${selectedPermissionId}`
+      );
+      showAlert(response.data.message, "success");
+      fetchUser();
+      fetchPermissions();
+      fetchRoles();
+    } catch (error) {
+      if (error.response.data.errors) {
+        showAlert(error.response.data.errors, "error");
+      }
+    } finally {
+      setIsLoading(false);
+      setOpenDeleteConfirmation(false);
+
+      setSelectedPermission("");
+    }
+  };
+
+  const permissionHead = ["NAME", "STATUS", "DATE UPDATED", "ACTION"];
   return (
     <div className="flex flex-col gap-5">
       <Card className="h-full w-full">
@@ -327,7 +365,17 @@ const RolePermissionTable = () => {
                         permissions.length > 0 ? (
                           permissions.map((perm) => (
                             <td key={perm.id} className="p-4">
-                              <div className="flex items-center justify-center">
+                              <div
+                                onClick={() => {
+                                  if (perm.status_id == 3) {
+                                    showAlert(
+                                      "You need to enable first the permission",
+                                      "error"
+                                    );
+                                  }
+                                }}
+                                className="flex items-center justify-center cursor-pointer"
+                              >
                                 <Switch
                                   onChange={() => handleSwitch(role, perm.name)}
                                   checked={role.permissions?.some(
@@ -372,51 +420,84 @@ const RolePermissionTable = () => {
         </CardFooter>
       </Card>
 
-      <Card className="h-full w-full">
-        <CardHeader floated={false} shadow={false}>
-          <Typography variant="h3">Permissions</Typography>
-        </CardHeader>
-        <CardBody>
-          <table className="w-full min-w-max table-auto rounded-md">
-            <thead className="h-16 bg-gray-200 text-left">
-              <tr>
-                {permissionHead.map((permissions) => {
-                  return <th>{permissions}</th>;
-                })}
-              </tr>
-            </thead>
-            <tbody className="">
-              {permissions.map((perm) => {
-                const readableDate = new Date(perm.updated_at).toLocaleString();
+      {viewPermissionTable && (
+        <Card className="h-full w-full">
+          <CardHeader floated={false} shadow={false}>
+            <Typography variant="h5" color="blue-gray">
+              Permissions
+            </Typography>
+          </CardHeader>
+          <CardBody>
+            <table className="w-full min-w-max table-auto rounded-md">
+              <thead className="h-16 bg-gray-200 text-left">
+                <tr>
+                  {permissionHead.map((permission, index) => {
+                    return (
+                      <th
+                        key={index}
+                        className={`bg-tableHeaderBg p-4 ${
+                          index === permissionHead.length - 1
+                            ? "rounded-tr-md rounded-br-md"
+                            : ""
+                        }`}
+                      >
+                        <Typography
+                          variant="small"
+                          color="black"
+                          className="flex items-center gap-2 font-normal leading-none opacity-70"
+                        >
+                          {permission}
+                        </Typography>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody className="">
+                {permissions.map((perm) => {
+                  const readableDate = new Date(
+                    perm.updated_at
+                  ).toLocaleString();
 
-                return (
-                  <tr className="m-24 h-16 border-b" key={perm.id}>
-                    <td className="max-w-48 px-4 py-2 text-left">
-                      {perm.name}
-                    </td>
-                    <td>
-                      <Switch
-                        color="green"
-                        value={perm.status_id}
-                        onChange={() =>
-                          handleStatusChange(perm.id, perm.status_id, perm.name)
-                        }
-                        checked={perm.status_id === 1}
-                      />
-                    </td>
-                    <td className="max-w-48 px-4 py-2 text-left">
-                      {readableDate}
-                    </td>
-                    <td className="px-4 py-2 text-center">
-                      <Edit2Icon />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </CardBody>
-      </Card>
+                  return (
+                    <tr className="m-24 h-16 border-b" key={perm.id}>
+                      <td className="max-w-48 px-4 py-2 text-left">
+                        {perm.name}
+                      </td>
+                      <td>
+                        <Switch
+                          color="green"
+                          value={perm.status_id}
+                          onChange={() =>
+                            handleStatusChange(
+                              perm.id,
+                              perm.status_id,
+                              perm.name
+                            )
+                          }
+                          checked={perm.status_id === 1}
+                        />
+                      </td>
+                      <td className="max-w-48 px-4 py-2 text-left">
+                        {readableDate}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <Tooltip content="Delete">
+                          <TrashIcon
+                            className="h-4 w-4 cursor-pointer "
+                            color="red"
+                            onClick={() => handleDelete(perm.id, perm.name)}
+                          />
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </CardBody>
+        </Card>
+      )}
 
       {/* CONFIRMATION DIALOG BOX */}
       <ConfirmationDialog
@@ -441,6 +522,15 @@ const RolePermissionTable = () => {
             : `Are you sure you want to put ${selectedPermName} on hold?`
         }
       />
+      {/* FOR DELETE PERMISSION */}
+      <ConfirmationDialog
+        open={openDeleteConfirmation}
+        onClose={() => setOpenDeleteConfirmation(false)}
+        onConfirm={confirmDeletePermission}
+        isLoading={isLoading}
+        message={`Are you sure you want to delete the "${selectedPermName}" permission role?`}
+      />
+
       <RoleDialog
         open={roleDialogOpen}
         onClose={() => setRoleDialogOpen(false)}

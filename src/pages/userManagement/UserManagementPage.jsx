@@ -83,41 +83,39 @@ const UserManagementPage = () => {
   const [isRotated, setIsRotated] = useState(false);
   const [openPrevCal, setOpenPrevCal] = useState(false);
   const { user } = useStateContext();
-  const canViewUserModule =
-    user?.all_permissions?.includes("view user module") || false;
-    const handleClearFilter = async () => {
-      setStartDate(null);
-      setEndDate(null);
-      setFilterStatus({
-        active: false,
-        inactive: false,
-        suspended: false,
-        deleted: false,
+
+  const handleClearFilter = async () => {
+    setStartDate(null);
+    setEndDate(null);
+    setFilterStatus({
+      active: false,
+      inactive: false,
+      suspended: false,
+      deleted: false,
+    });
+    try {
+      const response = await axiosClient.get("admin/users/get");
+      const responseData = response.data.data;
+
+      setUsers(responseData.data);
+
+      const { current_page, last_page, total, links, per_page } = responseData;
+
+      setPagination({
+        page: current_page,
+        totalPages: last_page,
+        totalItems: total,
+        links: links,
+        itemsPerPage: per_page,
+        isLoading: false,
       });
-      try {
-        const response = await axiosClient.get("admin/users/get");
-        const responseData = response.data.data;
-    
-        setUsers(responseData.data); 
-    
-        const { current_page, last_page, total, links, per_page } = responseData;
-    
-        setPagination({
-          page: current_page,
-          totalPages: last_page,
-          totalItems: total,
-          links: links,
-          itemsPerPage: per_page,
-          isLoading: false,
-        });
-      } catch (error) {
-        console.error("Failed to clear filters:", error);
-      }
-    };
-    
+    } catch (error) {
+      console.error("Failed to clear filters:", error);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
-      console.log(pagination)
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const formattedStartDate = startDate
@@ -127,12 +125,13 @@ const UserManagementPage = () => {
         ? new Date(endDate).toISOString().split("T")[0]
         : null;
 
-        if (statusFilter.inactive) filteredStatus.push(0);
-        if (statusFilter.active) filteredStatus.push(1);
-        if (statusFilter.suspended) filteredStatus.push(2);
-        if (statusFilter.deleted) filteredStatus.push(3);
-  
-        
+      const filteredStatus = [];
+
+      if (statusFilter.inactive) filteredStatus.push(0);
+      if (statusFilter.active) filteredStatus.push(1);
+      if (statusFilter.suspended) filteredStatus.push(2);
+      if (statusFilter.deleted) filteredStatus.push(3);
+
       const data = {
         user_type: status,
         search: debounceSearch,
@@ -145,21 +144,18 @@ const UserManagementPage = () => {
 
       const response = await axiosClient.get("/admin/users", { params: data });
 
-      if (response.status === 200) {
-        const responseData = response.data.data;
-        const { current_page, last_page, total, links, per_page } =
-          responseData;
-        setUsers(responseData.data);
-        setPagination((prev) => ({
-          ...prev,
-          page: current_page,
-          totalPages: last_page,
-          totalItems: total,
-          links,
-          itemsPerPage: per_page,
-          isLoading: false,
-        }));
-      }
+      const responseData = response.data.data;
+      const { current_page, last_page, total, links, per_page } = responseData;
+      setUsers(responseData.data);
+      setPagination((prev) => ({
+        ...prev,
+        page: current_page,
+        totalPages: last_page,
+        totalItems: total,
+        links,
+        itemsPerPage: per_page,
+        isLoading: false,
+      }));
     } catch (error) {
       console.error(error.response?.data || error.message);
     } finally {
@@ -186,22 +182,26 @@ const UserManagementPage = () => {
       itemsPerPage: 10,
     });
   };
-  
+
   const handlePageChange = (newPage) => {
-    const newPagination = { ...pagination, page: newPage, };
+    const newPagination = { ...pagination, page: newPage };
     setPagination(newPagination);
     fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
   const handleEditOpen = (userId, userType) => {
-  setSelectedUserId(userId);
+    setSelectedUserId(userId);
     setSelectedUser(userType);
     setEditOpen(!editOpen);
   };
 
   const handlePageSizeChange = (newSize) => {
-    const newPagination = { ...pagination,page:1, itemsPerPage:Number(newSize) }
-    setPagination(newPagination)
+    const newPagination = {
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(newSize),
+    };
+    setPagination(newPagination);
     fetchUsers({ ...newPagination, search: searchTerm, ...filter });
   };
 
@@ -265,359 +265,357 @@ const UserManagementPage = () => {
 
   return (
     <>
-      {canViewUserModule && (
-        <Card className="h-full w-full">
-          <CardHeader floated={false} shadow={false} className="rounded-none">
-            <div className="mb-4 flex items-center justify-between gap-8">
-              <div>
-                <Typography variant="h5" color="black">
-                  User list
-                </Typography>
-                <Typography className="font-normal">
-                  See information about all Users
-                </Typography>
-              </div>
+      <Card className="h-full w-full">
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <div className="mb-4 flex items-center justify-between gap-8">
+            <div>
+              <Typography variant="h5" color="black">
+                User list
+              </Typography>
+              <Typography className="font-normal">
+                See information about all Users
+              </Typography>
             </div>
-            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-              <Tabs
-                value=""
-                className="relative w-full overflow-x-auto rounded-md md:w-fit xl:overflow-visible"
+          </div>
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <Tabs
+              value=""
+              className="relative w-full overflow-x-auto rounded-md md:w-fit xl:overflow-visible"
+            >
+              <TabsHeader className="gap-x-4 bg-headerBg">
+                {TABS.map(({ label, value, icon }) => (
+                  <Tab
+                    key={value}
+                    className="rounded-md"
+                    value={value}
+                    onClick={() => handleClickStatus(value)}
+                  >
+                    <div className="flex items-center gap-2 text-nowrap px-4 text-sm font-medium text-gray-800">
+                      {icon}
+                      {label}
+                    </div>
+                  </Tab>
+                ))}
+              </TabsHeader>
+            </Tabs>
+            <div className="flex w-full items-center gap-2 rounded-md md:w-72">
+              <Menu
+                dismiss={{ itemPress: false }}
+                placement="bottom-start"
+                className="hover:none"
               >
-                <TabsHeader className="gap-x-4 bg-headerBg">
-                  {TABS.map(({ label, value, icon }) => (
-                    <Tab
-                      key={value}
-                      className="rounded-md"
-                      value={value}
-                      onClick={() => handleClickStatus(value)}
-                    >
-                      <div className="flex items-center gap-2 text-nowrap px-4 text-sm font-medium text-gray-800">
-                        {icon}
-                        {label}
-                      </div>
-                    </Tab>
-                  ))}
-                </TabsHeader>
-              </Tabs>
-              <div className="flex w-full items-center gap-2 rounded-md md:w-72">
-                <Menu
-                  dismiss={{ itemPress: false }}
-                  placement="bottom-start"
-                  className="hover:none"
-                >
-                  <MenuHandler>
-                    <IconButton variant="text">
-                      <FilterIcon />
-                    </IconButton>
-                  </MenuHandler>
-                  <MenuList className="max-h-max max-w-max space-y-2">
-                    {/* Filter by Date */}
-                    <MenuItem className="flex flex-col items-center justify-center gap-1">
-                      <span className="mb-2 font-medium">Filter by Date</span>
-                      <div>
-                        <Input
-                          readOnly={true}
-                          className="flex items-center justify-center text-center"
-                          icon={<CalendarRangeIcon />}
-                          label="Select Date"
-                          value={
-                            startDate && endDate
-                              ? `${format(startDate, "PPP")} → ${format(
-                                  endDate,
-                                  "PPP"
-                                )}`
-                              : startDate
-                              ? `${format(startDate, "PPP")} → ...`
-                              : ""
-                          }
-                          onClick={() => setOpenPrevCal(!openPrevCal)}
-                        />
-                        <Collapse
-                          open={openPrevCal}
-                          className="flex w-full justify-center"
-                        >
-                          <DayPicker
-                            captionLayout="label"
-                            mode="range"
-                            selected={{ from: startDate, to: endDate }}
-                            onSelect={handleDateSelect}
-                            showOutsideDays
-                            components={{
-                              IconLeft: ({ ...props }) => (
-                                <ChevronLeftIcon
-                                  {...props}
-                                  className="h-5 w-5 stroke-2"
-                                />
-                              ),
-                              IconRight: ({ ...props }) => (
-                                <ChevronRightIcon
-                                  {...props}
-                                  className="h-5 w-5 stroke-2"
-                                />
-                              ),
-                            }}
-                          />
-                        </Collapse>
-                      </div>
-                    </MenuItem>
-                    <hr className="my-3" />
-                    {/* Filter by Status */}
-                    <MenuItem className="flex w-full flex-col items-start">
-                      <span className="mb-2 font-medium">Filter by Status</span>
-                      {Object.entries(statusFilter).map(([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex w-full flex-row items-center gap-2"
-                        >
-                          <Checkbox
-                            containerProps={{ className: "p-1" }}
-                            label={key.charAt(0).toUpperCase() + key.slice(1)}
-                            checked={value}
-                            onChange={() =>
-                              setFilterStatus((prev) => ({
-                                ...prev,
-                                [key]: !prev[key],
-                              }))
-                            }
-                          />
-                        </div>
-                      ))}
-                      <div className="flex w-full flex-col gap-1">
-                        <Button
-                          className="mt-3 w-full bg-primary"
-                          onClick={fetchUsers}
-                        >
-                          Filter
-                        </Button>
-                        <Button className="w-full" onClick={handleClearFilter}>
-                          Clear Filter
-                        </Button>
-                      </div>
-                    </MenuItem>
-                  </MenuList>
-                </Menu>
-
-                <Input
-                  label="Search User"
-                  icon={
-                    pagination.isLoading ? (
-                      <Spinner className="h-5 w-5" />
-                    ) : (
-                      <Search className="h-5 w-5" />
-                    )
-                  }
-                  size="md"
-                  className="bg-white"
-                  value={searchTerm}
-                  onChange={(e) => handleSearchInput(e)}
-                />
-                <button
-                  className="absolute right-3 top-4 text-gray-500 hover:text-gray-700"
-                  onClick={rotateColumns}
-                >
-                  <ArrowLeftRight className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardBody className="overflow-scroll p-4">
-            {pagination.isLoading ? (
-              <Loading />
-            ) : (
-              <table className="w-full min-w-max table-auto rounded-md text-left">
-                <thead>
-                  <tr>
-                    {tableHeadOrder.map((colIndex, index) => (
-                      <th
-                        key={TABLE_HEAD[colIndex]}
-                        className={`bg-tableHeaderBg p-4 ${
-                          index === 0 ? "rounded-tl-md rounded-bl-md" : ""
-                        } ${
-                          index === TABLE_HEAD.length - 1
-                            ? "rounded-tr-md rounded-br-md"
+                <MenuHandler>
+                  <IconButton variant="text">
+                    <FilterIcon />
+                  </IconButton>
+                </MenuHandler>
+                <MenuList className="max-h-max max-w-max space-y-2">
+                  {/* Filter by Date */}
+                  <MenuItem className="flex flex-col items-center justify-center gap-1">
+                    <span className="mb-2 font-medium">Filter by Date</span>
+                    <div>
+                      <Input
+                        readOnly={true}
+                        className="flex items-center justify-center text-center"
+                        icon={<CalendarRangeIcon />}
+                        label="Select Date"
+                        value={
+                          startDate && endDate
+                            ? `${format(startDate, "PPP")} → ${format(
+                                endDate,
+                                "PPP"
+                              )}`
+                            : startDate
+                            ? `${format(startDate, "PPP")} → ...`
                             : ""
-                        }`}
-                      >
-                        <Typography
-                          variant="small"
-                          color="black"
-                          className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                        >
-                          {TABLE_HEAD[colIndex]}
-                        </Typography>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {users.map((user) => (
-                    <tr
-                      className="border-b border-gray-300 hover:bg-gray-100"
-                      key={user.id}
-                    >
-                      {tableHeadOrder.map((colIndex) => {
-                        // Return the appropriate cell based on column index
-                        switch (colIndex) {
-                          case 0: // User ID
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="flex flex-col">
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {user.id}
-                                  </Typography>
-                                </div>
-                              </td>
-                            );
-                          case 1: // User Information
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="flex items-center gap-3">
-                                  <div className="flex flex-col">
-                                    <Typography
-                                      variant="small"
-                                      color="blue-gray"
-                                      className="font-normal"
-                                    >
-                                      {user.first_name} {user.last_name}
-                                    </Typography>
-                                    <Typography
-                                      variant="small"
-                                      color="blue-gray"
-                                      className="font-normal opacity-70"
-                                    >
-                                      {user.email}
-                                    </Typography>
-                                  </div>
-                                </div>
-                              </td>
-                            );
-                          case 2: // User Type
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="flex flex-col">
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {user.user_type
-                                      ? user.user_type.toUpperCase()
-                                      : ""}
-                                  </Typography>
-                                </div>
-                              </td>
-                            );
-                          case 3: // Social Type
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="flex flex-col">
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {user.social_type
-                                      ? user.social_type.toUpperCase()
-                                      : "ROCKYGO"}
-                                  </Typography>
-                                </div>
-                              </td>
-                            );
-                          case 4: // Status
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="w-max">
-                                  <Chip
-                                    variant="ghost"
-                                    size="sm"
-                                    value={
-                                      user.is_active == 1
-                                        ? "Active"
-                                        : user.is_active == 2
-                                        ? "Suspended"
-                                        : user.is_active == 3
-                                        ? "Deleted"
-                                        : "Inactive"
-                                    }
-                                    color={
-                                      user.is_active == 1
-                                        ? "green"
-                                        : user.is_active == 2
-                                        ? "orange"
-                                        : user.is_active == 3
-                                        ? "red"
-                                        : "blue-gray"
-                                    }
-                                  />
-                                </div>
-                              </td>
-                            );
-                          case 5: // Date Created
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <div className="flex flex-col">
-                                  <Typography
-                                    variant="small"
-                                    color="blue-gray"
-                                    className="font-normal"
-                                  >
-                                    {new Date(user.created_at).toLocaleString(
-                                      "en-US",
-                                      {
-                                        year: "numeric",
-                                        month: "long",
-                                        day: "numeric",
-                                      }
-                                    )}
-                                  </Typography>
-                                </div>
-                              </td>
-                            );
-                          case 6: // Action
-                            return (
-                              <td className="p-4" key={`col-${colIndex}`}>
-                                <Tooltip content="Edit User">
-                                  <IconButton
-                                    variant="text"
-                                    onClick={() =>
-                                      handleEditOpen(user.id, user.user_type)
-                                    }
-                                  >
-                                    <PencilIcon className="h-4 w-4" />
-                                  </IconButton>
-                                </Tooltip>
-                              </td>
-                            );
-                          default:
-                            return null;
                         }
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </CardBody>
+                        onClick={() => setOpenPrevCal(!openPrevCal)}
+                      />
+                      <Collapse
+                        open={openPrevCal}
+                        className="flex w-full justify-center"
+                      >
+                        <DayPicker
+                          captionLayout="label"
+                          mode="range"
+                          selected={{ from: startDate, to: endDate }}
+                          onSelect={handleDateSelect}
+                          showOutsideDays
+                          components={{
+                            IconLeft: ({ ...props }) => (
+                              <ChevronLeftIcon
+                                {...props}
+                                className="h-5 w-5 stroke-2"
+                              />
+                            ),
+                            IconRight: ({ ...props }) => (
+                              <ChevronRightIcon
+                                {...props}
+                                className="h-5 w-5 stroke-2"
+                              />
+                            ),
+                          }}
+                        />
+                      </Collapse>
+                    </div>
+                  </MenuItem>
+                  <hr className="my-3" />
+                  {/* Filter by Status */}
+                  <MenuItem className="flex w-full flex-col items-start">
+                    <span className="mb-2 font-medium">Filter by Status</span>
+                    {Object.entries(statusFilter).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex w-full flex-row items-center gap-2"
+                      >
+                        <Checkbox
+                          containerProps={{ className: "p-1" }}
+                          label={key.charAt(0).toUpperCase() + key.slice(1)}
+                          checked={value}
+                          onChange={() =>
+                            setFilterStatus((prev) => ({
+                              ...prev,
+                              [key]: !prev[key],
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                    <div className="flex w-full flex-col gap-1">
+                      <Button
+                        className="mt-3 w-full bg-primary"
+                        onClick={fetchUsers}
+                      >
+                        Filter
+                      </Button>
+                      <Button className="w-full" onClick={handleClearFilter}>
+                        Clear Filter
+                      </Button>
+                    </div>
+                  </MenuItem>
+                </MenuList>
+              </Menu>
 
-          <CardFooter className="">
-            <Pagination
-              currentPage={pagination.page}
-              totalItems={pagination.totalItems}
-              itemsPerPage={pagination.itemsPerPage}
-              totalPages={pagination.totalPages}
-              onPageChange={(newPage) => handlePageChange(newPage)}
-              isLoading={pagination.isLoading}
-              onPageSizeChange={(newSize) => handlePageSizeChange(newSize)}
-            />
-          </CardFooter>
-        </Card>
-      )}
+              <Input
+                label="Search User"
+                icon={
+                  pagination.isLoading ? (
+                    <Spinner className="h-5 w-5" />
+                  ) : (
+                    <Search className="h-5 w-5" />
+                  )
+                }
+                size="md"
+                className="bg-white"
+                value={searchTerm}
+                onChange={(e) => handleSearchInput(e)}
+              />
+              <button
+                className="absolute right-3 top-4 text-gray-500 hover:text-gray-700"
+                onClick={rotateColumns}
+              >
+                <ArrowLeftRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardBody className="overflow-scroll p-4">
+          {pagination.isLoading ? (
+            <Loading />
+          ) : (
+            <table className="w-full min-w-max table-auto rounded-md text-left">
+              <thead>
+                <tr>
+                  {tableHeadOrder.map((colIndex, index) => (
+                    <th
+                      key={TABLE_HEAD[colIndex]}
+                      className={`bg-tableHeaderBg p-4 ${
+                        index === 0 ? "rounded-tl-md rounded-bl-md" : ""
+                      } ${
+                        index === TABLE_HEAD.length - 1
+                          ? "rounded-tr-md rounded-br-md"
+                          : ""
+                      }`}
+                    >
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                      >
+                        {TABLE_HEAD[colIndex]}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {users.map((user) => (
+                  <tr
+                    className="border-b border-gray-300 hover:bg-gray-100"
+                    key={user.id}
+                  >
+                    {tableHeadOrder.map((colIndex) => {
+                      // Return the appropriate cell based on column index
+                      switch (colIndex) {
+                        case 0: // User ID
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="flex flex-col">
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {user.id}
+                                </Typography>
+                              </div>
+                            </td>
+                          );
+                        case 1: // User Information
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="flex items-center gap-3">
+                                <div className="flex flex-col">
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"
+                                  >
+                                    {user.first_name} {user.last_name}
+                                  </Typography>
+                                  <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal opacity-70"
+                                  >
+                                    {user.email}
+                                  </Typography>
+                                </div>
+                              </div>
+                            </td>
+                          );
+                        case 2: // User Type
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="flex flex-col">
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {user.user_type
+                                    ? user.user_type.toUpperCase()
+                                    : ""}
+                                </Typography>
+                              </div>
+                            </td>
+                          );
+                        case 3: // Social Type
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="flex flex-col">
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {user.social_type
+                                    ? user.social_type.toUpperCase()
+                                    : "ROCKYGO"}
+                                </Typography>
+                              </div>
+                            </td>
+                          );
+                        case 4: // Status
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="w-max">
+                                <Chip
+                                  variant="ghost"
+                                  size="sm"
+                                  value={
+                                    user.is_active == 1
+                                      ? "Active"
+                                      : user.is_active == 2
+                                      ? "Suspended"
+                                      : user.is_active == 3
+                                      ? "Deleted"
+                                      : "Inactive"
+                                  }
+                                  color={
+                                    user.is_active == 1
+                                      ? "green"
+                                      : user.is_active == 2
+                                      ? "orange"
+                                      : user.is_active == 3
+                                      ? "red"
+                                      : "blue-gray"
+                                  }
+                                />
+                              </div>
+                            </td>
+                          );
+                        case 5: // Date Created
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <div className="flex flex-col">
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-normal"
+                                >
+                                  {new Date(user.created_at).toLocaleString(
+                                    "en-US",
+                                    {
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    }
+                                  )}
+                                </Typography>
+                              </div>
+                            </td>
+                          );
+                        case 6: // Action
+                          return (
+                            <td className="p-4" key={`col-${colIndex}`}>
+                              <Tooltip content="Edit User">
+                                <IconButton
+                                  variant="text"
+                                  onClick={() =>
+                                    handleEditOpen(user.id, user.user_type)
+                                  }
+                                >
+                                  <PencilIcon className="h-4 w-4" />
+                                </IconButton>
+                              </Tooltip>
+                            </td>
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </CardBody>
+
+        <CardFooter className="">
+          <Pagination
+            currentPage={pagination.page}
+            totalItems={pagination.totalItems}
+            itemsPerPage={pagination.itemsPerPage}
+            totalPages={pagination.totalPages}
+            onPageChange={(newPage) => handlePageChange(newPage)}
+            isLoading={pagination.isLoading}
+            onPageSizeChange={(newSize) => handlePageSizeChange(newSize)}
+          />
+        </CardFooter>
+      </Card>
 
       {/* MODALS */}
       <EditUserModal
