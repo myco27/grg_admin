@@ -42,6 +42,7 @@ export const ContextProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       const response = await axiosClient.get("/user");
+      console.log(response.data.user);
       _setUser(response.data.user);
     } catch (err) {
       _setUser(null);

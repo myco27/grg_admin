@@ -163,6 +163,7 @@ const AdminManagement = () => {
 
   const handleOpenView = (userId) => {
     setSelectedUserId(userId);
+
     setOpenView((openView) => !openView);
   };
 
@@ -285,11 +286,17 @@ const AdminManagement = () => {
                         <div className="flex items-center gap-2">
                           <div className="relative flex items-center justify-center">
                             <img
-                              src={user.profile_picture ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${user.profile_picture}` : ''}
+                              src={
+                                user.profile_picture
+                                  ? `${
+                                      import.meta.env.VITE_APP_IMAGE_PATH
+                                    }/profileImage/${user.profile_picture}`
+                                  : ""
+                              }
                               alt="profile"
                               className="h-[50px] w-[50px] rounded-full object-cover"
                               onError={(e) => {
-                                e.target.src = '/rocky_go_logo.png';
+                                e.target.src = "/rocky_go_logo.png";
                                 e.target.onerror = null;
                               }}
                             />
@@ -306,7 +313,7 @@ const AdminManagement = () => {
                             <Typography
                               variant="small"
                               color="blue-gray"
-                            className="font-normal"
+                              className="font-normal"
                             >
                               {user.first_name} {user.last_name}
                             </Typography>
@@ -336,51 +343,6 @@ const AdminManagement = () => {
                       className: "p-4",
                     },
                     {
-                      // key: "permissions",
-                      // value: (
-                      //   <div
-                      //     className="flex cursor-pointer flex-wrap rounded font-normal"
-                      //     onClick={() => handleOpenView(user.id)}
-                      //   >
-                      //     {user.all_permissions?.length > 0 ? (
-                      //       <>
-                      //         {user.all_permissions
-                      //           .slice(0, 3)
-                      //           .map((perm, index) => (
-                      //             <span key={index}>
-                      //               <Chip
-                      //                 color="purple"
-                      //                 variant="text"
-                      //                 size="sm"
-                      //                 className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                      //                 value={perm}
-                      //               />
-                      //               {index !== 2 &&
-                      //                 index !==
-                      //                   user.all_permissions.length - 1 &&
-                      //                 " "}
-                      //             </span>
-                      //           ))}
-                      //         {user.all_permissions.length > 3 && (
-                      //           <Tooltip
-                      //             content="View more"
-                      //             placement="right-end"
-                      //           >
-                      //             <Typography
-                      //               variant="h4"
-                      //               className="text-gray-400 hover:text-gray-600"
-                      //             >
-                      //               ...
-                      //             </Typography>
-                      //           </Tooltip>
-                      //         )}
-                      //       </>
-                      //     ) : (
-                      //       "No Permissions"
-                      //     )}
-                      //   </div>
-                      // ),
-                      // className: "max-w-60",
                       key: "permissions",
                       value: (
                         <div
@@ -398,18 +360,17 @@ const AdminManagement = () => {
                                     variant="text"
                                     size="sm"
                                     className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                                    value={perm}
+                                    value={perm.name}
                                   />
                                 ))}
 
-                              {/* Last chip + "..." in a row */}
                               <div className="flex items-center">
                                 <Chip
                                   color="purple"
                                   variant="text"
                                   size="sm"
                                   className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                                  value={user.all_permissions[2]}
+                                  value={user.all_permissions[2]?.name}
                                 />
                                 {user.all_permissions.length > 3 && (
                                   <Tooltip

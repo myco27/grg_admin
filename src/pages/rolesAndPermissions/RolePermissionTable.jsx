@@ -33,7 +33,7 @@ const RolePermissionTable = () => {
   const [permissions, setPermissions] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
-  const [openConfirm, setOpenConfirm] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedPermission, setSelectedPermission] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +47,7 @@ const RolePermissionTable = () => {
   const [permissionId, setPermissionId] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const debounceSearchPermission = UseDebounce({ value: permissionSearch });
-  const [selectedPermName, setSelectedPermName] = useState(null)
+  const [selectedPermName, setSelectedPermName] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -78,32 +78,31 @@ const RolePermissionTable = () => {
     setOpen(true);
   };
 
-  const handleStatusChange = (permissionId, status, selectedPerm) => {
+  const handleStatusChange = (permissionId, status_id, selectedPerm) => {
     setPermissionId(permissionId);
-    setSelectedStatus(status ? 0 : 1);
+    setSelectedStatus(status_id);
     setSelectedPermName(selectedPerm);
 
-    setOpenConfirm(true)
+    setOpenConfirm(true);
   };
 
   const changeStatus = async () => {
     try {
-      setIsLoading(true)
-      const payload = { permision_id: permissionId, status: selectedStatus};
-      const response = await axiosClient.put(`admin/change/${permissionId}`, payload);
-      if (response.status ==200){
-        setPermissions((prev) =>
-          prev.map((perm) =>
-            perm.id === permissionId ? { ...perm, status: perm.status === 1 ? 0 : 1 } : perm
-          )
-        );
-      }
+      setIsLoading(true);
+
+      const payload = { permision_id: permissionId, status: selectedStatus };
+      const response = await axiosClient.put(
+        `permissions/change-status/${permissionId}`,
+        payload
+      );
+      showAlert(response.data.message, "success");
+       fetchUser();
+      fetchPermissions();
     } catch (error) {
       console.error("Failed to change status:", error);
-    }
-    finally{
-      setIsLoading(false)
-      setOpenConfirm(false)
+    } finally {
+      setIsLoading(false);
+      setOpenConfirm(false);
     }
   };
 
@@ -174,9 +173,8 @@ const RolePermissionTable = () => {
           filterPermission: permissionSearch,
         },
       });
-      if (response.status === 200) {
-        setPermissions(response.data || []);
-      }
+
+      setPermissions(response.data || []);
     } catch (error) {
       console.error("Error fetching permissions:", error);
     } finally {
@@ -195,11 +193,9 @@ const RolePermissionTable = () => {
         }
       );
 
-      if (response.status === 200) {
-        showAlert(response.data.message, "success");
-        await fetchUser();
-        fetchRoles();
-      }
+      showAlert(response.data.message, "success");
+      fetchUser();
+      fetchRoles();
     } catch (error) {
       if (error.response.data.errors) {
         showAlert(error.response.data.errors, "error");
@@ -338,19 +334,12 @@ const RolePermissionTable = () => {
                                     (p) => p.name === perm.name
                                   )}
                                   disabled={
-                                    perm.status === 0 ||
+                                    perm.status_id == 3 ||
                                     (role.name === "developer" &&
                                       perm.name ===
                                         "view roles and permissions module")
                                   }
-                                  color={
-                                    perm.status === 0 ? "#632B9B" : "green"
-                                  }
-                                  className={
-                                    perm.status === 0
-                                      ? " disabled:bg-primary"
-                                      : "green"
-                                  }
+                                  color={perm.status_id == 3 ? "red" : "green"}
                                 />
                               </div>
                             </td>
@@ -399,6 +388,7 @@ const RolePermissionTable = () => {
             <tbody className="">
               {permissions.map((perm) => {
                 const readableDate = new Date(perm.updated_at).toLocaleString();
+
                 return (
                   <tr className="m-24 h-16 border-b" key={perm.id}>
                     <td className="max-w-48 px-4 py-2 text-left">
@@ -407,11 +397,11 @@ const RolePermissionTable = () => {
                     <td>
                       <Switch
                         color="green"
+                        value={perm.status_id}
                         onChange={() =>
-                          handleStatusChange(perm.id, perm.status, perm.name)
+                          handleStatusChange(perm.id, perm.status_id, perm.name)
                         }
-                        checked={perm.status===1}
-                
+                        checked={perm.status_id === 1}
                       />
                     </td>
                     <td className="max-w-48 px-4 py-2 text-left">
@@ -440,13 +430,15 @@ const RolePermissionTable = () => {
             : `Are you sure you want to revoke the "${selectedPermission}" permission from the "${selectedRole?.name}" role?`
         }
       />
-       <ConfirmationDialog
+      <ConfirmationDialog
         open={openConfirm}
         onClose={() => setOpenConfirm(!openConfirm)}
         onConfirm={changeStatus}
         isLoading={isLoading}
         message={
-          selectedStatus?`Would You Like to Enable ${selectedPermName}?`:`Would you Like to Disable? ${selectedPermName}`
+          selectedStatus == 3
+            ? `Are you sure you want to enable ${selectedPermName}?`
+            : `Are you sure you want to put ${selectedPermName} on hold?`
         }
       />
       <RoleDialog

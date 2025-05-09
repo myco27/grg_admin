@@ -41,22 +41,36 @@ const Sidebar = () => {
   };
 
   const canViewDashboardModule =
-    user?.all_permissions?.includes("view dashboard module") || false;
-  const canViewUserModule =
-    user?.all_permissions?.includes("view user module") || false;
-  const canViewAdminModule =
-    user?.all_permissions?.includes("view admin module") || false;
-  const canViewRolesAndPermissionsModule =
-    user?.all_permissions?.includes("view roles and permissions module") ||
+    user?.all_permissions?.some((p) => p.name === "view dashboard module") ||
     false;
+
+  const canViewUserModule =
+    user?.all_permissions?.some((p) => p.name === "view user module") || false;
+
+  const canViewAdminModule =
+    user?.all_permissions?.some((p) => p.name === "view admin module") || false;
+
+  const canViewRolesAndPermissionsModule =
+    user?.all_permissions?.some(
+      (p) => p.name === "view roles and permissions module"
+    ) || false;
+
   const canViewApplicationsModule =
-    user?.all_permissions?.includes("view application module") || false;
+    user?.all_permissions?.some((p) => p.name === "view application module") ||
+    false;
+
   const canViewSettingsModule =
-    user?.all_permissions?.includes("view settings module") || false;
+    user?.all_permissions?.some((p) => p.name === "view settings module") ||
+    false;
+
   const canViewRestaurantModule =
-    user?.all_permissions?.includes("view restaurant module") || false;
+    user?.all_permissions?.some((p) => p.name === "view restaurant module") ||
+    false;
+
   const canViewConfigurationModule =
-    user?.all_permissions?.includes("view configuration module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view configuration module"
+    ) || false;
 
   useEffect(() => {
     fetchUser();
