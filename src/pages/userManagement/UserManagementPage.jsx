@@ -85,40 +85,6 @@ const UserManagementPage = () => {
   const { user } = useStateContext();
   const canViewUserModule =
     user?.all_permissions?.includes("view user module") || false;
-<<<<<<< HEAD
-  const handleClearFilter = async () => {
-    setStartDate(null);
-    setEndDate(null);
-    setFilterStatus({
-      active: false,
-      inactive: false,
-      suspended: false,
-      deleted: false,
-    });
-    try {
-      const response = await axiosClient.get("admin/users/get");
-      const responseData = response.data.data;
-
-      setUsers(responseData.data);
-
-      const { current_page, last_page, total, links, per_page } = responseData;
-
-      setPagination({
-        page: current_page,
-        totalPages: last_page,
-        totalItems: total,
-        links: links,
-        itemsPerPage: per_page,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error("Failed to clear filters:", error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-=======
     const handleClearFilter = async () => {
       setStartDate(null);
       setEndDate(null);
@@ -152,7 +118,6 @@ const UserManagementPage = () => {
   const fetchUsers = async () => {
     try {
       console.log(pagination)
->>>>>>> 04c93704ee7d7581963886c15264ab97d1ac9983
       setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const formattedStartDate = startDate
@@ -184,10 +149,6 @@ const UserManagementPage = () => {
         const responseData = response.data.data;
         const { current_page, last_page, total, links, per_page } =
           responseData;
-<<<<<<< HEAD
-
-=======
->>>>>>> 04c93704ee7d7581963886c15264ab97d1ac9983
         setUsers(responseData.data);
         setPagination((prev) => ({
           ...prev,
