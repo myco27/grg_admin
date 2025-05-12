@@ -214,13 +214,14 @@ const RolePermissionTable = () => {
   const confirmDeletePermission = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `permissions/delete/${selectedPermissionId}`
       );
       showAlert(response.data.message, "success");
       fetchUser();
       fetchPermissions();
       fetchRoles();
+      fetchPermissionsTable();
     } catch (error) {
       if (error.response.data.errors) {
         showAlert(error.response.data.errors, "error");
