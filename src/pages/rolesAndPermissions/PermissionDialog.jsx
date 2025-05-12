@@ -10,7 +10,7 @@ import {
 import axiosClient from "../../axiosClient";
 import { useAlert } from "../../contexts/alertContext";
 
-const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
+const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions, fetchPermissionsTable }) => {
   const [permissionName, setPermissionName] = useState("");
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
@@ -25,6 +25,7 @@ const PermissionDialog = ({ open, onClose, fetchRoles, fetchPermissions }) => {
         showAlert(response.data.message, "success");
         fetchRoles();
         fetchPermissions();
+        fetchPermissionsTable();
         onClose();
       }
     } catch (error) {

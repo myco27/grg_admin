@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext } from "react";
-import axios from "../../axiosClient";
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -14,13 +13,7 @@ import {
 } from "@material-tailwind/react";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useAlert } from "../../contexts/alertContext";
-import {
-  UserPlusIcon,
-  ShieldCheckIcon,
-  Search,
-  Trash,
-  Trash2,
-} from "lucide-react";
+import { UserPlusIcon, ShieldCheckIcon, Search, Trash2 } from "lucide-react";
 import RoleDialog from "./RoleDialog";
 import PermissionDialog from "./PermissionDialog";
 import Pagination from "../../components/OrdersPage/Pagination";
@@ -32,6 +25,7 @@ import axiosClient from "../../axiosClient";
 const RolePermissionTable = () => {
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
+  const [permissionTableLList, setPermissionTableList] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -41,17 +35,15 @@ const RolePermissionTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
-  const { showAlert } = useAlert();
   const [searchTerm, setSearchTerm] = useState("");
   const debounceSearch = UseDebounce({ value: searchTerm });
   const [permissionSearch, setPermissionSeach] = useState("");
-  const [userId, setUserId] = useState(0);
   const [permissionId, setPermissionId] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const debounceSearchPermission = UseDebounce({ value: permissionSearch });
   const [selectedPermName, setSelectedPermName] = useState(null);
   const [selectedPermissionId, setSelectedPermissionId] = useState(null);
-
+  const { showAlert } = useAlert();
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -61,6 +53,27 @@ const RolePermissionTable = () => {
     isLoading: false,
   });
 
+  const [permissionPagination, setPermissionPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    totalItems: 0,
+    links: [],
+    itemsPerPage: 10,
+    isLoading: false,
+  });
+
+  const { user, fetchUser } = useStateContext();
+
+  const canAddPermission =
+    user?.all_permissions?.some(
+      (p) => p.name === "can add permission" && p.status_id === 1
+    ) || false;
+
+  const viewPermissionTable =
+    user?.all_permissions?.some(
+      (p) => p.name === "view permission table" && p.status_id === 1
+    ) || false;
+
   useEffect(() => {
     fetchRoles();
   }, [pagination.page, debounceSearch, pagination.itemsPerPage]);
@@ -69,92 +82,15 @@ const RolePermissionTable = () => {
     fetchPermissions();
   }, [debounceSearchPermission, setSelectedPermission]);
 
-  const { user, fetchUser } = useStateContext();
+  useEffect(() => {
+    fetchPermissionsTable();
+  }, [permissionPagination.page, permissionPagination.itemsPerPage]);
 
-  const canAddPermission =
-    user?.all_permissions?.some((p) => p.name === "can add permission") ||
-    false;
-
-  const viewPermissionTable =
-    user?.all_permissions?.some((p) => p.name === "view permission table") ||
-    false;
-
-  const handleSwitch = (role, permission) => {
-    setSelectedRole(role);
-    setSelectedPermission(permission);
-    const hasPermission = role.permissions.some((p) => p.name === permission);
-    setIsAdding(!hasPermission);
-
-    setOpen(true);
-  };
-
-  const handleDelete = (permissionId, permissionName) => {
-    setSelectedPermissionId(permissionId);
-    setSelectedPermName(permissionName);
-    setOpenDeleteConfirmation(true);
-  };
-
-  const handleStatusChange = (permissionId, status_id, selectedPerm) => {
-    setPermissionId(permissionId);
-    setSelectedStatus(status_id);
-    setSelectedPermName(selectedPerm);
-
-    setOpenConfirm(true);
-  };
-
-  const changeStatus = async () => {
-    try {
-      setIsLoading(true);
-
-      const payload = { permision_id: permissionId, status: selectedStatus };
-      const response = await axiosClient.put(
-        `permissions/change-status/${permissionId}`,
-        payload
-      );
-      showAlert(response.data.message, "success");
-      fetchUser();
-      fetchPermissions();
-    } catch (error) {
-      console.error("Failed to change status:", error);
-    } finally {
-      setIsLoading(false);
-      setOpenConfirm(false);
-    }
-  };
-
-  const handleOpenRoleDialog = () => {
-    setRoleDialogOpen(true);
-  };
-
-  const handleOpenPermissionDialog = () => {
-    setPermissionDialogOpen(true);
-  };
-
-  //   FOR PAGINATION
-  const handlePageChange = (newPage) => {
-    setPagination({
-      ...pagination,
-      page: newPage,
-    });
-  };
-
-  const handlePageSizeChange = (value) => {
-    setPagination({
-      ...pagination,
-      page: 1,
-      itemsPerPage: Number(value),
-    });
-  };
-
-  const handleSearchInput = (event) => {
-    const { value } = event.target;
-    setSearchTerm(value);
-  };
-
+  // API CALLS
   const fetchRoles = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
-      const response = await axios.get("/roles/with-permissions", {
+      const response = await axiosClient.get("/roles/with-permissions", {
         params: {
           page: pagination.page,
           search: debounceSearch,
@@ -184,7 +120,7 @@ const RolePermissionTable = () => {
   const fetchPermissions = async () => {
     try {
       setPagination({ ...pagination, isLoading: true });
-      const response = await axios.get("/permissions", {
+      const response = await axiosClient.get("/permissions", {
         params: {
           filterPermission: permissionSearch,
         },
@@ -195,6 +131,57 @@ const RolePermissionTable = () => {
       console.error("Error fetching permissions:", error);
     } finally {
       setPagination({ ...pagination, isLoading: false });
+    }
+  };
+
+  const fetchPermissionsTable = async () => {
+    try {
+      setPermissionPagination((prev) => ({ ...prev, isLoading: true }));
+      const response = await axiosClient.get("/permissions/list", {
+        params: {
+          page: permissionPagination.page,
+          page_size: permissionPagination.itemsPerPage,
+        },
+      });
+
+      const { data, current_page, last_page, total, links, per_page } =
+        response.data;
+
+      setPermissionTableList(data);
+      setPermissionPagination((prev) => ({
+        ...prev,
+        page: current_page,
+        totalPages: last_page,
+        totalItems: total,
+        links: links,
+        itemsPerPage: per_page,
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
+    } finally {
+      setPermissionPagination((prev) => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const togglePermissionStatus = async () => {
+    try {
+      setIsLoading(true);
+
+      const payload = { permision_id: permissionId, status: selectedStatus };
+      const response = await axiosClient.put(
+        `permissions/change-status/${permissionId}`,
+        payload
+      );
+      showAlert(response.data.message, "success");
+      fetchUser();
+      fetchPermissions();
+      fetchPermissionsTable();
+    } catch (error) {
+      console.error("Failed to change status:", error);
+    } finally {
+      setIsLoading(false);
+      setOpenConfirm(false);
     }
   };
 
@@ -244,6 +231,75 @@ const RolePermissionTable = () => {
 
       setSelectedPermission("");
     }
+  };
+
+  // EVENT LISTENERS
+  const handleOpenRoleDialog = () => {
+    setRoleDialogOpen(true);
+  };
+
+  const handleOpenPermissionDialog = () => {
+    setPermissionDialogOpen(true);
+  };
+
+  //   FOR PAGINATION
+  const handlePageChange = (newPage) => {
+    setPagination({
+      ...pagination,
+      page: newPage,
+    });
+  };
+
+  const handlePageSizeChange = (value) => {
+    setPagination({
+      ...pagination,
+      page: 1,
+      itemsPerPage: Number(value),
+    });
+  };
+
+  const handleSearchInput = (event) => {
+    const { value } = event.target;
+    setSearchTerm(value);
+  };
+
+  const handleSwitch = (role, permission) => {
+    setSelectedRole(role);
+    setSelectedPermission(permission);
+    const hasPermission = role.permissions.some((p) => p.name === permission);
+    setIsAdding(!hasPermission);
+
+    setOpen(true);
+  };
+
+  const handleDelete = (permissionId, permissionName) => {
+    setSelectedPermissionId(permissionId);
+    setSelectedPermName(permissionName);
+    setOpenDeleteConfirmation(true);
+  };
+
+  const handleStatusChange = (permissionId, status_id, selectedPerm) => {
+    setPermissionId(permissionId);
+    setSelectedStatus(status_id);
+    setSelectedPermName(selectedPerm);
+
+    setOpenConfirm(true);
+  };
+
+  // PERMISSION TABLE EVENT LISTENERS
+  const handlePermissionPageChange = (newPage) => {
+    setPermissionPagination({
+      ...permissionPagination,
+      page: newPage,
+    });
+  };
+
+  const handlePermissionPageSizeChange = (value) => {
+    setPermissionPagination({
+      ...permissionPagination,
+      page: 1,
+      itemsPerPage: Number(value),
+    });
   };
 
   const permissionHead = ["NAME", "STATUS", "DATE UPDATED", "ACTION"];
@@ -348,9 +404,7 @@ const RolePermissionTable = () => {
                 {Array.isArray(roles) && roles.length > 0 ? (
                   roles
                     .filter(
-                      (role) =>
-                        user?.roles?.[0]?.name === "developer" ||
-                        role.name !== "developer"
+                     (role) => user?.roles?.[0]?.name === "developer" || role.name !== "developer"
                     )
                     .map((role) => (
                       <tr
@@ -420,86 +474,102 @@ const RolePermissionTable = () => {
         </CardFooter>
       </Card>
 
+      {/* PERMISSION TABLE */}
       {viewPermissionTable && (
         <Card className="h-full w-full">
           <CardHeader floated={false} shadow={false}>
-            <Typography variant="h5" color="blue-gray">
+            <Typography className="px-2" variant="h5" color="blue-gray">
               Permissions
             </Typography>
           </CardHeader>
           <CardBody>
-            <table className="w-full min-w-max table-auto rounded-md">
-              <thead className="h-16 bg-gray-200 text-left">
-                <tr>
-                  {permissionHead.map((permission, index) => {
-                    return (
-                      <th
-                        key={index}
-                        className={`bg-tableHeaderBg p-4 ${
-                          index === permissionHead.length - 1
-                            ? "rounded-tr-md rounded-br-md"
-                            : ""
-                        }`}
-                      >
-                        <Typography
-                          variant="small"
-                          color="black"
-                          className="flex items-center gap-2 font-normal leading-none opacity-70"
+            {permissionPagination.isLoading ? (
+              <Loading />
+            ) : (
+              <table className="w-full min-w-max table-auto rounded-md">
+                <thead className="h-16 bg-gray-200 text-left">
+                  <tr>
+                    {permissionHead.map((permission, index) => {
+                      return (
+                        <th
+                          key={index}
+                          className={`bg-tableHeaderBg p-4 rounded-l-md ${
+                            index === permissionHead.length - 1
+                              ? "rounded-tr-md rounded-br-md  justify-center items-center"
+                              : ""
+                          }`}
                         >
-                          {permission}
-                        </Typography>
-                      </th>
+                          <Typography
+                            variant="small"
+                            color="black"
+                            className="flex items-center gap-2 font-normal leading-none opacity-70"
+                          >
+                            {permission}
+                          </Typography>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                </thead>
+                <tbody className="">
+                  {permissionTableLList.map((perm) => {
+                    const readableDate = new Date(
+                      perm.updated_at
+                    ).toLocaleString();
+
+                    return (
+                      <tr className="m-24 h-16 border-b" key={perm.id}>
+                        <td className="max-w-48 px-4 py-2 text-left">
+                          {perm.name}
+                        </td>
+                        <td className="px-4 py-2 text-left">
+                          <Switch
+                            color="green"
+                            value={perm.status_id}
+                            onChange={() =>
+                              handleStatusChange(
+                                perm.id,
+                                perm.status_id,
+                                perm.name
+                              )
+                            }
+                            checked={perm.status_id === 1}
+                          />
+                        </td>
+                        <td className="max-w-48 px-4 py-2 text-left">
+                          {readableDate}
+                        </td>
+                        <td className="px-4 py-2">
+                          <Tooltip content="Delete">
+                            <Trash2
+                              className="h-4 w-4 cursor-pointer "
+                              color="red"
+                              onClick={() => handleDelete(perm.id, perm.name)}
+                            />
+                          </Tooltip>
+                        </td>
+                      </tr>
                     );
                   })}
-                </tr>
-              </thead>
-              <tbody className="">
-                {permissions.map((perm) => {
-                  const readableDate = new Date(
-                    perm.updated_at
-                  ).toLocaleString();
-
-                  return (
-                    <tr className="m-24 h-16 border-b" key={perm.id}>
-                      <td className="max-w-48 px-4 py-2 text-left">
-                        {perm.name}
-                      </td>
-                      <td>
-                        <Switch
-                          color="green"
-                          value={perm.status_id}
-                          onChange={() =>
-                            handleStatusChange(
-                              perm.id,
-                              perm.status_id,
-                              perm.name
-                            )
-                          }
-                          checked={perm.status_id === 1}
-                        />
-                      </td>
-                      <td className="max-w-48 px-4 py-2 text-left">
-                        {readableDate}
-                      </td>
-                      <td className="px-4 py-2 text-center">
-                        <Tooltip content="Delete">
-                          <Trash2
-                            className="h-4 w-4 cursor-pointer "
-                            color="red"
-                            onClick={() => handleDelete(perm.id, perm.name)}
-                          />
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            )}
           </CardBody>
+          <CardFooter className="">
+            <Pagination
+              currentPage={permissionPagination.page}
+              totalItems={permissionPagination.totalItems}
+              itemsPerPage={permissionPagination.itemsPerPage}
+              totalPages={permissionPagination.totalPages}
+              onPageChange={(newPage) => handlePermissionPageChange(newPage)}
+              onPageSizeChange={handlePermissionPageSizeChange}
+            />
+          </CardFooter>
         </Card>
       )}
 
       {/* CONFIRMATION DIALOG BOX */}
+      {/* FOR ROLES AND PERMISSION TOGGLE STATUS */}
       <ConfirmationDialog
         open={open}
         onClose={() => setOpen(false)}
@@ -511,10 +581,12 @@ const RolePermissionTable = () => {
             : `Are you sure you want to revoke the "${selectedPermission}" permission from the "${selectedRole?.name}" role?`
         }
       />
+
+      {/* FOR PERMISSION TOGGLE STATUS */}
       <ConfirmationDialog
         open={openConfirm}
         onClose={() => setOpenConfirm(!openConfirm)}
-        onConfirm={changeStatus}
+        onConfirm={togglePermissionStatus}
         isLoading={isLoading}
         message={
           selectedStatus == 3
@@ -543,6 +615,7 @@ const RolePermissionTable = () => {
         onClose={() => setPermissionDialogOpen(false)}
         fetchRoles={fetchRoles}
         fetchPermissions={fetchPermissions}
+        fetchPermissionsTable={fetchPermissionsTable}
       />
     </div>
   );
