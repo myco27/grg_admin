@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu as MenuIcon,
   Settings,
+  Download,
   User,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -135,10 +136,32 @@ export default function Header() {
         return "Settings";
       case "/roles-and-permissions":
         return "Roles and Permissions";
-        case "/configuration":
-          return "Configuration";
+      case "/configuration":
+        return "Configuration";
       default:
         return "Dashboard";
+    }
+  };
+
+  // For Export
+  const handleExport = async () => {
+    try {
+      const response = await axiosClient.get("/export", {
+        responseType: "blob",
+      });
+
+      const currentDate = new Date().toISOString().split("T")[0];
+      const fileName = `sample_import_format_${currentDate}.xlsx`;
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Download failed:", error);
     }
   };
 
@@ -209,10 +232,16 @@ export default function Header() {
             </MenuItem>
             <hr className="my-2 border-blue-gray-50" /> */}
             <MenuItem
-              className="flex items-center gap-2 text-gray-500"
+              className="flex items-center gap-2"
               onClick={openProfileModal}
             >
               <User className="h-4 w-4" /> Profile
+            </MenuItem>
+            <MenuItem
+              className="flex items-center gap-2 text-nowrap"
+              onClick={handleExport}
+            >
+              <Download className="h-4 w-4" /> Export Menu Template
             </MenuItem>
             <MenuItem
               className="flex items-center gap-2 text-red-500"
