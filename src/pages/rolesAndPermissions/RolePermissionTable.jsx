@@ -189,7 +189,7 @@ const RolePermissionTable = () => {
     if (!selectedRole || !selectedPermission) return;
     setIsLoading(true);
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `/roles/${selectedRole.id}/toggle-permission`,
         {
           permission: selectedPermission,
@@ -405,7 +405,9 @@ const RolePermissionTable = () => {
                 {Array.isArray(roles) && roles.length > 0 ? (
                   roles
                     .filter(
-                     (role) => user?.roles?.[0]?.name === "developer" || role.name !== "developer"
+                      (role) =>
+                        user?.roles?.[0]?.name === "developer" ||
+                        role.name !== "developer"
                     )
                     .map((role) => (
                       <tr
