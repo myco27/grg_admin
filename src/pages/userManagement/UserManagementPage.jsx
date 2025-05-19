@@ -536,22 +536,30 @@ const UserManagementPage = () => {
                                   variant="ghost"
                                   size="sm"
                                   value={
-                                    user.is_active == 1
+                                    user.is_active == 0
+                                      ? "Inactive"
+                                      : user.is_active == 1
                                       ? "Active"
                                       : user.is_active == 2
                                       ? "Suspended"
                                       : user.is_active == 3
                                       ? "Deleted"
-                                      : "Inactive"
+                                      : user.is_active == 4
+                                      ? "Terminated"
+                                      : ""
                                   }
                                   color={
-                                    user.is_active == 1
+                                    user.is_active == 0
+                                      ? "blue-gray"
+                                      : user.is_active == 1
                                       ? "green"
                                       : user.is_active == 2
                                       ? "orange"
                                       : user.is_active == 3
                                       ? "red"
-                                      : "blue-gray"
+                                      : user.is_active == 4
+                                      ? "deep-orange"
+                                      : ""
                                   }
                                 />
                               </div>
