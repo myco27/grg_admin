@@ -12,6 +12,9 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosClient.get("/user");
 
       setUser(response.data.user);
+
+      localStorage.removeItem("USER");
+      localStorage.setItem("USER", JSON.stringify(response.data.user));
     } catch (err) {
       setUser(null);
     } finally {
