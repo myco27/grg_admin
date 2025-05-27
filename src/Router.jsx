@@ -25,6 +25,7 @@ import Configuration from "./pages/Configuration/Configuration";
 import TermsAndConditions from "./pages/Configuration/TermsAndConditions";
 import AboutUs from "./pages/Configuration/AboutUs";
 import PrivacyPolicy from "./pages/Configuration/PrivacyPolicies";
+import FreeItems from "./pages/freeItemsManagement/FreeItems";
 
 
 // Wrapper component to handle redirection based on authentication status
@@ -150,12 +151,19 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-  
       {
         path: "configuration",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
             <Configuration/>
+          </ProtectedRoute>
+        ),
+      },
+       {
+        path: "free-items",
+        element: (
+          <ProtectedRoute requiredPermission="view free items">
+            <FreeItems/>
           </ProtectedRoute>
         ),
       },

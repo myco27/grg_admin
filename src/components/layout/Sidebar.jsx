@@ -20,6 +20,7 @@ import {
   Cog,
   Info,
   Siren,
+  UtensilsIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -77,6 +78,11 @@ const Sidebar = () => {
   const canViewConfigurationModule =
     user?.all_permissions?.some(
       (p) => p.name === "view configuration module" && p.status_id === 1
+    ) || false;
+
+  const canViewFreeItems =
+    user?.all_permissions?.some(
+      (p) => p.name === "view free items" && p.status_id === 1
     ) || false;
 
   useEffect(() => {
@@ -530,6 +536,46 @@ const Sidebar = () => {
                 </>
               )}
 
+              {canViewFreeItems && (
+                <>
+                  <Link to="/free-items">
+                    <ListItem
+                      className={`hover:bg-[#3A1066] ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "w-[40px] px-2"
+                          : "w-[220px]"
+                      } ${
+                        location.pathname === "/free-items"
+                          ? "!bg-[#3A1066]"
+                          : ""
+                      }`}
+                    >
+                      <ListItemPrefix className="min-w-[24px]">
+                        <UtensilsIcon
+                          className={`h-5 w-5 text-white ${
+                            location.pathname === "/free-items" ? "" : ""
+                          }`}
+                        />
+                      </ListItemPrefix>
+                      <div
+                        className={`${
+                          sidebarCollapsed && !sidebarHovered
+                            ? "absolute left-[-9999px]"
+                            : ""
+                        } transition-all duration-300`}
+                      >
+                        <Typography
+                          color="white"
+                          className="whitespace-nowrap text-sm font-normal"
+                        >
+                          Free Items
+                        </Typography>
+                      </div>
+                    </ListItem>
+                  </Link>
+                </>
+              )}
+
               {/* Roles and Permissions */}
               {canViewRolesAndPermissionsModule && (
                 <Link to="/roles-and-permissions">
@@ -922,6 +968,46 @@ const Sidebar = () => {
                       </Link>
                     </div>
                   </Collapse>
+                </>
+              )}
+
+              {canViewFreeItems && (
+                <>
+                  <Link to="/free-items">
+                    <ListItem
+                      className={`hover:bg-[#3A1066] ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "w-[40px] px-2"
+                          : "w-[220px]"
+                      } ${
+                        location.pathname === "/free-items"
+                          ? "!bg-[#3A1066]"
+                          : ""
+                      }`}
+                    >
+                      <ListItemPrefix className="min-w-[24px]">
+                        <UtensilsIcon
+                          className={`h-5 w-5 text-white ${
+                            location.pathname === "/free-items" ? "" : ""
+                          }`}
+                        />
+                      </ListItemPrefix>
+                      <div
+                        className={`${
+                          sidebarCollapsed && !sidebarHovered
+                            ? "absolute left-[-9999px]"
+                            : ""
+                        } transition-all duration-300`}
+                      >
+                        <Typography
+                          color="white"
+                          className="whitespace-nowrap text-sm font-normal"
+                        >
+                          Free Items
+                        </Typography>
+                      </div>
+                    </ListItem>
+                  </Link>
                 </>
               )}
 
