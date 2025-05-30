@@ -22,11 +22,11 @@ import EditGlobalItemsModal from "./EditGlobalItemsModal";
 
 const FreeItems = () => {
   const globalItemsHeader = [
-    "NAME",
-    "DESCRIPTION",
-    "STATUS",
-    "DATE CREATED",
-    "ACTION",
+    "Name",
+    "Description",
+    "Status",
+    "Date Created",
+    "Action",
   ];
   const [globalItemsTableLList, setGlobalItemsTableList] = useState([]);
   const [openGlobalItems, setGlobalItemsOpen] = useState(false);
@@ -168,7 +168,8 @@ const FreeItems = () => {
                 size="sm"
                 onClick={handleOpenGlobalItems}
               >
-                <Plus strokeWidth={2} className="h-4 w-4"/>Add Global Item
+                <Plus strokeWidth={2} className="h-4 w-4" />
+                Add Global Item
               </Button>
             </div>
           </div>
@@ -195,18 +196,20 @@ const FreeItems = () => {
           {globalItemsPagination.isLoading ? (
             <Loading />
           ) : (
-            <table className="w-full min-w-max table-auto rounded-md">
-              <thead className="h-16 bg-gray-200 text-left">
+            <table className="rounded-md w-full min-w-max table-auto text-left">
+              <thead>
                 <tr>
                   {globalItemsHeader.map((globalItems, index) => {
                     return (
                       <th
                         key={index}
-                        className={`bg-tableHeaderBg p-4 rounded-l-md ${
-                          index === globalItemsHeader.length - 1
-                            ? "rounded-tr-md rounded-br-md  justify-center items-center"
-                            : ""
-                        }`}
+                        className={`bg-tableHeaderBg p-4
+                          ${index === 0 ? "rounded-tl-md rounded-bl-md" : ""}
+                          ${
+                            index === globalItemsHeader.length - 1
+                              ? "rounded-tr-md rounded-br-md"
+                              : ""
+                          }`}
                       >
                         <Typography
                           variant="small"
@@ -227,16 +230,29 @@ const FreeItems = () => {
                   ).toLocaleString();
                   return (
                     <tr
-                      className="m-24 h-16 border-b"
+                      className="border-b border-gray-300 hover:bg-gray-100"
                       key={data.global_items_id}
                     >
-                      <td className="max-w-48 px-4 py-2 text-left">
-                        {data.name}
+                      <td className="p-4">
+                        {" "}
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {data.name}
+                        </Typography>
                       </td>
-                      <td className="max-w-48 px-4 py-2 text-left">
-                        {data.description}
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {data.description}
+                        </Typography>
                       </td>
-                      <td className="px-4 py-2 text-left">
+                      <td className="p-4">
                         <Switch
                           color="green"
                           value={data.status_id}
@@ -249,10 +265,16 @@ const FreeItems = () => {
                           checked={data.status_id === 1}
                         />
                       </td>
-                      <td className="max-w-48 px-4 py-2 text-left">
-                        {readableDate}
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {readableDate}
+                        </Typography>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="p-4">
                         <Tooltip content="Edit">
                           <PencilIcon
                             onClick={() => handleEditOpen(data.global_items_id)}

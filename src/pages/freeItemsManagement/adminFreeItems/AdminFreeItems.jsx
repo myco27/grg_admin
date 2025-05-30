@@ -168,8 +168,7 @@ const AdminFreeItems = () => {
                 size="sm"
                 onClick={handleOpenAddModal}
               >
-                <Plus strokeWidth={2} className="h-4 w-4"/> Add Admin Free
-                Item
+                <Plus strokeWidth={2} className="h-4 w-4" /> Add Admin Free Item
               </Button>
             </div>
           </div>
