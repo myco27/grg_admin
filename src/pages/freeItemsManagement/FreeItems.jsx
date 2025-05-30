@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/layout/Loading";
 import axiosClient from "../../axiosClient";
 import Pagination from "../../components/OrdersPage/Pagination";
-import { PencilIcon, Search, Trash2, UserPlusIcon } from "lucide-react";
+import { PencilIcon, Search, Plus } from "lucide-react";
 import AddGlobalItemsModal from "./AddGlobalItemsModal";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useAlert } from "../../contexts/alertContext";
@@ -168,7 +168,7 @@ const FreeItems = () => {
                 size="sm"
                 onClick={handleOpenGlobalItems}
               >
-                <UserPlusIcon strokeWidth={2} className="w-5" /> Add Global Item
+                <Plus strokeWidth={2} className="h-4 w-4"/>Add Global Item
               </Button>
             </div>
           </div>
@@ -191,7 +191,7 @@ const FreeItems = () => {
             </div>
           </div>
         </CardHeader>
-        <CardBody>
+        <CardBody className="overflow-scroll">
           {globalItemsPagination.isLoading ? (
             <Loading />
           ) : (

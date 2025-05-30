@@ -26,7 +26,7 @@ import TermsAndConditions from "./pages/Configuration/TermsAndConditions";
 import AboutUs from "./pages/Configuration/AboutUs";
 import PrivacyPolicy from "./pages/Configuration/PrivacyPolicies";
 import FreeItems from "./pages/freeItemsManagement/FreeItems";
-
+import AdminFreeItems from "./pages/freeItemsManagement/adminFreeItems/AdminFreeItems";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -131,7 +131,7 @@ const router = createBrowserRouter([
         path: "configuration/privacypolicy",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
-            <PrivacyPolicy/>
+            <PrivacyPolicy />
           </ProtectedRoute>
         ),
       },
@@ -139,7 +139,7 @@ const router = createBrowserRouter([
         path: "configuration/termsandconditions",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
-            <TermsAndConditions/>
+            <TermsAndConditions />
           </ProtectedRoute>
         ),
       },
@@ -147,7 +147,7 @@ const router = createBrowserRouter([
         path: "configuration/aboutus",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
-            <AboutUs/>
+            <AboutUs />
           </ProtectedRoute>
         ),
       },
@@ -155,15 +155,23 @@ const router = createBrowserRouter([
         path: "configuration",
         element: (
           <ProtectedRoute requiredPermission="view configuration module">
-            <Configuration/>
+            <Configuration />
           </ProtectedRoute>
         ),
       },
-       {
+      {
         path: "free-items",
         element: (
           <ProtectedRoute requiredPermission="view free items">
-            <FreeItems/>
+            <FreeItems />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/free-items",
+        element: (
+          <ProtectedRoute requiredPermission="view free items">
+            <AdminFreeItems />
           </ProtectedRoute>
         ),
       },
