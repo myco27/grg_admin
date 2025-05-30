@@ -1160,13 +1160,14 @@ const Sidebar = () => {
                         </ListItem>
                       </Link>
                     </div>
+
                     <div
                       className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
                         freeItemConfigOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
                       <Link
-                        to="/configuration/privacypolicy"
+                        to="/admin/free-items"
                         className="flex w-full items-center"
                       >
                         <ListItem
@@ -1175,9 +1176,7 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith(
-                              "/configuration/privacypolicy"
-                            )
+                            location.pathname.startsWith("/admin/free-items")
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
@@ -1189,7 +1188,7 @@ const Sidebar = () => {
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                            Privacy Policy
+                            Admin Free Items
                           </Typography>
                         </ListItem>
                       </Link>
