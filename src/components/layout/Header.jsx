@@ -138,6 +138,10 @@ export default function Header() {
         return "Roles and Permissions";
       case "/configuration":
         return "Configuration";
+      case "/free-items":
+        return "Global Items";
+      case "/admin/free-items":
+        return "Admin Free Items";
       default:
         return "Dashboard";
     }
