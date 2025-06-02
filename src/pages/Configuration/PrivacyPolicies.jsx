@@ -12,8 +12,6 @@ import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
 import { useAlert } from "../../contexts/alertContext";
 
-
-
 function PrivacyPolicy() {
   const [_content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,18 +32,16 @@ function PrivacyPolicy() {
   const saveTerms = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.post(
-        "admin/config/privacy_policy",
-        { content: _content }
-      );
+      const response = await axiosClient.post("admin/config/privacy_policy", {
+        content: _content,
+      });
       console.log(response.data);
     } catch (e) {
       console.error(e.response?.data || e.message);
     } finally {
       showAlert("Succesfully Saved!", "success");
-      fetchTerms()
+      fetchTerms();
       setLoading(false);
-   
     }
   };
 
@@ -60,12 +56,18 @@ function PrivacyPolicy() {
           Privacy Policy
         </Typography>
       </CardHeader>
-      {loading?<Loading/>:<CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-        <TextEditor
-          value={_content}
-          onChange={(e) => setContent(e)}
-        ></TextEditor>
-      </CardBody>}
+      {loading ? (
+        <Loading />
+      ) : (
+        <CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative h-[70vh] overflow-y-auto rounded">
+            <TextEditor
+              value={_content}
+              onChange={(e) => setContent(e)}
+            ></TextEditor>
+          </div>
+        </CardBody>
+      )}
       <CardFooter className="flex justify-end">
         <Button className="sticky bg-primary" onClick={saveTerms}>
           Save

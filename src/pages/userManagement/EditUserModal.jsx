@@ -12,6 +12,8 @@ import {
   Chip,
   Tooltip,
   Spinner,
+  Select,
+  Option,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { PencilIcon } from "@heroicons/react/24/solid";
@@ -46,6 +48,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [userStatus, setUserStatus] = useState(0);
   const [points, setPoints] = useState(0);
   const [localSupportNumber, setLocalSupportNumber] = useState("");
   const [businessLandlineNumber, setBusinessLandlineNumber] = useState("");
@@ -153,6 +156,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       const response = await axiosClient.get(`/admin/users/${userId}`);
 
       if (response.status === 200) {
+        setUserStatus(response.data.data.is_active);
         setFirstName(response.data.data.first_name);
         setLastName(response.data.data.last_name);
         setEmail(response.data.data.email);
@@ -235,6 +239,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       formData.append("last_name", lastName);
       formData.append("email", email);
       formData.append("mobile_number", mobileNumber);
+      formData.append("is_active", userStatus);
       formData.append("local_support_number", localSupportNumber);
       formData.append("business_landline_number", businessLandlineNumber);
       formData.append("business_contact_number", businessContactNumber);
@@ -260,6 +265,7 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
       );
 
       if (response.status === 202) {
+        fetchUsers();
         showAlert("User updated successfully!", "success");
         handleOpen();
       }
@@ -441,6 +447,19 @@ const EditUserModal = ({ open, handleOpen, userId, userType, fetchUsers }) => {
               ) : (
                 <div></div>
               )}
+
+              <Select
+                value={String(userStatus)}
+                onChange={(value) => setUserStatus(Number(value))}
+                label="Select Status"
+              >
+                <Option value="0">Inactive</Option>
+                <Option value="1">Active</Option>
+                <Option value="2">Suspended</Option>
+                <Option value="3">Deleted</Option>
+                <Option value="4">Terminated</Option>
+              </Select>
+
               {/* Password Field */}
               <div className="relative">
                 <Input

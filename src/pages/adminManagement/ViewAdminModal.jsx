@@ -55,6 +55,7 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
       const response = await axiosClient.get(`/admin/users/${adminId}/roles`);
       if (response.status === 200) {
         const responseData = response.data.user;
+
         setFormData({
           first_name: responseData.first_name,
           last_name: responseData.last_name,
@@ -64,9 +65,13 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
           profile_picture: responseData.profile_picture || "",
         });
         if (responseData.profile_picture) {
-          setProfileImage(`${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${responseData.profile_picture}`);
+          setProfileImage(
+            `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${
+              responseData.profile_picture
+            }`
+          );
         } else {
-          setProfileImage('/rocky_go_logo.png');
+          setProfileImage("/rocky_go_logo.png");
         }
       }
     } catch (error) {
@@ -95,19 +100,24 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
             <div className="flex items-center gap-5 px-4">
               <div className="w-[4rem] h-[4rem] rounded-full bg-gray-300 flex items-center justify-center">
                 <img
-                  src={profileImage || '/rocky_go_logo.png'}
+                  src={profileImage || "/rocky_go_logo.png"}
                   alt="Profile"
                   className="w-full h-full rounded-full object-cover"
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    e.target.src = '/rocky_go_logo.png';
+                    e.target.src = "/rocky_go_logo.png";
                     e.target.onerror = null;
                   }}
                 />
               </div>
               <div>
-                <Typography variant="small" className="text-xs font-semibold text-blue-gray-700">Profile Picture</Typography>
+                <Typography
+                  variant="small"
+                  className="text-xs font-semibold text-blue-gray-700"
+                >
+                  Profile Picture
+                </Typography>
               </div>
             </div>
             <div className="flex gap-5">
@@ -147,8 +157,8 @@ const ViewAdminModal = ({ viewOpen, viewHandleOpen, adminId, fetchUsers }) => {
                   <Chip
                     color="purple"
                     className="m-1 max-w-fit bg-purple-50 text-purple-900"
-                    value={value}
-                  ></Chip>
+                    value={value.name}
+                  />
                 </div>
               ))}
             </div>

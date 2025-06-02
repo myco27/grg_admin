@@ -8,8 +8,8 @@ const ProtectedRoute = ({ children, requiredPermission }) => {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  const hasPermission = user.all_permissions.some((perm) =>
-    requiredPermission.includes(perm)
+  const hasPermission = user.all_permissions.some(
+    (perm) => perm.name === requiredPermission && perm.status_id === 1
   );
 
   if (!hasPermission) {

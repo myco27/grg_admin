@@ -12,8 +12,6 @@ import axiosClient from "../../axiosClient";
 import Loading from "../../components/layout/Loading";
 import { useAlert } from "../../contexts/alertContext";
 
-
-
 function TermsAndConditions() {
   const [_content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +20,9 @@ function TermsAndConditions() {
   const fetchTerms = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.get("admin/config/terms_and_conditions");
+      const response = await axiosClient.get(
+        "admin/config/terms_and_conditions"
+      );
       setContent(response.data.content);
     } catch (e) {
       console.error(e.error);
@@ -43,9 +43,8 @@ function TermsAndConditions() {
       console.error(e.response?.data || e.message);
     } finally {
       showAlert("Succesfully Saved!", "success");
-      fetchTerms()
+      fetchTerms();
       setLoading(false);
-   
     }
   };
 
@@ -60,12 +59,19 @@ function TermsAndConditions() {
           Terms and Conditions
         </Typography>
       </CardHeader>
-      {loading?<Loading/>:<CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-        <TextEditor
-          value={_content}
-          onChange={(e) => setContent(e)}
-        ></TextEditor>
-      </CardBody>}
+      {loading ? (
+        <Loading />
+      ) : (
+        <CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative h-[70vh] overflow-y-auto rounded">
+            <TextEditor
+            className="!border-none"
+              value={_content}
+              onChange={(e) => setContent(e)}
+            ></TextEditor>
+          </div>
+        </CardBody>
+      )}
       <CardFooter className="flex justify-end">
         <Button className="sticky bg-primary" onClick={saveTerms}>
           Save
