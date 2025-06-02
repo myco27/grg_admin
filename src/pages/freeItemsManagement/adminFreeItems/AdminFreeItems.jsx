@@ -28,9 +28,10 @@ const AdminFreeItems = () => {
     "Promo Code",
     "Max Quantity Per Day",
     "Status",
+    "Start Date",
     "Valid Until",
     "Date Created",
-    "Date Created",
+    "Date Updated",
     "Action",
   ];
   const [tableData, setTableData] = useState([]);
@@ -225,6 +226,14 @@ const AdminFreeItems = () => {
 
               <tbody className="">
                 {tableData.map((data) => {
+                  const start_date = data.start_date
+                    ? new Date(data.start_date).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "";
+
                   const date_created = new Date(
                     data.created_at
                   ).toLocaleString();
@@ -285,6 +294,15 @@ const AdminFreeItems = () => {
                           }
                           checked={data.status_id === 1}
                         />
+                      </td>
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {start_date}
+                        </Typography>
                       </td>
                       <td className="p-4">
                         <Typography

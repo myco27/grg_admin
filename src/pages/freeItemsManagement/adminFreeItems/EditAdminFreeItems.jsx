@@ -29,6 +29,7 @@ const EditAdminFreeItems = ({
   const [formData, setFormData] = useState({
     title: "",
     promoCode: "",
+    startDate: "",
     validUntil: "",
     userLimitUsage: 1,
     maxQuantityPerDay: 1,
@@ -80,6 +81,7 @@ const EditAdminFreeItems = ({
       setFormData({
         title: responseData.title,
         promoCode: responseData.promo_code,
+        startDate: new Date(responseData.start_date),
         validUntil: new Date(responseData.valid_until),
         userLimitUsage: responseData.user_limit_usage,
         maxQuantityPerDay: responseData.max_qty_per_day,
@@ -164,7 +166,7 @@ const EditAdminFreeItems = ({
 
   useEffect(() => {
     setActiveTab("Admin Free Items");
-    
+
     if (editOpen) {
       fetchItemDetails();
       fetchAllStores();
@@ -206,6 +208,7 @@ const EditAdminFreeItems = ({
           promoCode: formData.promoCode,
           maxQuantityPerDay: formData.maxQuantityPerDay,
           userLimitUsage: formData.userLimitUsage,
+          startDate: formData.startDate,
           validUntil: formData.validUntil,
           selectedStores: selectedStores,
           selectedGlobalItems: selectedGlobalItem,
@@ -370,6 +373,14 @@ const EditAdminFreeItems = ({
             value={formData.userLimitUsage}
             onChange={handleInputChange}
             required
+          />
+
+          <DatePicker
+            selected={formData.startDate}
+            onChange={(date) =>
+              setFormData((prev) => ({ ...prev, startDate: date }))
+            }
+            placeholder="Start Date"
           />
 
           <DatePicker

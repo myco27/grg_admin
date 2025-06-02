@@ -17,6 +17,7 @@ const AddAdminFreeItemsModal = ({
   const [formData, setFormData] = useState({
     title: "",
     promoCode: "",
+    startDate: "",
     validUntil: "",
     userLimitUsage: 1,
     maxQuantityPerDay: 1,
@@ -62,6 +63,7 @@ const AddAdminFreeItemsModal = ({
       setFormData({
         title: "",
         promoCode: "",
+        startDate: "",
         validUntil: "",
         maxQuantityPerDay: 0,
       });
@@ -166,6 +168,7 @@ const AddAdminFreeItemsModal = ({
         validUntil: formData.validUntil,
         userLimitUsage: formData.userLimitUsage,
         maxQuantityPerDay: formData.maxQuantityPerDay,
+        startDate: formData.startDate,
         selectedStores: selectedStores,
         selectedGlobalItems: selectedGlobalItem,
       });
@@ -321,6 +324,13 @@ const AddAdminFreeItemsModal = ({
             value={formData.userLimitUsage}
             onChange={handleInputChange}
             required
+          />
+          <DatePicker
+            selected={formData.startDate}
+            onChange={(date) =>
+              setFormData((prev) => ({ ...prev, startDate: date }))
+            }
+            placeholder="Start Date"
           />
 
           <DatePicker
