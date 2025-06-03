@@ -185,11 +185,15 @@ const EditAdminFreeItems = ({
   }, [editOpen]);
 
   useEffect(() => {
-    fetchAllStores();
+    if (editOpen) {
+      fetchAllStores();
+    }
   }, [debounceSearch, tablePagination.page, tablePagination.itemsPerPage]);
 
   useEffect(() => {
-    fetchAllFreeItems();
+    if (editOpen) {
+      fetchAllFreeItems();
+    }
   }, [
     debounceGlobalItemSearch,
     GlobalItemTablePagination.page,
