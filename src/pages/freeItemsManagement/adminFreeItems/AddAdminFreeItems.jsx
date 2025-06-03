@@ -81,11 +81,15 @@ const AddAdminFreeItemsModal = ({
   }, [openAddModal]);
 
   useEffect(() => {
-    fetchAllStores();
+    if (openAddModal) {
+      fetchAllStores();
+    }
   }, [debounceSearch, tablePagination.page, tablePagination.itemsPerPage]);
 
   useEffect(() => {
-    fetchAllFreeItems();
+    if (openAddModal) {
+      fetchAllFreeItems();
+    }
   }, [
     debounceGlobalItemSearch,
     GlobalItemTablePagination.page,
