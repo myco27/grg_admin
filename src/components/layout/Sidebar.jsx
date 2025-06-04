@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   List,
@@ -20,7 +20,9 @@ import {
   Cog,
   Info,
   Siren,
-  UtensilsIcon,
+  Globe,
+  Gift,
+  Boxes,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -556,7 +558,7 @@ const Sidebar = () => {
                     }`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
-                      <FileSliders className="h-5 w-5 text-white" />
+                      <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
                       className={`rounded-sm flex items-center justify-between w-full ${
@@ -606,7 +608,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4 text-white" />
+                            <Globe className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -639,7 +641,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4 text-white" />
+                            <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -1099,7 +1101,7 @@ const Sidebar = () => {
                     }`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
-                      <FileSliders className="h-5 w-5 text-white" />
+                      <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
                       className={`rounded-sm flex items-center justify-between w-full ${
@@ -1149,7 +1151,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4 text-white" />
+                            <Globe className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -1182,7 +1184,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4 text-white" />
+                            <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
