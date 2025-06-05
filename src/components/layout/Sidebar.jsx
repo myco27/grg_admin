@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   List,
@@ -20,6 +20,9 @@ import {
   Cog,
   Info,
   Siren,
+  Globe,
+  Gift,
+  Boxes,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -35,28 +38,59 @@ const Sidebar = () => {
   const location = useLocation();
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+  const [freeItemConfigOpen, setfreeItemConfigOpen] = useState(false);
 
   const handleConfig = () => {
     setConfigOpen(!configOpen);
   };
 
-  const canViewDashboardModule =
-    user?.all_permissions?.includes("view dashboard module") || false;
+  const handleFreeItemConfig = () => {
+    setfreeItemConfigOpen((freeItemConfigOpen) => !freeItemConfigOpen);
+  };
+
+  const canViewDashboardModule = user?.all_permissions?.some(
+    (p) => p.name === "view dashboard module" && p.status_id === 1
+  );
+
   const canViewUserModule =
-    user?.all_permissions?.includes("view user module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view user module" && p.status_id === 1
+    ) || false;
+
   const canViewAdminModule =
-    user?.all_permissions?.includes("view admin module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view admin module" && p.status_id === 1
+    ) || false;
+
   const canViewRolesAndPermissionsModule =
-    user?.all_permissions?.includes("view roles and permissions module") ||
-    false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view roles and permissions module" && p.status_id === 1
+    ) || false;
+
   const canViewApplicationsModule =
-    user?.all_permissions?.includes("view application module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view application module" && p.status_id === 1
+    ) || false;
+
   const canViewSettingsModule =
-    user?.all_permissions?.includes("view settings module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view settings module" && p.status_id === 1
+    ) || false;
+
   const canViewRestaurantModule =
-    user?.all_permissions?.includes("view restaurant module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view restaurant module" && p.status_id === 1
+    ) || false;
+
   const canViewConfigurationModule =
-    user?.all_permissions?.includes("view configuration module") || false;
+    user?.all_permissions?.some(
+      (p) => p.name === "view configuration module" && p.status_id === 1
+    ) || false;
+
+  const canViewFreeItems =
+    user?.all_permissions?.some(
+      (p) => p.name === "view free items" && p.status_id === 1
+    ) || false;
 
   useEffect(() => {
     fetchUser();
@@ -509,6 +543,154 @@ const Sidebar = () => {
                 </>
               )}
 
+              {canViewFreeItems && (
+                <>
+                  <ListItem
+                    onClick={handleFreeItemConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/free-items")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Boxes className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Free Items
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {freeItemConfigOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
+
+                  <Collapse
+                    open={freeItemConfigOpen}
+                    className="flex flex-col gap-1"
+                  >
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/free-items"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith("/free-items")
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Globe className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Global Items
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/admin/free-items"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith("/admin/free-items")
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Gift className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Admin Free Items
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+
+                    {/* <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div> */}
+                  </Collapse>
+                </>
+              )}
+
               {/* Roles and Permissions */}
               {canViewRolesAndPermissionsModule && (
                 <Link to="/roles-and-permissions">
@@ -900,6 +1082,153 @@ const Sidebar = () => {
                         </ListItem>
                       </Link>
                     </div>
+                  </Collapse>
+                </>
+              )}
+
+              {canViewFreeItems && (
+                <>
+                  <ListItem
+                    onClick={handleFreeItemConfig}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname.startsWith("/free-items")
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <Boxes className="h-5 w-5 text-white" />
+                    </ListItemPrefix>
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Free Items
+                      </Typography>
+                      <span className="ml-auto pr-2">
+                        {freeItemConfigOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
+                  </ListItem>
+
+                  <Collapse
+                    open={freeItemConfigOpen}
+                    className="flex flex-col gap-1"
+                  >
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/free-items"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith("/free-items")
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Globe className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Global Items
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/admin/free-items"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith("/admin/free-items")
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Gift className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            Admin Free Items
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div>
+                    {/* <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
+                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      }`}
+                    >
+                      <Link
+                        to="/configuration/termsandconditions"
+                        className="flex w-full items-center"
+                      >
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          } ${
+                            location.pathname.startsWith(
+                              "/configuration/termsandconditions"
+                            )
+                              ? "!bg-[#3A1066] text-white !important"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <Cog className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="whitespace-nowrap text-sm font-normal"
+                          >
+                            T&C
+                          </Typography>
+                        </ListItem>
+                      </Link>
+                    </div> */}
                   </Collapse>
                 </>
               )}

@@ -6,7 +6,8 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -49,4 +50,17 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(150, 150, 150, 0.8); /* Darker gray on hover */
+}
+
+/* Sticky Quill Toolbar */
+.ql-toolbar {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.text-editor {
+  border: none !important;
 }
