@@ -571,7 +571,7 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Free Items
+                        Promotional
                       </Typography>
                       <span className="ml-auto pr-2">
                         {freeItemConfigOpen ? (
@@ -592,7 +592,7 @@ const Sidebar = () => {
                         freeItemConfigOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
-                      <Link
+                      {/* <Link
                         to="/free-items"
                         className="flex w-full items-center"
                       >
@@ -617,7 +617,7 @@ const Sidebar = () => {
                             Global Items
                           </Typography>
                         </ListItem>
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <div
@@ -626,7 +626,7 @@ const Sidebar = () => {
                       }`}
                     >
                       <Link
-                        to="/admin/free-items"
+                        to="/promotions/free-items"
                         className="flex w-full items-center"
                       >
                         <ListItem
@@ -635,7 +635,7 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/admin/free-items")
+                            location.pathname.startsWith("/promotions/free-items")
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
@@ -647,7 +647,7 @@ const Sidebar = () => {
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                            Admin Free Items
+                            Free Items
                           </Typography>
                         </ListItem>
                       </Link>
@@ -1114,7 +1114,7 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Free Items
+                        Promotional
                       </Typography>
                       <span className="ml-auto pr-2">
                         {freeItemConfigOpen ? (
@@ -1135,7 +1135,7 @@ const Sidebar = () => {
                         freeItemConfigOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
-                      <Link
+                      {/* <Link
                         to="/free-items"
                         className="flex w-full items-center"
                       >
@@ -1160,7 +1160,7 @@ const Sidebar = () => {
                             Global Items
                           </Typography>
                         </ListItem>
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <div
@@ -1169,7 +1169,7 @@ const Sidebar = () => {
                       }`}
                     >
                       <Link
-                        to="/admin/free-items"
+                        to="/promotions/free-items"
                         className="flex w-full items-center"
                       >
                         <ListItem
@@ -1178,7 +1178,7 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/admin/free-items")
+                            location.pathname.startsWith("/promotions/free-items")
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
@@ -1190,7 +1190,7 @@ const Sidebar = () => {
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                            Admin Free Items
+                           Free Items
                           </Typography>
                         </ListItem>
                       </Link>
