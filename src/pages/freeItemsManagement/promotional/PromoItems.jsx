@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { PencilIcon, Plus, Search } from "lucide-react";
+import { EyeIcon, PencilIcon, Plus, Search } from "lucide-react";
 import UseDebounce from "../../../components/UseDebounce";
 import Loading from "../../../components/layout/Loading";
 import axiosClient from "../../../axiosClient";
@@ -20,8 +20,11 @@ import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import { useAlert } from "../../../contexts/alertContext";
 import AddPromoItems from "./AddPromoItems";
 import EditPromoItems from "./EditPromoItems";
+import { useNavigate } from "react-router-dom";
 
 const PromoItems = () => {
+  const navigate = useNavigate();
+
   const tableHeader = [
     "Promo Code",
     "Start Date",
@@ -329,12 +332,21 @@ const PromoItems = () => {
                       </td>
 
                       <td className="p-4">
-                        <Tooltip content="Edit">
-                          <PencilIcon
-                            onClick={() => handleEditOpen(data.free_item_v2_id)}
-                            className="h-5 w-5 cursor-pointer"
-                          />
-                        </Tooltip>
+                        <div className="flex items-center gap-4">
+                          <Tooltip content="Edit">
+                            <PencilIcon
+                              onClick={() => handleEditOpen(data.free_item_v2_id)}
+                              className="h-5 w-5 cursor-pointer"
+                            />
+                          </Tooltip>
+
+                          <Tooltip content="View Details">
+                            <EyeIcon
+                                onClick={() => navigate(`/promotions/free-items/${data.free_item_v2_id}`)}
+                                className="h-5 w-5 cursor-pointer"
+                              />
+                          </Tooltip>
+                        </div>
                       </td>
                     </tr>
                   );
