@@ -158,7 +158,7 @@ export default function ClaimedFreeItems() {
                   import.meta.env.VITE_APP_FRONT_IMAGE_PATH
                 }/${promoImage}`}
                 alt="Promo Image"
-                className="h-32 w-40 object-cover"
+                className="h-32 w-auto object-cover"
                 loading="lazy"
                 decoding="async"
                 onError={(e) => {
