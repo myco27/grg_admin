@@ -7,6 +7,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useAlert } from "../../../contexts/alertContext";
+import axios from "axios";
 import axiosClient from "../../../axiosClient";
 import DatePicker from "../../../components/OrdersPage/DatePicker";
 import { useEffect, useState } from "react";
@@ -24,11 +25,13 @@ const AddPromoItems = ({
   const [selectedCentralItems, setSelectedCentralItems] = useState([]);
   const [allCentralItemsId, setAllCentralItemsId] = useState([]);
   const [formData, setFormData] = useState({
+    title: "",
     promoCode: "",
     startDate: "",
     untilDate: "",
     maxQtyDay: 1,
     limitUsage: 1,
+    image: null,
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -55,10 +58,12 @@ const AddPromoItems = ({
       fetchAllCentral();
       setFormData({
         promoCode: "",
+        title: "",
         startDate: "",
         untilDate: "",
         maxQtyDay: 1,
         limitUsage: 1,
+        image: null,
       });
       setStores([]);
       setSelectedStore("");
@@ -133,23 +138,52 @@ const AddPromoItems = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     setLoading(true);
     setSaving(true);
+
     try {
-      const response = await axiosClient.post("/admin/promo-free-items/add", {
-        promoCode: formData.promoCode,
-        startDate: formData.startDate,
-        untilDate: formData.untilDate,
-        maxQtyDay: formData.maxQtyDay,
-        limitUsage: formData.limitUsage,
-        centralId: selectedStore,
-        selectedCentralItems: selectedCentralItems,
+      const formDataInstance = new FormData();
+      formDataInstance.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
+      formDataInstance.append("title", formData.title);
+      formDataInstance.append("promoCode", formData.promoCode);
+      // formDataInstance.append("startDate", formData.startDate);
+      // formDataInstance.append("untilDate", formData.untilDate);
+
+      formDataInstance.append(
+        "startDate",
+        new Date(formData.startDate).toISOString()
+      );
+      formDataInstance.append(
+        "untilDate",
+        new Date(formData.untilDate).toISOString()
+      );
+
+      formDataInstance.append("maxQtyDay", formData.maxQtyDay);
+      formDataInstance.append("limitUsage", formData.limitUsage);
+      formDataInstance.append("centralId", selectedStore);
+      selectedCentralItems.forEach((item) => {
+        formDataInstance.append("selectedCentralItems[]", item);
       });
+
+      if (formData.image) {
+        formDataInstance.append("image", formData.image);
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_ROCKYGO_URL}/promo-free-items/add`,
+        formDataInstance,
+        {
+          withCredentials: true,
+        }
+      );
 
       fetchFreeItemData();
       handleOpenAddModal();
       showAlert("Free Item created successfully!", "success");
     } catch (error) {
+      console.log(error);
+
       if (error.response.data.errors) {
         Object.values(error.response.data.errors)
           .flat()
@@ -220,12 +254,29 @@ const AddPromoItems = ({
     }
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+      }));
+    }
+  };
+
   const tabs = [
     {
       value: "Promo Free Items",
       label: "Promo Free Items",
       content: (
         <>
+          <Input
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            required
+          />
           <Input
             label="Promo Code"
             name="promoCode"
@@ -264,6 +315,36 @@ const AddPromoItems = ({
             onChange={handleInputChange}
             required
           />
+          <div className="mt-4">
+            <label className="text-sm font-medium text-blue-gray-700 mb-2 block">
+              Upload Image
+            </label>
+
+            <div className="relative">
+              <input
+                type="file"
+                id="imageUpload"
+                name="image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+
+              <div className="flex gap-x-2">
+                <label
+                  htmlFor="imageUpload"
+                  className="inline-block cursor-pointer rounded bg-blue-500 px-4 py-2 text-white text-sm font-medium shadow-md hover:bg-blue-600 transition duration-150 ease-in-out"
+                >
+                  Choose File
+                </label>
+                {formData.image && (
+                  <p className="mt-2 text-sm text-green-600">
+                    {formData.image.name}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </>
       ),
     },
