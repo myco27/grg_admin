@@ -229,6 +229,9 @@ const EditPromoItems = ({
 
       const responseData = response.data;
 
+      setSelectedStore(responseData.central_id);
+      setSelectedCentralItems(responseData.items.map((data) => data.food_id));
+
       const imageUrl = `${import.meta.env.VITE_APP_FRONT_IMAGE_PATH}${
         responseData.free_item_image
       }`;
@@ -258,9 +261,6 @@ const EditPromoItems = ({
       }));
 
       // setLottieJsonContent(JSON.stringify(lottieJson));
-
-      setSelectedStore(responseData.central_id);
-      setSelectedCentralItems(responseData.items.map((data) => data.food_id));
     } catch (error) {
       console.error("Error fetching user details:", error);
     } finally {
@@ -581,7 +581,7 @@ const EditPromoItems = ({
                 value={selectedStore}
               >
                 {stores.map((store) => (
-                  <Option key={store.id} value={store.id.toString()}>
+                  <Option key={store.id} value={store.id}>
                     {store.store_name} {store.store_branch}
                   </Option>
                 ))}
