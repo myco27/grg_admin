@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Typography,
   List,
@@ -20,7 +20,9 @@ import {
   Cog,
   Info,
   Siren,
-  UtensilsIcon,
+  Globe,
+  Gift,
+  Boxes,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -556,7 +558,7 @@ const Sidebar = () => {
                     }`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
-                      <FileSliders className="h-5 w-5 text-white" />
+                      <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
                       className={`rounded-sm flex items-center justify-between w-full ${
@@ -569,7 +571,7 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Free Items
+                        Promotional
                       </Typography>
                       <span className="ml-auto pr-2">
                         {freeItemConfigOpen ? (
@@ -590,7 +592,7 @@ const Sidebar = () => {
                         freeItemConfigOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
-                      <Link
+                      {/* <Link
                         to="/free-items"
                         className="flex w-full items-center"
                       >
@@ -606,7 +608,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4 text-white" />
+                            <Globe className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -615,7 +617,7 @@ const Sidebar = () => {
                             Global Items
                           </Typography>
                         </ListItem>
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <div
@@ -624,7 +626,7 @@ const Sidebar = () => {
                       }`}
                     >
                       <Link
-                        to="/admin/free-items"
+                        to="/promotions/free-items"
                         className="flex w-full items-center"
                       >
                         <ListItem
@@ -633,19 +635,19 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/admin/free-items")
+                            location.pathname.startsWith("/promotions/free-items")
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4 text-white" />
+                            <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                            Admin Free Items
+                            Free Items
                           </Typography>
                         </ListItem>
                       </Link>
@@ -1099,7 +1101,7 @@ const Sidebar = () => {
                     }`}
                   >
                     <ListItemPrefix className="min-w-[24px]">
-                      <FileSliders className="h-5 w-5 text-white" />
+                      <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
                       className={`rounded-sm flex items-center justify-between w-full ${
@@ -1112,7 +1114,7 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Free Items
+                        Promotional
                       </Typography>
                       <span className="ml-auto pr-2">
                         {freeItemConfigOpen ? (
@@ -1133,7 +1135,7 @@ const Sidebar = () => {
                         freeItemConfigOpen ? "max-h-40" : "max-h-0"
                       }`}
                     >
-                      <Link
+                      {/* <Link
                         to="/free-items"
                         className="flex w-full items-center"
                       >
@@ -1149,7 +1151,7 @@ const Sidebar = () => {
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Info className="h-4 w-4 text-white" />
+                            <Globe className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
@@ -1158,7 +1160,7 @@ const Sidebar = () => {
                             Global Items
                           </Typography>
                         </ListItem>
-                      </Link>
+                      </Link> */}
                     </div>
 
                     <div
@@ -1167,7 +1169,7 @@ const Sidebar = () => {
                       }`}
                     >
                       <Link
-                        to="/admin/free-items"
+                        to="/promotions/free-items"
                         className="flex w-full items-center"
                       >
                         <ListItem
@@ -1176,19 +1178,19 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/admin/free-items")
+                            location.pathname.startsWith("/promotions/free-items")
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
                         >
                           <ListItemPrefix className="rounded">
-                            <Siren className="h-4 w-4 text-white" />
+                            <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
                           <Typography
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                            Admin Free Items
+                           Free Items
                           </Typography>
                         </ListItem>
                       </Link>

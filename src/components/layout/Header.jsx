@@ -140,8 +140,8 @@ export default function Header() {
         return "Configuration";
       case "/free-items":
         return "Global Items";
-      case "/admin/free-items":
-        return "Admin Free Items";
+      case "/promotions/free-items":
+        return "Free Items";
       default:
         return "Dashboard";
     }

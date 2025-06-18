@@ -27,6 +27,8 @@ import AboutUs from "./pages/Configuration/AboutUs";
 import PrivacyPolicy from "./pages/Configuration/PrivacyPolicies";
 import FreeItems from "./pages/freeItemsManagement/FreeItems";
 import AdminFreeItems from "./pages/freeItemsManagement/adminFreeItems/AdminFreeItems";
+import PromoItems from "./pages/freeItemsManagement/promotional/PromoItems";
+import ClaimedFreeItems from "./pages/freeItemsManagement/adminFreeItems/ClaimedFreeItems";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -172,6 +174,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view free items">
             <AdminFreeItems />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "promotions/free-items",
+        element: (
+          <ProtectedRoute requiredPermission="view free items">
+            <PromoItems />
+          </ProtectedRoute>
+        ),
+      },
+      {
+      path: "promotions/free-items/:promotionId",
+        element: (
+          <ProtectedRoute requiredPermission="view free items">
+            <ClaimedFreeItems />
           </ProtectedRoute>
         ),
       },
