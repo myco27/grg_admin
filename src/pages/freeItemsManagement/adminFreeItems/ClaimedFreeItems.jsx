@@ -26,8 +26,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { DayPicker } from "react-day-picker";
 import Loading from "../../../components/layout/Loading";
+import { EyeIcon } from "lucide-react";
 
-const TABLE_HEAD = ["ID", "Customer Name", "Status", "Date Claimed", "Action"];
+const TABLE_HEAD = [
+  "Order Number",
+  "Customer Name",
+  "Restaurant",
+  "Status",
+  "Date",
+  "Order Status",
+];
 
 export default function ClaimedFreeItems() {
   const { promotionId } = useParams();
@@ -100,6 +108,8 @@ export default function ClaimedFreeItems() {
         }
       );
 
+      console.log("resssponwse", response.data);
+
       setPromoImage(response.data.free_item_image);
       setData(response.data.customers || []);
       setPromo(response.data);
@@ -145,6 +155,12 @@ export default function ClaimedFreeItems() {
       color: "bg-blue-gray-500",
       count: tabCounts.unclaimed,
     },
+    {
+      label: "Cancelled",
+      value: "cancelled",
+      color: "bg-red-500",
+      count: tabCounts.cancelled,
+    },
   ];
 
   return (
@@ -158,7 +174,7 @@ export default function ClaimedFreeItems() {
                   import.meta.env.VITE_APP_FRONT_IMAGE_PATH
                 }/${promoImage}`}
                 alt="Promo Image"
-                className="h-32 w-auto object-cover"
+                className="h-32 w-40 object-cover"
                 loading="lazy"
                 decoding="async"
                 onError={(e) => {
@@ -180,11 +196,11 @@ export default function ClaimedFreeItems() {
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
-              variant="outlined"
+              className="flex items-center gap-3 rounded-md"
               size="sm"
               onClick={() => navigate("/promotions/free-items")}
             >
-              View Free Items
+              <EyeIcon strokeWidth={2} className="h-4 w-4" /> View Free Items
             </Button>
           </div>
         </div>
@@ -283,7 +299,6 @@ export default function ClaimedFreeItems() {
 
             {/* Clear Button */}
             <Button
-              variant="outlined"
               size="md"
               onClick={() => {
                 setSearch("");
@@ -339,17 +354,24 @@ export default function ClaimedFreeItems() {
                 </tr>
               ) : (
                 data.map((item, index) => {
-                  const {
-                    user,
-                    created_at,
-                    status,
-                    order_id,
-                    free_item_v2_customer_id,
-                  } = item;
+                  const { user, created_at, status, order_id, order } = item;
                   const fullName = `${user?.first_name || "N/A"} ${
                     user?.last_name || ""
                   }`;
-                  const displayStatus = status === 1 ? "claimed" : "unclaimed";
+
+                  const store =
+                    [order?.setup?.store_name, order?.setup?.store_branch]
+                      .filter(Boolean)
+                      .join(" ") || "N/A";
+
+                  // Status mapping based on Laravel logic
+                  let displayStatus = "Unclaimed";
+                  if (status === 1 && order?.order_status === "completed") {
+                    displayStatus = "Claimed";
+                  } else if (status === 0 && order_id != 0) {
+                    displayStatus = "Cancelled";
+                  }
+
                   return (
                     <tr
                       key={index}
@@ -358,12 +380,14 @@ export default function ClaimedFreeItems() {
                       <td className="p-4">
                         <Typography
                           variant="small"
-                          color="blue-gray"
-                          className="font-normal"
+                          color="blue"
+                          className="font-medium cursor-pointer hover:underline hover:text-blue-700 transition-colors duration-200"
+                          onClick={() => handleViewOrder(order_id)}
                         >
-                          {free_item_v2_customer_id}
+                          {order?.order_number || "N/A"}
                         </Typography>
                       </td>
+
                       <td className="p-4">
                         <Typography
                           variant="small"
@@ -374,16 +398,30 @@ export default function ClaimedFreeItems() {
                         </Typography>
                       </td>
                       <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {store}
+                        </Typography>
+                      </td>
+                      <td className="p-4">
                         <Chip
                           variant="ghost"
                           size="sm"
                           value={displayStatus}
-                          className="capitalize text-left font-normal"
-                          color={
-                            displayStatus === "claimed" ? "green" : "blue-gray"
-                          }
+                          className={`relative grid items-center font-sans font-bold uppercase whitespace-nowrap select-none py-1 px-2 text-xs rounded-md
+                            ${
+                              displayStatus === "Claimed"
+                                ? "bg-green-500/20 text-green-900"
+                                : displayStatus === "Cancelled"
+                                ? "bg-red-500/20 text-red-900"
+                                : "bg-blue-gray-200 text-blue-gray-900"
+                            }`}
                         />
                       </td>
+
                       <td className="p-4">
                         <Typography
                           variant="small"
@@ -394,13 +432,13 @@ export default function ClaimedFreeItems() {
                         </Typography>
                       </td>
                       <td className="p-4">
-                        <Button
-                          onClick={() => handleViewOrder(order_id)}
-                          variant="outlined"
-                          size="sm"
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
                         >
-                          View Order
-                        </Button>
+                          {order?.order_status || "N/A"}
+                        </Typography>
                       </td>
                     </tr>
                   );
