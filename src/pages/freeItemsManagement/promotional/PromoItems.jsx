@@ -31,6 +31,7 @@ const PromoItems = () => {
     "Until Date",
     "Is Busy",
     "Status",
+    "Promo Used",
     "Max Quantity Per Day",
     "Limit Usage",
     "Action",
@@ -317,6 +318,16 @@ const PromoItems = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
+                          {data.customer_count}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
                           {data.max_qty_day}
                         </Typography>
                       </td>
@@ -335,16 +346,22 @@ const PromoItems = () => {
                         <div className="flex items-center gap-4">
                           <Tooltip content="Edit">
                             <PencilIcon
-                              onClick={() => handleEditOpen(data.free_item_v2_id)}
+                              onClick={() =>
+                                handleEditOpen(data.free_item_v2_id)
+                              }
                               className="h-5 w-5 cursor-pointer"
                             />
                           </Tooltip>
 
                           <Tooltip content="View Details">
                             <EyeIcon
-                                onClick={() => navigate(`/promotions/free-items/${data.free_item_v2_id}`)}
-                                className="h-5 w-5 cursor-pointer"
-                              />
+                              onClick={() =>
+                                navigate(
+                                  `/promotions/free-items/${data.free_item_v2_id}`
+                                )
+                              }
+                              className="h-5 w-5 cursor-pointer"
+                            />
                           </Tooltip>
                         </div>
                       </td>

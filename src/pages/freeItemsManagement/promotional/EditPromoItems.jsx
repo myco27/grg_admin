@@ -1,5 +1,11 @@
 import {
+  Avatar,
+  Button,
   Checkbox,
+  Dialog,
+  DialogBody,
+  DialogHeader,
+  IconButton,
   Input,
   Option,
   Select,
@@ -12,8 +18,10 @@ import DatePicker from "../../../components/OrdersPage/DatePicker";
 import { useEffect, useState } from "react";
 import Pagination from "../../../components/OrdersPage/Pagination";
 import UseDebounce from "../../../components/UseDebounce";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Body, Base, Footer, Header, Sidebar } from "../../../components/Modal";
+import Lottie from "lottie-react";
+import axios from "axios";
 
 const EditPromoItems = ({
   editOpen,
@@ -25,12 +33,20 @@ const EditPromoItems = ({
   const [selectedCentralItems, setSelectedCentralItems] = useState([]);
   const [allCentralItemsId, setAllCentralItemsId] = useState([]);
   const [formData, setFormData] = useState({
+    title: "",
     promoCode: "",
     startDate: "",
     untilDate: "",
     maxQtyDay: 1,
     limitUsage: 1,
+    image: null,
+    lottie: null,
   });
+  const [openLottie, setOpenLottie] = useState(false);
+  const [lottieJsonContent, setLottieJsonContent] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
+  const [previewImage, setPreviewImage] = useState("");
+  const [openImage, setOpenImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { showAlert } = useAlert();
@@ -56,13 +72,18 @@ const EditPromoItems = ({
       fetchItemDetails();
       fetchAllCentral();
       setFormData({
+        title: "",
         promoCode: "",
         startDate: "",
         untilDate: "",
         maxQtyDay: 1,
         limitUsage: 1,
+        image: null,
+        lottie: null,
       });
+      setImagePreview(null);
       setStores([]);
+      setLottieJsonContent("");
       setSelectedStore("");
       setCentralItems([]);
       setSelectedCentralItems([]);
@@ -71,10 +92,11 @@ const EditPromoItems = ({
   }, [editOpen]);
 
   useEffect(() => {
-    if (editOpen) {
+    if (editOpen && selectedStore && activeTab === "Assign Free Items") {
       fetchAllCentralItems();
     }
   }, [
+    activeTab,
     selectedStore,
     debounceCentralItemSearch,
     centralItemTablePagination.page,
@@ -135,18 +157,47 @@ const EditPromoItems = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     setLoading(true);
     setSaving(true);
     try {
-      const response = await axiosClient.put(`/admin/promo-free-items/update/${selectedId}`, {
-        promoCode: formData.promoCode,
-        startDate: formData.startDate,
-        untilDate: formData.untilDate,
-        maxQtyDay: formData.maxQtyDay,
-        limitUsage: formData.limitUsage,
-        centralId: selectedStore,
-        selectedCentralItems: selectedCentralItems,
+      const formDataInstance = new FormData();
+
+      formDataInstance.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
+      formDataInstance.append("title", formData.title);
+      formDataInstance.append("promoCode", formData.promoCode);
+      formDataInstance.append(
+        "startDate",
+        new Date(formData.startDate).toISOString()
+      );
+      formDataInstance.append(
+        "untilDate",
+        new Date(formData.untilDate).toISOString()
+      );
+      formDataInstance.append("maxQtyDay", formData.maxQtyDay);
+      formDataInstance.append("limitUsage", formData.limitUsage);
+      formDataInstance.append("centralId", selectedStore);
+      if (formData.image instanceof File) {
+        formDataInstance.append("image", formData.image);
+      }
+
+      if (formData.lottie instanceof File) {
+        formDataInstance.append("lottie", formData.lottie);
+      }
+
+      selectedCentralItems.forEach((item, index) => {
+        formDataInstance.append(`selectedCentralItems[${index}]`, item);
       });
+
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_ROCKYGO_URL
+        }/promo-free-items/update/${selectedId}`,
+        formDataInstance,
+        {
+          withCredentials: true,
+        }
+      );
 
       fetchFreeItemData();
       editHandleOpen();
@@ -171,21 +222,44 @@ const EditPromoItems = ({
     setLoading(true);
     try {
       const response = await axiosClient.get(
-        `/admin/get/promo-free-items/details/${selectedId}`
+        `${
+          import.meta.env.VITE_ROCKYGO_URL
+        }/get/promo-free-items/details/${selectedId}`
       );
 
       const responseData = response.data;
 
-      setFormData({
+      const imageUrl = `${import.meta.env.VITE_APP_FRONT_IMAGE_PATH}${
+        responseData.free_item_image
+      }`;
+      if (responseData.lottie_link) {
+        const lottieUrl = `${import.meta.env.VITE_ROCKYGO_URL}/lottie/${
+          responseData.central_id
+        }/${responseData.free_item_v2_id}/${responseData.lottie_link
+          .split("/")
+          .pop()}`;
+
+        const res = await fetch(lottieUrl);
+        const data = await res.json();
+        setLottieJsonContent(JSON.stringify(data));
+        setFormData((prev) => ({ ...prev, lottie: data }));
+      }
+
+      // ✅ Set form data
+      setFormData((prev) => ({
+        ...prev,
+        title: responseData.title,
         promoCode: responseData.promo_code,
         startDate: new Date(responseData.start_date),
         untilDate: new Date(responseData.until_date),
         limitUsage: responseData.limit_usage,
         maxQtyDay: responseData.max_qty_day,
-      });
+        image: imageUrl,
+      }));
+
+      // setLottieJsonContent(JSON.stringify(lottieJson));
 
       setSelectedStore(responseData.central_id);
-
       setSelectedCentralItems(responseData.items.map((data) => data.food_id));
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -249,12 +323,210 @@ const EditPromoItems = ({
     }
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    const name = event.target.name; // "image" or "lottie"
+
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+
+      if (name === "image" && file.type.startsWith("image/")) {
+        setImagePreview(URL.createObjectURL(file));
+      }
+
+      if (name === "lottie" && file.type === "application/json") {
+        const reader = new FileReader();
+        reader.onload = (e) => setLottieJsonContent(e.target.result);
+        reader.readAsText(file);
+      }
+    }
+  };
+
+  const checkimagePreview = (e, fileOrUrl) => {
+    e.preventDefault();
+    setPreviewImage(
+      fileOrUrl instanceof File ? URL.createObjectURL(fileOrUrl) : fileOrUrl
+    );
+    setOpenImage(true);
+  };
+
+  const handleImageOpen = () => setOpenImage(!openImage);
+  const handleLottieOpen = () => setOpenLottie(!openLottie);
+
   const tabs = [
     {
       value: "Promo Free Items",
       label: "Promo Free Items",
       content: (
         <>
+          <div className="flex flex-col items-center gap-12 py-4">
+            <div className="flex flex-col sm:flex-row gap-6">
+              {["image", "lottie"].map((type) => (
+                <div key={type} className="flex flex-col items-center gap-2">
+                  {/* Label on top */}
+                  <label htmlFor={`${type}Upload`} className="cursor-pointer">
+                    <Typography className="text-sm font-semibold text-blue-gray-700">
+                      UPLOAD {type.toUpperCase()}{" "}
+                      {type === "lottie" && "FILE (.json)"}
+                    </Typography>
+                  </label>
+
+                  {/* Hidden Input */}
+                  <input
+                    type="file"
+                    id={`${type}Upload`}
+                    name={type}
+                    accept={type === "image" ? "image/*" : "application/json"}
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+
+                  {/* Preview / Info */}
+                  {formData[type] ? (
+                    type === "image" ? (
+                      <div className="group relative">
+                        <Avatar
+                          src={imagePreview || formData.image}
+                          alt={`${type} Preview`}
+                          className="h-48 w-48 rounded-lg border border-gray-300 object-cover shadow-md"
+                          variant="rounded"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <Button
+                            onClick={(e) =>
+                              checkimagePreview(e, formData.image)
+                            }
+                            className="rounded-full bg-white px-4 py-2 text-sm text-gray-800 shadow hover:bg-gray-100"
+                          >
+                            View
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              document.getElementById(`${type}Upload`).click()
+                            }
+                            className="rounded-full bg-white px-4 py-2 text-sm text-gray-800 shadow hover:bg-gray-100"
+                          >
+                            Change
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="group relative">
+                        {lottieJsonContent ? (
+                          <Lottie
+                            animationData={JSON.parse(lottieJsonContent)}
+                            loop
+                            autoplay
+                            className="h-48 w-48 rounded-lg border border-gray-300 bg-white shadow-md"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-48 w-48 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-100 text-sm text-gray-500"
+                            onClick={() =>
+                              document.getElementById(`${type}Upload`).click()
+                            }
+                          >
+                            Upload Lottie JSON
+                          </div>
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center gap-4 rounded-lg bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <Button
+                            onClick={() => setOpenLottie(true)}
+                            className="rounded-full bg-white px-4 py-2 text-sm text-gray-800 shadow hover:bg-gray-100"
+                          >
+                            View
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              document.getElementById(`${type}Upload`).click()
+                            }
+                            className="rounded-full bg-white px-4 py-2 text-sm text-gray-800 shadow hover:bg-gray-100"
+                          >
+                            Change
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <div
+                      onClick={() =>
+                        document.getElementById(`${type}Upload`).click()
+                      }
+                      className="flex h-48 w-48 cursor-pointer items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-100 text-sm text-gray-500 hover:bg-gray-200 transition"
+                    >
+                      Upload {type === "lottie" ? "Lottie JSON" : "Image"}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Image Preview Dialog */}
+          <Dialog
+            open={openImage}
+            handler={handleImageOpen}
+            size="lg"
+            className="p-0 bg-transparent"
+          >
+            <div className="relative w-full max-w-[90vw] md:max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg bg-gray-900">
+              <button
+                className="absolute top-2 right-2 z-10 text-white hover:text-gray-300"
+                onClick={handleImageOpen}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <img
+                src={previewImage}
+                alt="Full Preview"
+                className="w-full h-auto object-contain max-h-[80vh]"
+              />
+            </div>
+          </Dialog>
+
+          {/* Lottie File Preview Dialog */}
+          <Dialog
+            open={openLottie}
+            handler={handleLottieOpen}
+            size="lg"
+            className="p-0 bg-transparent"
+          >
+            <div className="relative w-full max-w-[90vw] md:max-w-4xl mx-auto rounded-lg overflow-hidden shadow-lg bg-gray-900 text-white">
+              {/* Close button */}
+              <button
+                className="absolute top-2 right-2 z-10 text-white hover:text-gray-300"
+                onClick={handleLottieOpen}
+              >
+                <X className="h-6 w-6" />
+              </button>
+
+              <div className="p-6 flex justify-center items-center min-h-[60vh]">
+                {lottieJsonContent ? (
+                  <Lottie
+                    animationData={JSON.parse(lottieJsonContent)}
+                    loop
+                    autoplay
+                    className="w-full max-w-2xl"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-400">
+                    No Lottie animation loaded.
+                  </p>
+                )}
+              </div>
+            </div>
+          </Dialog>
+
+          <Input
+            label="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            required
+          />
           <Input
             label="Promo Code"
             name="promoCode"
@@ -309,7 +581,7 @@ const EditPromoItems = ({
                 value={selectedStore}
               >
                 {stores.map((store) => (
-                  <Option key={store.id} value={store.id}>
+                  <Option key={store.id} value={store.id.toString()}>
                     {store.store_name} {store.store_branch}
                   </Option>
                 ))}

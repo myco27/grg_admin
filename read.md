@@ -1,4 +1,6 @@
 Installed Mailer Laravel
 php artisan make:Mail'
 Installed ApexCharts for Dashboard
-created comfirmation_code table 
+created comfirmation_code table
+npm install lottie-react
+

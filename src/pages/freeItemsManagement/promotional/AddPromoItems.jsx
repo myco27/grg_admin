@@ -32,6 +32,7 @@ const AddPromoItems = ({
     maxQtyDay: 1,
     limitUsage: 1,
     image: null,
+    lottie: null,
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -64,6 +65,7 @@ const AddPromoItems = ({
         maxQtyDay: 1,
         limitUsage: 1,
         image: null,
+        lottie: null,
       });
       setStores([]);
       setSelectedStore("");
@@ -90,6 +92,8 @@ const AddPromoItems = ({
     try {
       const response = await axiosClient.get("/admin/get/central/stores");
       const responseData = response.data.modelData;
+
+      console.log(responseData);
 
       setStores(responseData);
     } catch (error) {
@@ -147,9 +151,6 @@ const AddPromoItems = ({
       formDataInstance.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
       formDataInstance.append("title", formData.title);
       formDataInstance.append("promoCode", formData.promoCode);
-      // formDataInstance.append("startDate", formData.startDate);
-      // formDataInstance.append("untilDate", formData.untilDate);
-
       formDataInstance.append(
         "startDate",
         new Date(formData.startDate).toISOString()
@@ -168,6 +169,10 @@ const AddPromoItems = ({
 
       if (formData.image) {
         formDataInstance.append("image", formData.image);
+      }
+
+      if (formData.lottie) {
+        formDataInstance.append("lottie", formData.lottie);
       }
 
       const response = await axios.post(
@@ -254,12 +259,14 @@ const AddPromoItems = ({
     }
   };
 
-  const handleImageChange = (event) => {
+  const handleFileChange = (event) => {
     const file = event.target.files[0];
+    const { name } = event.target;
+
     if (file) {
       setFormData((prev) => ({
         ...prev,
-        image: file,
+        [name]: file,
       }));
     }
   };
@@ -315,18 +322,22 @@ const AddPromoItems = ({
             onChange={handleInputChange}
             required
           />
-          <div className="mt-4">
-            <label className="text-sm font-medium text-blue-gray-700 mb-2 block">
-              Upload Image
+
+          <div className="mt-4 flex flex-col gap-4">
+            <label className="text-lg font-medium text-blue-gray-700 mb-2 block">
+              Upload Images
             </label>
 
             <div className="relative">
+              <label className="text-sm font-medium text-blue-gray-700 mb-2 block">
+                Free Item Image
+              </label>
               <input
                 type="file"
                 id="imageUpload"
                 name="image"
                 accept="image/*"
-                onChange={handleImageChange}
+                onChange={handleFileChange}
                 className="hidden"
               />
 
@@ -340,6 +351,34 @@ const AddPromoItems = ({
                 {formData.image && (
                   <p className="mt-2 text-sm text-green-600">
                     {formData.image.name}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="relative">
+              <label className="text-sm font-medium text-blue-gray-700 mb-2 block">
+                Lottie Image
+              </label>
+              <input
+                type="file"
+                id="lottieUpload"
+                name="lottie"
+                accept="application/json"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              <div className="flex gap-x-2">
+                <label
+                  htmlFor="lottieUpload"
+                  className="inline-block cursor-pointer rounded bg-blue-500 px-4 py-2 text-white text-sm font-medium shadow-md hover:bg-blue-600 transition duration-150 ease-in-out"
+                >
+                  Choose File
+                </label>
+                {formData.lottie && (
+                  <p className="mt-2 text-sm text-green-600">
+                    {formData.lottie.name}
                   </p>
                 )}
               </div>
