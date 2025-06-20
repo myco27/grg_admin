@@ -31,7 +31,8 @@ import { EyeIcon } from "lucide-react";
 const TABLE_HEAD = [
   "Order Number",
   "Customer Name",
-  "Restaurant",
+  "Email",
+  "Phone",
   "Status",
   "Date",
   "Order Status",
@@ -359,11 +360,6 @@ export default function ClaimedFreeItems() {
                     user?.last_name || ""
                   }`;
 
-                  const store =
-                    [order?.setup?.store_name, order?.setup?.store_branch]
-                      .filter(Boolean)
-                      .join(" ") || "N/A";
-
                   // Status mapping based on Laravel logic
                   let displayStatus = "Unclaimed";
                   if (status === 1 && order?.order_status === "completed") {
@@ -403,7 +399,16 @@ export default function ClaimedFreeItems() {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {store}
+                          {user?.email || "N/A"}
+                        </Typography>
+                      </td>
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {user?.mobile_number || "N/A"}
                         </Typography>
                       </td>
                       <td className="p-4">
