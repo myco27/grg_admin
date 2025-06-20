@@ -186,7 +186,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-      path: "promotions/free-items/:promotionId",
+        path: "promotions/free-items/:promotionId",
         element: (
           <ProtectedRoute requiredPermission="view free items">
             <ClaimedFreeItems />

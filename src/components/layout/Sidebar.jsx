@@ -23,6 +23,8 @@ import {
   Globe,
   Gift,
   Boxes,
+  FileText,
+  Car,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -36,6 +38,7 @@ const Sidebar = () => {
     fetchUser,
   } = useStateContext();
   const location = useLocation();
+  const [submenuOpen, setSubmenuOpen] = useState(false);
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [freeItemConfigOpen, setfreeItemConfigOpen] = useState(false);
@@ -50,6 +53,10 @@ const Sidebar = () => {
 
   const canViewDashboardModule = user?.all_permissions?.some(
     (p) => p.name === "view dashboard module" && p.status_id === 1
+  );
+
+  const canViewOrderModule = user?.all_permissions?.some(
+    (p) => p.name === "view order module" && p.status_id === 1
   );
 
   const canViewUserModule =
@@ -199,6 +206,90 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {/* Orders */}
+              {canViewOrderModule && (
+                <>
+                  <ListItem
+                    onClick={() => setSubmenuOpen(!submenuOpen)}
+                    className={`hover:bg-[#3A1066] cursor-pointer w-[220px] ${
+                      location.pathname.startsWith("/orders")
+                        ? "bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LayoutDashboard
+                        className={`h-5 w-5 text-white ${
+                          location.pathname.startsWith("/orders")
+                            ? "text-purple-500"
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <Typography
+                      color="white"
+                      className="text-sm font-normal flex-1"
+                    >
+                      Orders
+                    </Typography>
+                    <ChevronDown
+                      className={`h-4 w-4 text-white transition-transform ${
+                        submenuOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </ListItem>
+
+                  {submenuOpen && (
+                    <div className="ml-8">
+                      <Link
+                        to="/orders"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <ListItem
+                          className={`hover:bg-[#3A1066] w-[190px] rounded-md ${
+                            location.pathname === "/orders"
+                              ? "bg-[#3A1066]"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="min-w-[24px]">
+                            <FileText className="h-5 w-5 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="text-sm font-normal"
+                          >
+                            Order Transaction
+                          </Typography>
+                        </ListItem>
+                      </Link>
+
+                      {/* <Link
+                        to="/orders/pickup"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <ListItem
+                          className={`hover:bg-[#3A1066] w-[190px] rounded-md ${
+                            location.pathname === "/orders/pickup"
+                              ? "bg-[#3A1066]"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="min-w-[24px]">
+                            <Car className="h-5 w-5 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="text-sm font-normal"
+                          >
+                            Pick Up with a Car
+                          </Typography>
+                        </ListItem>
+                      </Link> */}
+                    </div>
+                  )}
+                </>
+              )}
               {/* User Management */}
               {canViewUserModule && (
                 <Link to="/user-management">
@@ -635,7 +726,9 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/promotions/free-items")
+                            location.pathname.startsWith(
+                              "/promotions/free-items"
+                            )
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
@@ -788,6 +881,29 @@ const Sidebar = () => {
                     </ListItemPrefix>
                     <Typography color="white" className="text-sm font-normal">
                       Dashboard
+                    </Typography>
+                  </ListItem>
+                </Link>
+              )}
+
+              {canViewOrderModule && (
+                <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>
+                  <ListItem
+                    className={`hover:bg-[#3A1066] w-[220px] ${
+                      location.pathname === "/orders" ? "bg-[#3A1066]" : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <LayoutDashboard
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/orders"
+                            ? "text-purple-500"
+                            : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <Typography color="white" className="text-sm font-normal">
+                      Orders
                     </Typography>
                   </ListItem>
                 </Link>
@@ -1178,7 +1294,9 @@ const Sidebar = () => {
                               ? "w-[40px] px-2"
                               : "w-[220px]"
                           } ${
-                            location.pathname.startsWith("/promotions/free-items")
+                            location.pathname.startsWith(
+                              "/promotions/free-items"
+                            )
                               ? "!bg-[#3A1066] text-white !important"
                               : ""
                           }`}
@@ -1190,7 +1308,7 @@ const Sidebar = () => {
                             color="white"
                             className="whitespace-nowrap text-sm font-normal"
                           >
-                           Free Items
+                            Free Items
                           </Typography>
                         </ListItem>
                       </Link>

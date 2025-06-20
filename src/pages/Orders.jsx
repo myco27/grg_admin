@@ -452,7 +452,7 @@ export default function Orders() {
           {pagination.isLoading || ordersLoading ? (
             <Loading />
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 3xl:grid-cols-4">
               {orders.length > 0 ? (
                 orders.map((order) => (
                   <div key={order.order_id} className="w-full">
