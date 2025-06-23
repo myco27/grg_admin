@@ -47,6 +47,12 @@ export default function ClaimedFreeItems() {
   const [tabCounts, setTabCounts] = useState({});
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: 10,
+    total: 0,
+  });
   const [lastPage, setLastPage] = useState(1);
   const [promo, setPromo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -114,8 +120,8 @@ export default function ClaimedFreeItems() {
       setPromoImage(response.data.free_item_image);
       setData(response.data.customers || []);
       setPromo(response.data);
-      setLastPage(response.data.last_page || 1);
       setTabCounts(response.data.counts || {});
+      setPagination(response.data.pagination);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -456,22 +462,40 @@ export default function ClaimedFreeItems() {
 
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
         <Typography variant="small" color="blue-gray" className="font-normal">
-          Page {page} of {lastPage}
+          Page {pagination.current_page} of {pagination.last_page}
         </Typography>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2">
           <Button
             variant="outlined"
             size="sm"
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
+            disabled={pagination.current_page === 1}
           >
             Previous
           </Button>
+
+          {/* Page number buttons */}
+          {Array.from({ length: pagination.last_page }, (_, index) => (
+            <Button
+              key={index + 1}
+              variant={
+                pagination.current_page === index + 1 ? "filled" : "outlined"
+              }
+              size="sm"
+              onClick={() => setPage(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+
           <Button
             variant="outlined"
             size="sm"
-            onClick={() => setPage((prev) => Math.min(prev + 1, lastPage))}
-            disabled={page === lastPage}
+            onClick={() =>
+              setPage((prev) => Math.min(prev + 1, pagination.last_page))
+            }
+            disabled={pagination.current_page === pagination.last_page}
           >
             Next
           </Button>
