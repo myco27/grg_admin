@@ -99,6 +99,11 @@ const Sidebar = () => {
       (p) => p.name === "view free items" && p.status_id === 1
     ) || false;
 
+  const canViewInvoiceModule =
+    user?.all_permissions?.some(
+      (p) => p.name === "view invoice module" && p.status_id === 1
+    ) || false;
+
   useEffect(() => {
     fetchUser();
   }, []);
@@ -205,7 +210,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Orders */}
               {canViewOrderModule && (
                 <>
@@ -330,7 +334,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Restaurant Management */}
               {canViewRestaurantModule && (
                 <Link to="/restaurant-management">
@@ -371,7 +374,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Admin Management */}
               {canViewAdminModule && (
                 <Link to="/admin-management">
@@ -410,7 +412,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Applications */}
               {canViewApplicationsModule && (
                 <Link to="/applications">
@@ -449,7 +450,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Settings */}
               {canViewSettingsModule && (
                 <Link to="/settings">
@@ -487,6 +487,7 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {/* Configuration Management */}
               {canViewConfigurationModule && (
                 <>
                   <ListItem
@@ -634,6 +635,7 @@ const Sidebar = () => {
                 </>
               )}
 
+              {/* Free Items Management */}
               {canViewFreeItems && (
                 <>
                   <ListItem
@@ -782,6 +784,45 @@ const Sidebar = () => {
                     </div> */}
                   </Collapse>
                 </>
+              )}
+
+              {/* Invoice Management */}
+              {canViewInvoiceModule && (
+                <Link to="/invoice-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/invoice-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <ShieldCheck
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/invoice-management" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Invoice Management
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
               )}
 
               {/* Roles and Permissions */}
@@ -1055,6 +1096,7 @@ const Sidebar = () => {
                 </Link>
               )}
 
+              {/* Configuration Management */}
               {canViewConfigurationModule && (
                 <>
                   <ListItem
@@ -1202,6 +1244,7 @@ const Sidebar = () => {
                 </>
               )}
 
+              {/* Free Items Management */}
               {canViewFreeItems && (
                 <>
                   <ListItem
@@ -1349,6 +1392,45 @@ const Sidebar = () => {
                     </div> */}
                   </Collapse>
                 </>
+              )}
+
+              {/* Invoice Management */}
+              {canViewInvoiceModule && (
+                <Link to="/invoice-management">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/invoice-management"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px]">
+                      <ShieldCheck
+                        className={`h-5 w-5 text-white ${
+                          location.pathname === "/invoice-management" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Invoice Management
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
               )}
 
               {/* Roles and Permissions */}
