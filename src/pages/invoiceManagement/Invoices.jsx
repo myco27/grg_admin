@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Card,
   CardBody,
@@ -28,10 +29,12 @@ const Invoices = () => {
     "Price",
     "Total (Incl. SST)",
     "Payment Status",
+    "Image",
     "Created At",
     "Action",
   ];
 
+  const imageBaseUrl = import.meta.env.VITE_APP_IMAGE_PATH;
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [globalItemsId, setGlobalItemsId] = useState(null);
@@ -230,11 +233,17 @@ const Invoices = () => {
               </thead>
               <tbody className="">
                 {data.map((data) => {
+                  console.log("data", data);
+
+                  const imageUrl = `${import.meta.env.VITE_APP_IMAGE_PATH}${
+                    data.invoice_image_path
+                  }`;
+
                   const readableDate = new Date(
                     data.created_at
                   ).toLocaleString();
 
-                   const invoiceDate = new Date(
+                  const invoiceDate = new Date(
                     data.invoice_date
                   ).toLocaleString();
                   return (
@@ -321,6 +330,14 @@ const Invoices = () => {
                         >
                           {data.payment_status}
                         </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Avatar
+                          src={imageUrl}
+                          alt="avatar"
+                          variant="square"
+                        ></Avatar>
                       </td>
 
                       <td className="p-4">
