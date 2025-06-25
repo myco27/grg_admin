@@ -38,6 +38,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
     shift_type: "",
     invoice_image_path: null,
   });
+
   const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -48,6 +49,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
   useEffect(() => {
     if (open && !submitting) {
+      setLoading(true);
       setFormData({
         company: "",
         category: "",
@@ -70,15 +72,13 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
         invoice_image_path: null,
       });
 
-      fetchCompanyCategory();
+      fetchCompanyCategory().finally(() => setLoading(false));
     }
   }, [open]);
 
   const fetchCompanyCategory = async () => {
     try {
       const response = await axios.get("/admin/invoice/company/category");
-
-      console.log(response.data);
 
       setCompanies(response.data.companyData);
       setCategories(response.data.categoryData);
@@ -182,7 +182,6 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
   };
 
   const handleSelectChange = (name, value) => {
-    console.log(name, value);
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
 
@@ -212,55 +211,43 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
   const [value, setValue] = useState(null);
   const handleChange = (value) => {
     setValue(value);
-    console.log("value:", value);
   };
 
   return (
     <Dialog open={open} handler={handleOpen} dismiss={{ outsidePress: false }}>
-      <DialogHeader>Add New Admin</DialogHeader>
+      <DialogHeader>Add New Invoice</DialogHeader>
       <DialogBody
         divider
         className="flex flex-col gap-4 max-h-[75dvh] overflow-y-scroll"
       >
-        {loading ? (
-          <Loading />
-        ) : submitting ? (
+        {loading ||
+        submitting ||
+        companies.length === 0 ||
+        categories.length === 0 ? (
           <Loading />
         ) : (
           <>
-            <div className="w-72">
-              <Select
-                label="Select Version"
-                value={value}
-                onChange={handleChange}
-              >
-                <Option value="123">Material Tailwind HTML</Option>
-                <Option>Material Tailwind React</Option>
-                <Option>Material Tailwind Vue</Option>
-                <Option>Material Tailwind Angular</Option>
-                <Option>Material Tailwind Svelte</Option>
-              </Select>
-            </div>
             <Select
-              className="w-full"
+              className="w-full py-5"
               required
-              value={String(formData.company)}
+              value={formData.company}
               name="company"
               label="Assign Company"
               onChange={(value) => handleSelectChange("company", value)}
             >
               {companies.map((data) => (
-                <Option key={data.company_id} value={String(data.company_id)}>
+                <Option key={data.company_id} value={data.company_id}>
                   {data.name.toUpperCase()}
                 </Option>
               ))}
             </Select>
 
             <Select
-              className="w-full"
+              className="w-full py-5"
               required
               name="category"
               label="Assign Category"
+              value={formData.category}
               onChange={(value) => handleSelectChange("category", value)}
             >
               {categories.map((data) => (
@@ -283,6 +270,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <Select
+              className="w-full py-5"
               name="petty_type"
               label="Petty Type"
               value={formData.petty_type}
@@ -294,6 +282,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             {formData.petty_type === "With SST" && (
               <Input
+                className="w-full py-5"
                 label="SST Rate (%)"
                 name="sst_rate"
                 type="number"
@@ -304,6 +293,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             )}
 
             <Input
+              className="w-full py-5"
               label="Store Reference No."
               name="store_reference_no"
               type="text"
@@ -313,6 +303,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <Input
+              className="w-full py-5"
               label="Delivery Order No."
               name="delivery_order_no"
               type="text"
@@ -322,6 +313,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <DatePicker
+              className="w-full py-5"
               required
               name="invoice_date"
               selected={formData.invoice_date}
@@ -333,6 +325,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <div className="flex flex-col md:flex-row gap-4">
               <Input
+                className="w-full py-5"
                 label="Price"
                 name="price"
                 type="number"
@@ -341,6 +334,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
                 onChange={handleInputChange}
               />
               <Select
+                className="w-full py-5"
                 required
                 name="confirm_price"
                 label="Confirm Price"
@@ -353,6 +347,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <div className="flex flex-col md:flex-row gap-4">
               <Input
+                className="w-full py-5"
                 label="Total Price (Incl. SST)"
                 name="total_price_inclusive"
                 type="number"
@@ -362,6 +357,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
               />
 
               <Select
+                className="w-full py-5"
                 required
                 name="confirm_total_price"
                 label="Confirm Total Price"
@@ -376,6 +372,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <Select
               required
+              className="w-full py-5"
               name="payment_status"
               label="Payment Status"
               onChange={(value) => handleSelectChange("payment_status", value)}
@@ -386,6 +383,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             </Select>
 
             <Input
+              className="w-full py-5"
               label="Notes"
               name="notes"
               type="text"
@@ -394,6 +392,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <Select
+              className="w-full py-5"
               required
               name="is_voucher"
               label="Is Voucher"
@@ -404,6 +403,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             </Select>
 
             <Input
+              className="w-full py-5"
               label="Tax Code"
               name="tax_code"
               type="text"
@@ -413,6 +413,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <DatePicker
+              className="w-full py-5"
               required
               name="zreport_date"
               selected={formData.zreport_date}
@@ -423,6 +424,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             />
 
             <Select
+              className="w-full py-5"
               required
               name="shift_type"
               label="Shift Type"
