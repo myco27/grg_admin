@@ -353,13 +353,13 @@ const Invoices = () => {
                         </Typography>
                       </td>
 
-                      <td className="p-4">
+                      {/* <td className="p-4">
                         <Avatar
                           src={imageUrl}
                           alt="avatar"
                           variant="square"
                         ></Avatar>
-                      </td>
+                      </td> */}
 
                       <td className="p-4">
                         <Typography
