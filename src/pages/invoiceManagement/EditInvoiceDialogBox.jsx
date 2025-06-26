@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../../axiosClient";
 import {
   Button,
@@ -11,12 +11,19 @@ import {
   Option,
   Typography,
 } from "@material-tailwind/react";
-import { EyeIcon, EyeClosed } from "lucide-react";
-import { useAlert } from "../../contexts/alertContext";
 import Loading from "../../components/layout/Loading";
 import DatePicker from "../../components/OrdersPage/DatePicker";
+import { useAlert } from "../../contexts/alertContext";
+import { meta } from "@eslint/js";
+import axiosClient from "../../axiosClient";
+import { X } from "lucide-react";
 
-const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
+const EditInvoiceDialogBox = ({
+  editOpen,
+  editHandleOpen,
+  fetchData,
+  selectedId,
+}) => {
   const [formData, setFormData] = useState({
     company: "",
     category: "",
@@ -36,50 +43,63 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
     tax_code: "",
     zreport_date: "",
     shift_type: "",
-    invoice_files: null,
+    invoice_files: [], // was: null
+    attachments: [],
   });
-
   const [companies, setCompanies] = useState([]);
   const [categories, setCategories] = useState([]);
-
   const [submitting, setSubmitting] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
+  const [removedAttachmentIds, setRemovedAttachmentIds] = useState([]);
 
   useEffect(() => {
-    if (open && !submitting) {
+    if (editOpen) {
+      setRemovedAttachmentIds([]);
       setLoading(true);
-      setFormData({
-        company: "",
-        category: "",
-        sst_number: "",
-        petty_type: "",
-        sst_rate: "",
-        store_reference_no: "",
-        delivery_order_no: "",
-        invoice_date: "",
-        price: "",
-        total_price_inclusive: "",
-        confirm_price: "",
-        confirm_total_price: "",
-        payment_status: "",
-        notes: "",
-        is_voucher: "",
-        tax_code: "",
-        zreport_date: "",
-        shift_type: "",
-        invoice_files: null,
-      });
-
+      fetchDetails();
       fetchCompanyCategory().finally(() => setLoading(false));
     }
-  }, [open]);
+  }, [editOpen]);
+
+  const fetchDetails = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/admin/invoice/details/${selectedId}`);
+      const data = response.data.data;
+
+      setFormData({
+        company: String(data.company?.company_id) || "",
+        category: String(data.invoice_category?.invoice_category_id) || "",
+        sst_number: data.sst_number || "",
+        petty_type: data.petty_type || "",
+        sst_rate: data.sst_rate || "",
+        store_reference_no: data.store_reference_no || "",
+        delivery_order_no: data.delivery_order_no || "",
+        invoice_date: data.invoice_date || "",
+        price: data.price || "",
+        total_price_inclusive: data.total_price_inclusive || "",
+        confirm_price: String(data.confirm_price) || "",
+        confirm_total_price: String(data.confirm_total_price) || "",
+        payment_status: data.payment_status || "",
+        notes: data.notes || "",
+        is_voucher: String(data.is_voucher) || "",
+        tax_code: data.tax_code || "",
+        zreport_date: data.zreport_date || "",
+        shift_type: data.shift_type || "",
+        invoice_files: null,
+        attachments: data.attachments || [],
+      });
+    } catch (error) {
+      console.error("Error fetching invoice details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchCompanyCategory = async () => {
     try {
       const response = await axios.get("/admin/invoice/company/category");
-
       setCompanies(response.data.companyData);
       setCategories(response.data.categoryData);
     } catch (error) {
@@ -93,49 +113,24 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
     try {
       const formDataToSend = new FormData();
 
-      formDataToSend.append("company", formData.company);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("sst_number", formData.sst_number);
-      formDataToSend.append("petty_type", formData.petty_type);
-      formDataToSend.append("sst_rate", formData.sst_rate);
-      formDataToSend.append("store_reference_no", formData.store_reference_no);
-      formDataToSend.append("delivery_order_no", formData.delivery_order_no);
-      formDataToSend.append(
-        "invoice_date",
-        formData.invoice_date
-          ? new Date(formData.invoice_date).toISOString()
-          : ""
-      );
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === "invoice_files" && value) {
+          value.forEach((file) => {
+            formDataToSend.append("invoice_files[]", file);
+          });
+        } else if (key !== "attachments") {
+          formDataToSend.append(key, value);
+        }
+      });
 
-      formDataToSend.append("price", formData.price);
-      formDataToSend.append(
-        "total_price_inclusive",
-        formData.total_price_inclusive
-      );
-      formDataToSend.append("confirm_price", formData.confirm_price);
-      formDataToSend.append(
-        "confirm_total_price",
-        formData.confirm_total_price
-      );
-      formDataToSend.append("payment_status", formData.payment_status);
-      formDataToSend.append("notes", formData.notes);
-      formDataToSend.append("is_voucher", formData.is_voucher);
-      formDataToSend.append("tax_code", formData.tax_code);
-      formDataToSend.append(
-        "zreport_date",
-        formData.zreport_date
-          ? new Date(formData.zreport_date).toISOString()
-          : ""
-      );
-      formDataToSend.append("shift_type", formData.shift_type);
-      if (formData.invoice_files) {
-        formData.invoice_files.forEach((file) => {
-          formDataToSend.append("invoice_files[]", file);
+      if (removedAttachmentIds.length > 0) {
+        removedAttachmentIds.forEach((id) => {
+          formDataToSend.append("removed_attachments[]", id);
         });
       }
 
-      const response = await axios.post(
-        "/admin/invoice/create",
+      const response = await axiosClient.post(
+        `/admin/invoice/update/${selectedId}`,
         formDataToSend,
         {
           headers: {
@@ -145,11 +140,10 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
       );
 
       fetchData();
-      handleOpen();
-      showAlert("Invoice created successfully!", "success");
+      editHandleOpen();
+      showAlert("Invoice updated successfully!", "success");
     } catch (error) {
-      console.log(error);
-      if (error.response.data.errors) {
+      if (error.response?.data?.errors) {
         Object.values(error.response.data.errors)
           .flat()
           .forEach((errorMessage) => {
@@ -163,18 +157,9 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
     }
   };
 
-  // Event Listeners
+  //   Event Listeners
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files);
-
-    setFormData((prev) => ({
-      ...prev,
-      invoice_files: files,
-    }));
   };
 
   const handleSelectChange = (name, value) => {
@@ -198,20 +183,38 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
         updated.sst_rate = "";
       }
 
-      console.log(updated);
-
       return updated;
     });
   };
 
-  const [value, setValue] = useState(null);
-  const handleChange = (value) => {
-    setValue(value);
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        invoice_files: [...(prev.invoice_files ?? []), ...files],
+      }));
+
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveAttachment = (idToRemove) => {
+    setRemovedAttachmentIds((prev) => [...prev, idToRemove]);
+    setFormData((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((file) => file.id !== idToRemove),
+    }));
   };
 
   return (
-    <Dialog open={open} handler={handleOpen} dismiss={{ outsidePress: false }}>
-      <DialogHeader>Add New Invoice</DialogHeader>
+    <Dialog
+      open={editOpen}
+      handler={editHandleOpen}
+      dismiss={{ outsidePress: false }}
+    >
+      <DialogHeader>Edit Invoice</DialogHeader>
       <DialogBody
         divider
         className="flex flex-col gap-4 max-h-[75dvh] overflow-y-scroll"
@@ -225,14 +228,12 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
           <>
             <Select
               className="w-full py-5"
-              required
-              value={formData.company}
-              name="company"
+              value={String(formData.company)}
               label="Assign Company"
               onChange={(value) => handleSelectChange("company", value)}
             >
               {companies.map((data) => (
-                <Option key={data.company_id} value={data.company_id}>
+                <Option key={data.company_id} value={String(data.company_id)}>
                   {data.name.toUpperCase()}
                 </Option>
               ))}
@@ -240,16 +241,14 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <Select
               className="w-full py-5"
-              required
-              name="category"
+              value={String(formData.category)}
               label="Assign Category"
-              value={formData.category}
               onChange={(value) => handleSelectChange("category", value)}
             >
               {categories.map((data) => (
                 <Option
                   key={data.invoice_category_id}
-                  value={data.invoice_category_id}
+                  value={String(data.invoice_category_id)}
                 >
                   {data.name.toUpperCase()}
                 </Option>
@@ -257,19 +256,17 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             </Select>
 
             <Input
+              className="w-full py-5"
               label="SST Number"
               name="sst_number"
-              type="text"
-              required
               value={formData.sst_number}
               onChange={handleInputChange}
             />
 
             <Select
               className="w-full py-5"
-              name="petty_type"
-              label="Petty Type"
               value={formData.petty_type}
+              label="Petty Type"
               onChange={(value) => handleSelectChange("petty_type", value)}
             >
               <Option value="With SST">WITH SST</Option>
@@ -281,10 +278,8 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
                 className="w-full py-5"
                 label="SST Rate (%)"
                 name="sst_rate"
-                type="number"
                 value={formData.sst_rate}
                 onChange={handleInputChange}
-                required
               />
             )}
 
@@ -292,25 +287,19 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
               className="w-full py-5"
               label="Store Reference No."
               name="store_reference_no"
-              type="text"
-              required
               value={formData.store_reference_no}
               onChange={handleInputChange}
             />
-
             <Input
               className="w-full py-5"
               label="Delivery Order No."
               name="delivery_order_no"
-              type="text"
-              required
               value={formData.delivery_order_no}
               onChange={handleInputChange}
             />
 
             <DatePicker
               className="w-full py-5"
-              required
               name="invoice_date"
               selected={formData.invoice_date}
               onChange={(date) =>
@@ -324,15 +313,12 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
                 className="w-full py-5"
                 label="Price"
                 name="price"
-                type="number"
-                required
                 value={formData.price}
                 onChange={handleInputChange}
               />
               <Select
                 className="w-full py-5"
-                required
-                name="confirm_price"
+                value={formData.confirm_price}
                 label="Confirm Price"
                 onChange={(value) => handleSelectChange("confirm_price", value)}
               >
@@ -343,19 +329,13 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <div className="flex flex-col md:flex-row gap-4">
               <Input
-                className="w-full py-5"
                 label="Total Price (Incl. SST)"
                 name="total_price_inclusive"
-                type="number"
-                required
                 value={formData.total_price_inclusive}
                 onChange={handleInputChange}
               />
-
               <Select
-                className="w-full py-5"
-                required
-                name="confirm_total_price"
+                value={formData.confirm_total_price}
                 label="Confirm Total Price"
                 onChange={(value) =>
                   handleSelectChange("confirm_total_price", value)
@@ -367,9 +347,8 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
             </div>
 
             <Select
-              required
               className="w-full py-5"
-              name="payment_status"
+              value={formData.payment_status}
               label="Payment Status"
               onChange={(value) => handleSelectChange("payment_status", value)}
             >
@@ -382,15 +361,13 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
               className="w-full py-5"
               label="Notes"
               name="notes"
-              type="text"
               value={formData.notes}
               onChange={handleInputChange}
             />
 
             <Select
               className="w-full py-5"
-              required
-              name="is_voucher"
+              value={formData.is_voucher}
               label="Is Voucher"
               onChange={(value) => handleSelectChange("is_voucher", value)}
             >
@@ -402,15 +379,12 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
               className="w-full py-5"
               label="Tax Code"
               name="tax_code"
-              type="text"
-              required
               value={formData.tax_code}
               onChange={handleInputChange}
             />
 
             <DatePicker
               className="w-full py-5"
-              required
               name="zreport_date"
               selected={formData.zreport_date}
               onChange={(date) =>
@@ -421,8 +395,7 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
 
             <Select
               className="w-full py-5"
-              required
-              name="shift_type"
+              value={formData.shift_type}
               label="Shift Type"
               onChange={(value) => handleSelectChange("shift_type", value)}
             >
@@ -430,22 +403,79 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
               <Option value="Evening">EVENING</Option>
             </Select>
 
-            <Input
-              label="Invoice Files"
-              name="invoice_files[]"
-              type="file"
-              multiple
-              onChange={handleFileChange}
-            />
+            <div className="space-y-2">
+              <Typography variant="small" className="font-semibold">
+                Attachments:
+              </Typography>
+
+              {formData.attachments.map((file, idx) => (
+                <div
+                  key={`existing-${file.id}`}
+                  className="flex items-center justify-between bg-green-100 rounded p-2 w-full"
+                >
+                  <a
+                    href={`${import.meta.env.VITE_APP_IMAGE_PATH}${
+                      file.file_path
+                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline text-sm"
+                  >
+                    {file.file_path.split("/").pop()}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(file.id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    <X />
+                  </button>
+                </div>
+              ))}
+
+              {(formData.invoice_files ?? []).map((file, idx) => (
+                <div
+                  key={`new-${idx}`}
+                  className="flex items-center justify-between bg-green-100 rounded p-2 w-full"
+                >
+                  <span className="text-sm text-gray-800">{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => {
+                        const updatedFiles = [...prev.invoice_files];
+
+                        updatedFiles.splice(idx, 1);
+                        return { ...prev, invoice_files: updatedFiles };
+                      });
+                    }}
+                    className="text-red-500 hover:underline"
+                  >
+                    <X />
+                  </button>
+                </div>
+              ))}
+
+              <label className="text-md text-blue-500 underline cursor-pointer block w-fit">
+                + Add Attachment
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+            </div>
           </>
         )}
       </DialogBody>
+
       <DialogFooter>
         <div className="flex justify-end gap-2">
           <Button
             variant="gradient"
             color="gray"
-            onClick={handleOpen}
+            onClick={editHandleOpen}
             disabled={submitting}
           >
             <span>Cancel</span>
@@ -464,4 +494,4 @@ const AddInvoiceDialogBox = ({ open, handleOpen, fetchData }) => {
   );
 };
 
-export default AddInvoiceDialogBox;
+export default EditInvoiceDialogBox;

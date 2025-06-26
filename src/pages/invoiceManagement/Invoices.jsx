@@ -4,7 +4,12 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  IconButton,
   Input,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Spinner,
   Switch,
   Tooltip,
@@ -14,11 +19,27 @@ import { useEffect, useState } from "react";
 import Loading from "../../components/layout/Loading";
 import axiosClient from "../../axiosClient";
 import Pagination from "../../components/OrdersPage/Pagination";
-import { PencilIcon, Search, Plus } from "lucide-react";
+import { PencilIcon, Search, Plus, Check } from "lucide-react";
 import { useAlert } from "../../contexts/alertContext";
 import AddInvoiceDialogBox from "./AddInvoiceDialogBox";
+import EditInvoiceDialogBox from "./EditInvoiceDialogBox";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
+import { useStateContext } from "../../contexts/contextProvider";
+import ConfirmationDialogBox from "../../components/ConfirmationDialog";
 
 const Invoices = () => {
+  // ####################### Permissions #######################
+  const { user } = useStateContext();
+  const userRole = user?.roles[0]?.name;
+  const accountantConfirm = user?.all_permissions?.some(
+    (p) => p.name === "accountant confirm" && p.status_id === 1
+  );
+
+  const managerConfirm = user?.all_permissions?.some(
+    (p) => p.name === "manager confirm" && p.status_id === 1
+  );
+  //  ############################################################
+
   const headerData = [
     "Company",
     "Category",
@@ -28,26 +49,21 @@ const Invoices = () => {
     "Price",
     "Total (Incl. SST)",
     "Payment Status",
+    "Ready for Payment",
     "Created At",
     "Action",
   ];
 
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
-  const [globalItemsId, setGlobalItemsId] = useState(null);
-  const [globalItemsStatus, setGlobalItemsStatus] = useState(null);
-
-  const [openGlobalItemEdit, setOpenGlobalItemEdit] = useState(false);
-
-  const [openGlobalItemConfirmation, setOpenGlobalItemConfirmation] =
-    useState(false);
-  const [globalItemConfirmationLoading, setGlobalItemConfirmationLoading] =
-    useState(false);
-
+  const [selectedId, setSelectedId] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
   const { showAlert } = useAlert();
-
-  const [globalItemsPagination, setGlobalItemsPagination] = useState({
+  const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
     totalItems: 0,
@@ -59,12 +75,12 @@ const Invoices = () => {
   // API CALLS
   const fetchData = async () => {
     try {
-      setGlobalItemsPagination((prev) => ({ ...prev, isLoading: true }));
+      setPagination((prev) => ({ ...prev, isLoading: true }));
 
       const response = await axiosClient.get("/admin/get/invoices", {
         params: {
-          page: globalItemsPagination.page,
-          page_size: globalItemsPagination.itemsPerPage,
+          page: pagination.page,
+          page_size: pagination.itemsPerPage,
         },
       });
 
@@ -72,7 +88,7 @@ const Invoices = () => {
         response.data;
 
       setData(data);
-      setGlobalItemsPagination((prev) => ({
+      setPagination((prev) => ({
         ...prev,
         page: current_page,
         totalPages: last_page,
@@ -84,41 +100,20 @@ const Invoices = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setGlobalItemsPagination((prev) => ({ ...prev, isLoading: false }));
-    }
-  };
-
-  const confirmToggleGlobalItemStatus = async () => {
-    setGlobalItemConfirmationLoading(true);
-    try {
-      const response = await axiosClient.put(
-        `/admin/global-free-items/status/${globalItemsId}/update`,
-        {
-          status_id: globalItemsStatus,
-        }
-      );
-
-      showAlert("Status updated successfully!", "success");
-      fetchData();
-    } catch (error) {
-      console.error("Error toggling permission:", error);
-    } finally {
-      setOpenGlobalItemConfirmation(false);
-      setGlobalItemConfirmationLoading(false);
-      setOpen(false);
+      setPagination((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [globalItemsPagination.page, globalItemsPagination.itemsPerPage]);
+  }, [pagination.page, pagination.itemsPerPage]);
 
-  // GLOBAL ITEMS TABLE EVENT LISTENERS
+  // EVENT LISTENERS
   const handleSearchInput = (event) => {
     const { value } = event.target;
     setSearchTerm(value);
-    setGlobalItemsPagination({
-      ...globalItemsPagination,
+    setPagination({
+      ...pagination,
       page: 1,
       itemsPerPage: 10,
     });
@@ -128,30 +123,59 @@ const Invoices = () => {
     setOpen((prev) => !prev);
   };
 
-  const handleGlobalItemsPageChange = (newPage) => {
-    setGlobalItemsPagination({
-      ...globalItemsPagination,
+  const handlePageChange = (newPage) => {
+    setPagination({
+      ...pagination,
       page: newPage,
     });
   };
 
-  const handleGlobalItemsPageSizeChange = (value) => {
-    setGlobalItemsPagination({
-      ...globalItemsPagination,
+  const handlePageSizeChange = (value) => {
+    setPagination({
+      ...pagination,
       page: 1,
       itemsPerPage: Number(value),
     });
   };
 
-  const handleStatusChange = (globalItemId, statusId) => {
-    setGlobalItemsId(globalItemId);
-    setGlobalItemsStatus(statusId);
-    setOpenGlobalItemConfirmation(true);
+  const handleEditOpen = (id) => {
+    setSelectedId(id);
+    setOpenEdit((openEdit) => !openEdit);
   };
 
-  const handleEditOpen = (globalItemId) => {
-    setGlobalItemsId(globalItemId);
-    setOpenGlobalItemEdit((openGlobalItemEdit) => !openGlobalItemEdit);
+  const confirmToggleStatus = async () => {
+    setConfirmationLoading(true);
+    try {
+      const response = await axiosClient.put(`/admin/status/${userId}/update`, {
+        status_id: status,
+      });
+
+      if (response.status === 200) {
+        showAlert(response.data.message, "success");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error toggling permission:", error);
+    } finally {
+      setOpenConfirmation(false);
+      setConfirmationLoading(false);
+      setOpen(false);
+    }
+  };
+
+  const handleAction = (type, id) => {
+    switch (type) {
+      case "edit":
+        setSelectedId(id);
+        setOpenEdit(true);
+        break;
+      case "accountantConfirm":
+        break;
+      case "managerConfirm":
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -183,7 +207,7 @@ const Invoices = () => {
               <Input
                 label="Search User"
                 icon={
-                  globalItemsPagination.isLoading ? (
+                  pagination.isLoading ? (
                     <Spinner className="h-5 w-5" />
                   ) : (
                     <Search className="h-5 w-5" />
@@ -198,7 +222,7 @@ const Invoices = () => {
           </div>
         </CardHeader>
         <CardBody className="overflow-scroll">
-          {globalItemsPagination.isLoading ? (
+          {pagination.isLoading ? (
             <Loading />
           ) : (
             <table className="rounded-md w-full min-w-max table-auto text-left">
@@ -234,13 +258,13 @@ const Invoices = () => {
                     data.created_at
                   ).toLocaleString();
 
-                   const invoiceDate = new Date(
+                  const invoiceDate = new Date(
                     data.invoice_date
                   ).toLocaleString();
                   return (
                     <tr
                       className="border-b border-gray-300 hover:bg-gray-100"
-                      key={data.global_items_id}
+                      key={data.invoice_id}
                     >
                       <td className="p-4">
                         {" "}
@@ -327,6 +351,20 @@ const Invoices = () => {
                         <Typography
                           variant="small"
                           color="blue-gray"
+                          className={`font-normal text-white rounded px-4 px-3 w-fit ${
+                            data.ready_for_payment == 0
+                              ? "bg-red-500"
+                              : "bg-green-500"
+                          }`}
+                        >
+                          {data.ready_for_payment == 0 ? "No" : "Yes"}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
                           className="font-normal"
                         >
                           {readableDate}
@@ -334,12 +372,79 @@ const Invoices = () => {
                       </td>
 
                       <td className="p-4">
-                        <Tooltip content="Edit">
-                          <PencilIcon
-                            onClick={() => handleEditOpen(data.global_items_id)}
-                            className="h-5 w-5 cursor-pointer"
-                          />
-                        </Tooltip>
+                        <Menu>
+                          <MenuHandler>
+                            <IconButton variant="text">
+                              <EllipsisHorizontalIcon className="h-10 w-10" />
+                            </IconButton>
+                          </MenuHandler>
+                          <MenuList>
+                            <MenuItem
+                              onClick={() =>
+                                handleAction("edit", data.invoice_id)
+                              }
+                              className="flex items-center gap-2"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                              <Typography
+                                color="blue-gray"
+                                className="text-sm font-medium"
+                              >
+                                Edit
+                              </Typography>
+                            </MenuItem>
+
+                            {accountantConfirm && (
+                              <MenuItem
+                                onClick={() =>
+                                  handleAction(
+                                    "accountantConfirm",
+                                    data.invoice_id,
+                                    data.ready_for_payment
+                                  )
+                                }
+                                className="flex items-center gap-2"
+                              >
+                                <Check className="h-4 w-4" />
+                                <Typography
+                                  color="blue-gray"
+                                  className="text-sm font-medium"
+                                >
+                                  {userRole === "developer" ? (
+                                    <span>Accountant Confirm</span>
+                                  ) : (
+                                    <span>Confirm</span>
+                                  )}
+                                </Typography>
+                              </MenuItem>
+                            )}
+
+                            {managerConfirm && (
+                              <MenuItem
+                                onClick={() =>
+                                  handleAction(
+                                    "managerConfirm",
+                                    data.invoice_id,
+                                    data.ready_for_payment
+                                  )
+                                }
+                                className="flex items-center gap-2"
+                              >
+                                <Check className="h-4 w-4" />
+                                <Typography
+                                  color="blue-gray"
+                                  className="text-sm font-medium"
+                                >
+                                  {userRole === "developer" ? (
+                                    <span>Manager Confirm</span>
+                                  ) : (
+                                    <span>Confirm</span>
+                                  )}
+                                </Typography>
+                              </MenuItem>
+                            )}
+                          </MenuList>
+                        </Menu>
                       </td>
                     </tr>
                   );
@@ -350,12 +455,12 @@ const Invoices = () => {
         </CardBody>
         <CardFooter className="">
           <Pagination
-            currentPage={globalItemsPagination.page}
-            totalItems={globalItemsPagination.totalItems}
-            itemsPerPage={globalItemsPagination.itemsPerPage}
-            totalPages={globalItemsPagination.totalPages}
-            onPageChange={(newPage) => handleGlobalItemsPageChange(newPage)}
-            onPageSizeChange={handleGlobalItemsPageSizeChange}
+            currentPage={pagination.page}
+            totalItems={pagination.totalItems}
+            itemsPerPage={pagination.itemsPerPage}
+            totalPages={pagination.totalPages}
+            onPageChange={(newPage) => handlePageChange(newPage)}
+            onPageSizeChange={handlePageSizeChange}
           />
         </CardFooter>
       </Card>
@@ -367,25 +472,24 @@ const Invoices = () => {
         fetchData={fetchData}
       />
 
-      {/* <EditGlobalItemsModal
-        editOpen={openGlobalItemEdit}
+      <EditInvoiceDialogBox
+        editOpen={openEdit}
         editHandleOpen={handleEditOpen}
-        globalItemId={globalItemsId}
         fetchData={fetchData}
-      /> */}
+        selectedId={selectedId}
+      />
 
-      {/* CONFIRMATION DIALOG BOX */}
-      {/* <ConfirmationDialog
-        open={openGlobalItemConfirmation}
-        onClose={() => setOpenGlobalItemConfirmation(false)}
-        onConfirm={confirmToggleGlobalItemStatus}
-        isLoading={globalItemConfirmationLoading}
+      <ConfirmationDialogBox
+        open={openConfirmation}
+        onClose={() => setOpenConfirmation(false)}
+        onConfirm={confirmToggleStatus}
+        isLoading={confirmationLoading}
         message={
-          globalItemsStatus == 1
-            ? `Are you sure you want to deactivate this item?`
-            : `Are you sure you want to activate this item?`
+          selectedStatus == 1
+            ? `Are you sure you want to deactivate this user admin?`
+            : `Are you sure you want to activate this user admin?`
         }
-      /> */}
+      />
     </>
   );
 };
