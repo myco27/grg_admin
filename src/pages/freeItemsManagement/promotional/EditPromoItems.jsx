@@ -10,6 +10,7 @@ import {
   Option,
   Select,
   Tabs,
+  Textarea,
   Typography,
 } from "@material-tailwind/react";
 import { useAlert } from "../../../contexts/alertContext";
@@ -39,6 +40,8 @@ const EditPromoItems = ({
     untilDate: "",
     maxQtyDay: 1,
     limitUsage: 1,
+    description: "",
+    busyDescription: "",
     image: null,
     lottie: null,
   });
@@ -78,6 +81,8 @@ const EditPromoItems = ({
         untilDate: "",
         maxQtyDay: 1,
         limitUsage: 1,
+        description: "",
+        busyDescription: "",
         image: null,
         lottie: null,
       });
@@ -176,6 +181,8 @@ const EditPromoItems = ({
       );
       formDataInstance.append("maxQtyDay", formData.maxQtyDay);
       formDataInstance.append("limitUsage", formData.limitUsage);
+      formDataInstance.append("description", formData.description);
+      formDataInstance.append("busy_description", formData.busyDescription);
       formDataInstance.append("centralId", selectedStore);
       if (formData.image instanceof File) {
         formDataInstance.append("image", formData.image);
@@ -221,13 +228,17 @@ const EditPromoItems = ({
   const fetchItemDetails = async () => {
     setLoading(true);
     try {
-      const response = await axiosClient.get(
+      const response = await axios.get(
         `${
           import.meta.env.VITE_ROCKYGO_URL
-        }/get/promo-free-items/details/${selectedId}`
+        }/get/promo-free-items/details/${selectedId}`,
+        {
+          withCredentials: true,
+        }
       );
 
       const responseData = response.data;
+      console.log("response", response);
 
       setSelectedStore(responseData.central_id);
       setSelectedCentralItems(responseData.items.map((data) => data.food_id));
@@ -257,6 +268,8 @@ const EditPromoItems = ({
         untilDate: new Date(responseData.until_date),
         limitUsage: responseData.limit_usage,
         maxQtyDay: responseData.max_qty_day,
+        description: responseData.description,
+        busyDescription: responseData.busy_description,
         image: imageUrl,
       }));
 
@@ -562,6 +575,22 @@ const EditPromoItems = ({
             name="limitUsage"
             type="number"
             value={formData.limitUsage}
+            onChange={handleInputChange}
+            required
+          />
+          <Textarea
+            label="Description"
+            name="description"
+            type="text"
+            value={formData.description}
+            onChange={handleInputChange}
+            required
+          />
+          <Textarea
+            label="Busy Description"
+            name="busyDescription"
+            type="text"
+            value={formData.busyDescription}
             onChange={handleInputChange}
             required
           />
