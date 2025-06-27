@@ -34,6 +34,8 @@ const PromoItems = () => {
     "Promo Used",
     "Max Quantity Per Day",
     "Limit Usage",
+    "Description",
+    "Busy Description",
     "Action",
   ];
   const [tableData, setTableData] = useState([]);
@@ -71,6 +73,8 @@ const PromoItems = () => {
           page_size: tablePagination.itemsPerPage,
         },
       });
+
+      console.log("test data", response);
 
       const { data, current_page, last_page, total, links, per_page } =
         response.data;
@@ -339,6 +343,26 @@ const PromoItems = () => {
                           className="font-normal"
                         >
                           {data.limit_usage}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {data.description}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {data.busy_description}
                         </Typography>
                       </td>
 
