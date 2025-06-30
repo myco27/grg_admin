@@ -4,6 +4,7 @@ import {
   Option,
   Select,
   Tabs,
+  Textarea,
   Typography,
 } from "@material-tailwind/react";
 import { useAlert } from "../../../contexts/alertContext";
@@ -31,6 +32,8 @@ const AddPromoItems = ({
     untilDate: "",
     maxQtyDay: 1,
     limitUsage: 1,
+    description: "",
+    busyDescription: "",
     image: null,
     lottie: null,
   });
@@ -64,6 +67,8 @@ const AddPromoItems = ({
         untilDate: "",
         maxQtyDay: 1,
         limitUsage: 1,
+        description: "",
+        busyDescription: "",
         image: null,
         lottie: null,
       });
@@ -162,6 +167,8 @@ const AddPromoItems = ({
 
       formDataInstance.append("maxQtyDay", formData.maxQtyDay);
       formDataInstance.append("limitUsage", formData.limitUsage);
+      formDataInstance.append("description", formData.description);
+      formDataInstance.append("busy_description", formData.busyDescription);
       formDataInstance.append("centralId", selectedStore);
       selectedCentralItems.forEach((item) => {
         formDataInstance.append("selectedCentralItems[]", item);
@@ -319,6 +326,22 @@ const AddPromoItems = ({
             name="limitUsage"
             type="number"
             value={formData.limitUsage}
+            onChange={handleInputChange}
+            required
+          />
+          <Textarea
+            label="Description"
+            name="description"
+            type="text"
+            value={formData.description}
+            onChange={handleInputChange}
+            required
+          />
+          <Textarea
+            label="Busy Description"
+            name="busyDescription"
+            type="text"
+            value={formData.busyDescription}
             onChange={handleInputChange}
             required
           />
