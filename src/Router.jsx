@@ -29,6 +29,7 @@ import FreeItems from "./pages/freeItemsManagement/FreeItems";
 import AdminFreeItems from "./pages/freeItemsManagement/adminFreeItems/AdminFreeItems";
 import PromoItems from "./pages/freeItemsManagement/promotional/PromoItems";
 import ClaimedFreeItems from "./pages/freeItemsManagement/adminFreeItems/ClaimedFreeItems";
+import Invoices from "./pages/invoiceManagement/Invoices";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -186,10 +187,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-      path: "promotions/free-items/:promotionId",
+        path: "promotions/free-items/:promotionId",
         element: (
           <ProtectedRoute requiredPermission="view free items">
             <ClaimedFreeItems />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "invoice-management",
+        element: (
+          <ProtectedRoute requiredPermission="view invoice module">
+            <Invoices />
           </ProtectedRoute>
         ),
       },

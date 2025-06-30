@@ -89,7 +89,8 @@ const RolePermissionTable = () => {
   // API CALLS
   const fetchRoles = async () => {
     try {
-      setPagination({ ...pagination, isLoading: true });
+      setPagination((prev) => ({ ...prev, isLoading: true }));
+
       const response = await axiosClient.get("/roles/with-permissions", {
         params: {
           page: pagination.page,
@@ -119,7 +120,8 @@ const RolePermissionTable = () => {
 
   const fetchPermissions = async () => {
     try {
-      setPagination({ ...pagination, isLoading: true });
+      setPagination((prev) => ({ ...prev, isLoading: true }));
+
       const response = await axiosClient.get("/permissions", {
         params: {
           filterPermission: permissionSearch,
@@ -127,10 +129,9 @@ const RolePermissionTable = () => {
       });
 
       setPermissions(response.data || []);
+      setPagination((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {
       console.error("Error fetching permissions:", error);
-    } finally {
-      setPagination({ ...pagination, isLoading: false });
     }
   };
 
@@ -247,7 +248,7 @@ const RolePermissionTable = () => {
   const handlePageChange = (newPage) => {
     setPagination({
       ...pagination,
-      page: newPage,
+      page: Number(newPage),
     });
   };
 
