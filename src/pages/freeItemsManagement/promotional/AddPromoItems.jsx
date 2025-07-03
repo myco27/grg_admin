@@ -31,6 +31,7 @@ const AddPromoItems = ({
     startDate: "",
     untilDate: "",
     maxQtyDay: 1,
+    usersMaxQtyDay: 1,
     limitUsage: 1,
     description: "",
     busyDescription: "",
@@ -66,6 +67,7 @@ const AddPromoItems = ({
         startDate: "",
         untilDate: "",
         maxQtyDay: 1,
+        usersMaxQtyDay: 1,
         limitUsage: 1,
         description: "",
         busyDescription: "",
@@ -166,6 +168,7 @@ const AddPromoItems = ({
       );
 
       formDataInstance.append("maxQtyDay", formData.maxQtyDay);
+      formDataInstance.append("usersMaxQtyDay", formData.usersMaxQtyDay);
       formDataInstance.append("limitUsage", formData.limitUsage);
       formDataInstance.append("description", formData.description);
       formDataInstance.append("busy_description", formData.busyDescription);
@@ -318,6 +321,14 @@ const AddPromoItems = ({
             name="maxQtyDay"
             type="number"
             value={formData.maxQtyDay}
+            onChange={handleInputChange}
+            required
+          />
+          <Input
+            label="Users Max Quantity Per Day"
+            name="usersMaxQtyDay"
+            type="number"
+            value={formData.usersMaxQtyDay}
             onChange={handleInputChange}
             required
           />

@@ -33,6 +33,7 @@ const PromoItems = () => {
     "Status",
     "Promo Used",
     "Max Quantity Per Day",
+    "Users Max Quantity Per Day",
     "Limit Usage",
     "Description",
     "Busy Description",
@@ -73,8 +74,6 @@ const PromoItems = () => {
           page_size: tablePagination.itemsPerPage,
         },
       });
-
-      console.log("test data", response);
 
       const { data, current_page, last_page, total, links, per_page } =
         response.data;
@@ -333,6 +332,16 @@ const PromoItems = () => {
                           className="font-normal"
                         >
                           {data.max_qty_day}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {data.users_max_qty_day}
                         </Typography>
                       </td>
 
