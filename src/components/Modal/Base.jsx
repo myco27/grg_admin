@@ -13,7 +13,7 @@ const Base = ({
       size={size} 
       open={open} 
       handler={handleOpen}
-      className={`flex flex-col ${className}`}
+      className={`flex flex-col max-h-screen ${className}`}
       dismiss={{ outsidePress: false }}
     >
       {children}

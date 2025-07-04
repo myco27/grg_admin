@@ -1,7 +1,18 @@
 import {
+  Button,
+  Card,
+  CardBody,
   Checkbox,
+  Chip,
   Input,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Option,
+  Popover,
+  PopoverContent,
+  PopoverHandler,
   Select,
   Tabs,
   Textarea,
@@ -41,7 +52,8 @@ const AddPromoItems = ({
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { showAlert } = useAlert();
-  const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStore, setSelectedStore] = useState([]);
+  const [open, setOpen] = useState(false);
   const [stores, setStores] = useState([]);
   const [activeTab, setActiveTab] = useState("Promo Free Items");
   const [centralItemSearchTerm, setCentralItemSearchTerm] = useState("");
@@ -60,6 +72,7 @@ const AddPromoItems = ({
   useEffect(() => {
     setActiveTab("Promo Free Items");
     if (openAddModal) {
+      fetchAllCentralItems();
       fetchAllCentral();
       setFormData({
         promoCode: "",
@@ -75,8 +88,7 @@ const AddPromoItems = ({
         lottie: null,
       });
       setStores([]);
-      setSelectedStore("");
-      setCentralItems([]);
+      setSelectedStore([]);
       setSelectedCentralItems([]);
       setCentralItemSearchTerm("");
     }
@@ -87,7 +99,6 @@ const AddPromoItems = ({
       fetchAllCentralItems();
     }
   }, [
-    selectedStore,
     debounceCentralItemSearch,
     centralItemTablePagination.page,
     centralItemTablePagination.itemsPerPage,
@@ -100,8 +111,6 @@ const AddPromoItems = ({
       const response = await axiosClient.get("/admin/get/central/stores");
       const responseData = response.data.modelData;
 
-      console.log(responseData);
-
       setStores(responseData);
     } catch (error) {
       console.error("Error fetching stores:", error);
@@ -113,16 +122,13 @@ const AddPromoItems = ({
   const fetchAllCentralItems = async () => {
     setLoading(true);
     try {
-      const response = await axiosClient.get(
-        `/admin/get/central-items/${selectedStore}`,
-        {
-          params: {
-            search: debounceCentralItemSearch,
-            page: centralItemTablePagination.page,
-            page_size: centralItemTablePagination.itemsPerPage,
-          },
-        }
-      );
+      const response = await axiosClient.get(`/admin/get/central-items`, {
+        params: {
+          search: debounceCentralItemSearch,
+          page: centralItemTablePagination.page,
+          page_size: centralItemTablePagination.itemsPerPage,
+        },
+      });
 
       const responseData = response.data.modelData.data;
 
@@ -172,9 +178,12 @@ const AddPromoItems = ({
       formDataInstance.append("limitUsage", formData.limitUsage);
       formDataInstance.append("description", formData.description);
       formDataInstance.append("busy_description", formData.busyDescription);
-      formDataInstance.append("centralId", selectedStore);
+
+      selectedStore.forEach((data) => {
+        formDataInstance.append("centralIds[]", data);
+      });
       selectedCentralItems.forEach((item) => {
-        formDataInstance.append("selectedCentralItems[]", item);
+        formDataInstance.append("selectedCentralItems[]", item.food_id);
       });
 
       if (formData.image) {
@@ -197,8 +206,6 @@ const AddPromoItems = ({
       handleOpenAddModal();
       showAlert("Free Item created successfully!", "success");
     } catch (error) {
-      console.log(error);
-
       if (error.response.data.errors) {
         Object.values(error.response.data.errors)
           .flat()
@@ -219,11 +226,28 @@ const AddPromoItems = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSelect = (value) => {
-    setSelectedStore(value);
+  // -----------------------------PROMO ITEMS EVENT LISTENER---------------------------------------
+  const handleToggle = (id) => {
+    setSelectedStore((prev) =>
+      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
+    );
   };
 
-  // -----------------------------PROMO ITEMS EVENT LISTENER---------------------------------------
+  const handleRemoveSelectedItem = (foodId) => {
+    setSelectedCentralItems((prev) =>
+      prev.filter((item) => item.food_id !== foodId)
+    );
+  };
+
+  const handleSelectAllStores = () => {
+    const allSelected = stores.every((store) =>
+      selectedStore.includes(store.id)
+    );
+
+    const newSelection = allSelected ? [] : stores.map((store) => store.id);
+
+    setSelectedStore(newSelection);
+  };
 
   const handleCentralItemSearchInput = (event) => {
     const { value } = event.target;
@@ -250,22 +274,32 @@ const AddPromoItems = ({
     });
   };
 
-  const toggleSelectAllCentralItems = () => {
-    const allSelected = allCentralItemsId.every((id) =>
-      selectedCentralItems.includes(id)
-    );
-    if (allSelected) {
-      setSelectedCentralItems([]);
-    } else {
-      setSelectedCentralItems(allCentralItemsId);
-    }
-  };
+  // const toggleSelectAllCentralItems = () => {
+  //   const allSelected = allCentralItemsId.every((id) =>
+  //     selectedCentralItems.includes(id)
+  //   );
+  //   if (allSelected) {
+  //     setSelectedCentralItems([]);
+  //   } else {
+  //     setSelectedCentralItems(allCentralItemsId);
+  //   }
+
+  //   console.log(selectedCentralItems);
+  // };
 
   const handleCheckboxChange = (e, foodId) => {
+    const selectedItem = centralItems.find((item) => item.food_id === foodId);
+    if (!selectedItem) return;
+
     if (e.target.checked) {
-      setSelectedCentralItems((prev) => [...prev, foodId]);
+      setSelectedCentralItems((prev) => {
+        const alreadyExists = prev.some((item) => item.food_id === foodId);
+        return alreadyExists ? prev : [...prev, selectedItem];
+      });
     } else {
-      setSelectedCentralItems((prev) => prev.filter((id) => id !== foodId));
+      setSelectedCentralItems((prev) =>
+        prev.filter((item) => item.food_id !== foodId)
+      );
     }
   };
 
@@ -426,19 +460,49 @@ const AddPromoItems = ({
       label: "Assign Free Items",
       content: (
         <>
-          <div className="w-full flex flex-col md:flex-row md:justify-end gap-2 p-2">
+          <div className="w-full flex flex-col md:flex-row md:justify-between gap-2">
             <div className="w-full md:w-1/3">
-              <Select
-                label="Select Central"
-                onChange={handleSelect}
-                value={selectedStore}
-              >
-                {stores.map((store) => (
-                  <Option key={store.id} value={store.id}>
-                    {store.store_name} {store.store_branch}
-                  </Option>
-                ))}
-              </Select>
+              <Popover open={open} handler={setOpen}>
+                <PopoverHandler>
+                  <Button>Select Central</Button>
+                </PopoverHandler>
+                <PopoverContent className="max-h-[50%] overflow-y-auto z-[9999]">
+                  <div
+                    className="flex items-center gap-2 py-1 px-2 border-b cursor-pointer hover:bg-gray-100"
+                    onClick={handleSelectAllStores}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        stores.length > 0 &&
+                        stores.every((store) =>
+                          selectedStore.includes(store.id)
+                        )
+                      }
+                      readOnly
+                    />
+                    <span>Select All</span>
+                  </div>
+
+                  {/* Store list */}
+                  {stores.map((store) => (
+                    <div
+                      key={store.id}
+                      className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleToggle(store.id)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedStore.includes(store.id)}
+                        readOnly
+                      />
+                      <span>
+                        {store.store_name} {store.store_branch}
+                      </span>
+                    </div>
+                  ))}
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="w-full md:w-1/3">
@@ -460,25 +524,81 @@ const AddPromoItems = ({
           </div>
 
           <div className="max-h-[65vh] overflow-auto w-full">
+            {/* Selected Store Container */}
+            {selectedStore.length > 0 && (
+              <>
+                <Card className="m-2">
+                  <CardBody>
+                    <Typography className="" variant="h6">
+                      Selected Stores:
+                    </Typography>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedStore.map((id) => {
+                        const store = stores.find((s) => s.id === id);
+                        return (
+                          <Chip
+                            key={id}
+                            value={`${store.store_name} ${store.store_branch}`}
+                            onClose={() => handleToggle(id)}
+                            variant="outlined"
+                            className=""
+                          />
+                        );
+                      })}
+                    </div>
+                  </CardBody>
+                </Card>
+              </>
+            )}
+
+            {selectedCentralItems.length > 0 && (
+              <>
+                <Card className="m-2">
+                  <CardBody>
+                    <Typography variant="h6">Selected Items:</Typography>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCentralItems.map((item) => (
+                        <Chip
+                          key={item.food_id}
+                          value={item.name}
+                          onClose={() => handleRemoveSelectedItem(item.food_id)}
+                          variant="outlined"
+                        />
+                      ))}
+                    </div>
+                  </CardBody>
+                </Card>
+              </>
+            )}
+
             <div className="w-full overflow-x-auto">
               <table className="min-w-full table-auto text-left">
                 <thead>
                   <tr>
-                    <th className="bg-tableHeaderBg flex rounded-tl-md rounded-bl-md p-4">
-                      <Typography
+                    {/* <th className="bg-tableHeaderBg flex rounded-tl-md rounded-bl-md p-4"> */}
+                    {/* <Typography
                         variant="small"
                         color="black"
                         className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                       >
                         All
-                      </Typography>
-                      <Checkbox
+                      </Typography> */}
+                    {/* <Checkbox
                         id="selectAll"
                         onChange={toggleSelectAllCentralItems}
                         checked={allCentralItemsId.every((id) =>
                           selectedCentralItems.includes(id)
                         )}
                       />
+                    </th> */}
+                    <th className="bg-tableHeaderBg flex rounded-tl-md rounded-bl-md p-4">
+                      <Typography
+                        variant="small"
+                        color="black"
+                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                      >
+                        Select
+                      </Typography>
                     </th>
                     <th className="bg-tableHeaderBg p-4">
                       <Typography
@@ -512,7 +632,9 @@ const AddPromoItems = ({
                           onChange={(e) =>
                             handleCheckboxChange(e, data.food_id)
                           }
-                          checked={selectedCentralItems.includes(data.food_id)}
+                          checked={selectedCentralItems.some(
+                            (item) => item.food_id === data.food_id
+                          )}
                         />
                       </td>
                       <td className="px-4 py-2">
@@ -555,10 +677,15 @@ const AddPromoItems = ({
 
   return (
     <>
-      <Base open={openAddModal} handleOpen={handleOpenAddModal} size="lg">
+      <Base
+        open={openAddModal}
+        handleOpen={handleOpenAddModal}
+        size="xl"
+        className={"h-[85dvh]"}
+      >
         <Tabs
           value={activeTab}
-          className="flex  rounded-lg"
+          className="flex rounded-lg h-full"
           orientation="horizontal"
         >
           <div className="flex w-full flex-col sm:flex-row">
@@ -569,15 +696,20 @@ const AddPromoItems = ({
               tabs={tabs}
               sidebarTitle=""
             />
-            <div className="w-full">
-              <Header title={activeTab} onClose={handleOpenAddModal} />
+            <div className="w-full flex flex-col">
+              <Header
+                className=""
+                title={activeTab}
+                onClose={handleOpenAddModal}
+              />
               <Body
-                className="flex"
+                className="flex flex-1 "
                 tabs={tabs}
                 activeTab={activeTab}
                 loading={loading}
               />
               <Footer
+                className=""
                 loading={loading}
                 showSubmit={true}
                 onCancel={handleOpenAddModal}
