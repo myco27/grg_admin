@@ -30,6 +30,7 @@ import AdminFreeItems from "./pages/freeItemsManagement/adminFreeItems/AdminFree
 import PromoItems from "./pages/freeItemsManagement/promotional/PromoItems";
 import ClaimedFreeItems from "./pages/freeItemsManagement/adminFreeItems/ClaimedFreeItems";
 import Invoices from "./pages/invoiceManagement/Invoices";
+import StoreGroup from "./pages/storeGroupManagement/StoreGroup";
 
 // Wrapper component to handle redirection based on authentication status
 const RootRedirect = () => {
@@ -199,6 +200,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="view invoice module">
             <Invoices />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "store-group",
+        element: (
+          <ProtectedRoute requiredPermission="view store group module">
+            <StoreGroup />
           </ProtectedRoute>
         ),
       },

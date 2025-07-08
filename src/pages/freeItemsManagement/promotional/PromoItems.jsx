@@ -98,12 +98,17 @@ const PromoItems = () => {
   const confirmToggle = async () => {
     setConfirmationLoading(true);
     try {
+      const payload = {};
+      if (freeItemIsBusy !== null) {
+        payload.is_busy = freeItemIsBusy;
+      }
+      if (freeItemsStatus !== null) {
+        payload.status = freeItemsStatus;
+      }
+
       const response = await axiosClient.put(
         `/admin/promo-free-items/status/${selectedId}/update`,
-        {
-          is_busy: freeItemIsBusy,
-          status: freeItemsStatus,
-        }
+        payload
       );
 
       showAlert("Status updated successfully!", "success");
@@ -113,6 +118,8 @@ const PromoItems = () => {
     } finally {
       setOpenConfirmation(false);
       setConfirmationLoading(false);
+      setFreeItemIsBusy(null); // Reset after confirm
+      setFreeItemsStatus(null);
     }
   };
 
@@ -155,12 +162,14 @@ const PromoItems = () => {
   const handleStatusChange = (promoId, statusId) => {
     setSelectedId(promoId);
     setFreeItemsStatus(statusId);
+    setFreeItemIsBusy(null);
     setOpenConfirmation(true);
   };
 
   const handleIsBusyChange = (promoId, isBusy) => {
     setSelectedId(promoId);
     setFreeItemIsBusy(isBusy);
+    setFreeItemsStatus(null);
     setOpenConfirmation(true);
   };
 

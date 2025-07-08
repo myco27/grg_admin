@@ -142,6 +142,8 @@ export default function Header() {
         return "Global Items";
       case "/promotions/free-items":
         return "Free Items";
+      case "/store-group":
+        return "Store Group";
       default:
         return "Dashboard";
     }

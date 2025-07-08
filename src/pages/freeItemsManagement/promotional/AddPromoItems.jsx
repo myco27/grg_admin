@@ -135,6 +135,8 @@ const AddPromoItems = ({
       const { data, current_page, last_page, total, links, per_page } =
         response.data.modelData;
 
+        console.log('asdasd');
+
       setCentralItems(responseData);
       setAllCentralItemsId(response.data.modelDataIds);
       setCentralItemTablePagination((prev) => ({
@@ -468,7 +470,7 @@ const AddPromoItems = ({
                 </PopoverHandler>
                 <PopoverContent className="max-h-[50%] overflow-y-auto z-[9999]">
                   <div
-                    className="flex items-center gap-2 py-1 px-2 border-b cursor-pointer hover:bg-gray-100"
+                    className="flex items-center gap-2 py-1 px-2 border-b cursor-pointer bg-gray-800 text-white hover:bg-gray-700"
                     onClick={handleSelectAllStores}
                   >
                     <input
@@ -551,6 +553,7 @@ const AddPromoItems = ({
               </>
             )}
 
+            {/* Selected Item Container */}
             {selectedCentralItems.length > 0 && (
               <>
                 <Card className="m-2">
