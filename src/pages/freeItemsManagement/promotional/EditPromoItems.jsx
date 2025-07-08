@@ -188,9 +188,7 @@ const EditPromoItems = ({
       formDataInstance.append("limitUsage", formData.limitUsage);
       formDataInstance.append("description", formData.description);
       formDataInstance.append("busy_description", formData.busyDescription);
-      selectedStore.forEach((data) => {
-        formDataInstance.append("centralIds[]", data);
-      });
+
       if (formData.image instanceof File) {
         formDataInstance.append("image", formData.image);
       }
@@ -199,8 +197,12 @@ const EditPromoItems = ({
         formDataInstance.append("lottie", formData.lottie);
       }
 
-      selectedCentralItems.forEach((item, index) => {
-        formDataInstance.append(`selectedCentralItems[${index}]`, item.food_id);
+      selectedStore.forEach((data, index) => {
+        formDataInstance.append(`centralIds[${index}]`, data.id);
+      });
+
+      selectedCentralItems.forEach((data, index) => {
+        formDataInstance.append(`selectedCentralItems[${index}]`, data.food_id);
       });
 
       const response = await axios.post(
@@ -246,29 +248,13 @@ const EditPromoItems = ({
 
       const responseData = response.data;
 
-      // console.log('response selected store: ', responseData.stores);
-
-      setSelectedStore(responseData.stores.map((data) => data.store));
-      //  console.log('response selected store: ', selectedStore);
-      setSelectedCentralItems(responseData.items.map((data) => data.food));
+      setSelectedStore(responseData?.stores.map((data) => data.store));
+      setSelectedCentralItems(responseData?.items.map((data) => data.food));
 
       const imageUrl = `${import.meta.env.VITE_APP_FRONT_IMAGE_PATH}${
-        responseData.free_item_image
+        responseData?.free_item_image
       }`;
-      if (responseData.lottie_link) {
-        const lottieUrl = `${import.meta.env.VITE_ROCKYGO_URL}/lottie/${
-          responseData.central_id
-        }/${responseData.free_item_v2_id}/${responseData.lottie_link
-          .split("/")
-          .pop()}`;
 
-        const res = await fetch(lottieUrl);
-        const data = await res.json();
-        setLottieJsonContent(JSON.stringify(data));
-        setFormData((prev) => ({ ...prev, lottie: data }));
-      }
-
-      // ✅ Set form data
       setFormData((prev) => ({
         ...prev,
         title: responseData.title,
@@ -282,6 +268,19 @@ const EditPromoItems = ({
         busyDescription: responseData.busy_description,
         image: imageUrl,
       }));
+
+      if (responseData.lottie_link) {
+        const lottieUrl = `${import.meta.env.VITE_ROCKYGO_URL}/lottie/${
+          responseData.central_id
+        }/${responseData.free_item_v2_id}/${responseData.lottie_link
+          .split("/")
+          .pop()}`;
+
+        const res = await fetch(lottieUrl);
+        const data = await res.json();
+        setLottieJsonContent(JSON.stringify(data));
+        setFormData((prev) => ({ ...prev, lottie: data }));
+      }
 
       // setLottieJsonContent(JSON.stringify(lottieJson));
     } catch (error) {
@@ -664,12 +663,12 @@ const EditPromoItems = ({
                       <div
                         key={store.id}
                         className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleToggle(store.id)}
+                        onClick={() => handleToggle(store)}
                       >
                         <input
                           type="checkbox"
                           checked={selectedStore.some(
-                            (selected) => selected.id === store.id
+                            (data) => data.id === store.id
                           )}
                           readOnly
                         />
@@ -703,24 +702,27 @@ const EditPromoItems = ({
 
           <div className="max-h-[65vh] overflow-auto w-full">
             {/* Selected Store Container */}
-            {selectedStore.length > 0 && (
+            {selectedStore.length > 0 && stores.length > 0 && (
               <>
                 <Card className="m-2">
                   <CardBody>
-                    <Typography className="" variant="h6">
-                      Selected Stores:
-                    </Typography>
+                    <Typography variant="h6">Selected Stores:</Typography>
                     <div className="flex flex-wrap gap-2">
                       {selectedStore.map((data) => {
-                        return (
-                          <Chip
-                            key={data.id}
-                            value={`${data.store_name} ${data.store_branch}`}
-                            onClose={() => handleToggle(id)}
-                            variant="outlined"
-                            className=""
-                          />
-                        );
+                        const store = stores.find((s) => s.id === data.id);
+
+                        if (store) {
+                          return (
+                            <Chip
+                              key={data.id}
+                              value={`${data.store_name} ${data.store_branch}`}
+                              onClose={() => handleToggle(data)}
+                              variant="outlined"
+                            />
+                          );
+                        }
+
+                        return null; // fallback if not found
                       })}
                     </div>
                   </CardBody>

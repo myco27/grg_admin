@@ -135,8 +135,6 @@ const AddPromoItems = ({
       const { data, current_page, last_page, total, links, per_page } =
         response.data.modelData;
 
-        console.log('asdasd');
-
       setCentralItems(responseData);
       setAllCentralItemsId(response.data.modelDataIds);
       setCentralItemTablePagination((prev) => ({
