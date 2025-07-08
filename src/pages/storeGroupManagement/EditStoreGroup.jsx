@@ -226,13 +226,30 @@ const EditStoreGroup = ({
       content: (
         <>
           <div className="flex flex-col md:flex-row gap-2">
-            <Input
-              label="Legend"
-              name="legend"
-              value={formData.legend}
-              onChange={handleInputChange}
-              required
-            />
+            <div className="w-full flex items-center gap-2 md:max-w-[100px]">
+              <label
+                htmlFor="legend"
+                className="text-sm font-medium text-blue-gray-700 w-16"
+              >
+                Legend
+              </label>
+              <div className="relative w-full h-10">
+                <input
+                  type="color"
+                  id="legend"
+                  name="legend"
+                  value={formData.legend}
+                  onChange={handleInputChange}
+                  className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                  required
+                />
+                <div
+                  className="w-full h-full rounded-full border border-gray-300"
+                  style={{ backgroundColor: formData.legend }}
+                ></div>
+              </div>
+            </div>
+
             <Input
               label="Name"
               name="name"

@@ -257,13 +257,19 @@ const StoreGroup = () => {
                       </td>
 
                       <td className="p-4">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {data.legend}
-                        </Typography>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-5 h-5 rounded-full border border-gray-300"
+                            style={{ backgroundColor: data.legend }}
+                          ></div>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {data.legend}
+                          </Typography>
+                        </div>
                       </td>
 
                       <td className="p-4">
