@@ -720,8 +720,10 @@ const Sidebar = () => {
                     </div>
 
                     <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
-                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px]  ${
+                        freeItemConfigOpen ? "max-h-40 " : "max-h-0"
+                      } ${
+                        sidebarCollapsed && !sidebarHovered ? "ml-1" : "ml-4"
                       }`}
                     >
                       <Link
@@ -729,27 +731,32 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white
+                          ${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
-                          } ${
+                          }
+                          ${
                             location.pathname.startsWith(
                               "/promotions/free-items"
                             )
-                              ? "!bg-[#3A1066] text-white !important"
+                              ? "bg-[#3A1066] text-white"
                               : ""
                           }`}
                         >
                           <ListItemPrefix className="rounded">
                             <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
-                          <Typography
-                            color="white"
-                            className="whitespace-nowrap text-sm font-normal"
-                          >
-                            Free Items
-                          </Typography>
+
+                          {(!sidebarCollapsed || sidebarHovered) && (
+                            <Typography
+                              color="white"
+                              className="whitespace-nowrap text-sm font-normal"
+                            >
+                              Free Items
+                            </Typography>
+                          )}
                         </ListItem>
                       </Link>
                     </div>
