@@ -297,10 +297,21 @@ const EditPromoItems = ({
 
   // -----------------------------PROMO ITEMS EVENT LISTENER---------------------------------------
 
-  const handleToggle = (id) => {
-    setSelectedStore((prev) =>
-      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
-    );
+  // const handleToggle = (id) => {
+  //   setSelectedStore((prev) =>
+  //     prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
+  //   );
+  // };
+
+  const handleToggle = (storeData) => {
+    setSelectedStore((prev) => {
+      const exists = prev.some((item) => item.id === storeData.id);
+      if (exists) {
+        return prev.filter((item) => item.id !== storeData.id);
+      } else {
+        return [...prev, storeData];
+      }
+    });
   };
 
   const handleRemoveSelectedItem = (foodId) => {
@@ -310,11 +321,9 @@ const EditPromoItems = ({
   };
 
   const handleSelectAllStores = () => {
-    const allSelected = stores.every((store) =>
-      selectedStore.includes(store.id)
-    );
+    const allSelected = stores.every((store) => selectedStore.includes(store));
 
-    const newSelection = allSelected ? [] : stores.map((store) => store.id);
+    const newSelection = allSelected ? [] : stores.map((store) => store);
 
     setSelectedStore(newSelection);
   };
@@ -649,7 +658,7 @@ const EditPromoItems = ({
                       checked={
                         stores.length > 0 &&
                         stores.every((store) =>
-                          selectedStore.includes(store.id)
+                          selectedStore.includes(store)
                         )
                       }
                       readOnly
@@ -659,6 +668,10 @@ const EditPromoItems = ({
 
                   {/* Store list */}
                   {stores.map((store) => {
+                    // console.log({
+                    //   'store': store,
+                    //   'selectedStore': selectedStore
+                    // })
                     return (
                       <div
                         key={store.id}
@@ -709,6 +722,10 @@ const EditPromoItems = ({
                     <Typography variant="h6">Selected Stores:</Typography>
                     <div className="flex flex-wrap gap-2">
                       {selectedStore.map((data) => {
+                        console.log({
+                          selectedStore: selectedStore,
+                        });
+
                         const store = stores.find((s) => s.id === data.id);
 
                         if (store) {
