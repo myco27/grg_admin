@@ -3,7 +3,7 @@ name: Deploy React App to cPanel
 on:
   push:
     branches:
-      - dev   # or any other branch you use
+      - main
 
 jobs:
   deploy:
@@ -24,7 +24,7 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Deploy via FTP
+      - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: dist/
-          server-dir: public_html/your-folder/
+          server-dir: /
