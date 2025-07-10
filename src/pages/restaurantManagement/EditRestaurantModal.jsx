@@ -58,7 +58,8 @@ const EditRestaurantModal = ({
       setBusinessStore(selectedStore.store.store_branch);
       setBusinessLandline(selectedStore.store.phone);
       setBusinessMobile(selectedStore.store.mobile);
-      setStatus(String(selectedStore.is_active));
+      setStatus(String(selectedStore.store.is_active));
+
       const formData = new FormData();
       formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
       formData.append("applicant_id", applicantId);
@@ -223,7 +224,6 @@ const EditRestaurantModal = ({
 
   const handleStatusChange = (val) => {
     setStatus((prev) => {
-      console.log("Previous status:", prev);
       return val;
     });
   };
