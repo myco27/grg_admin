@@ -3,7 +3,7 @@ name: Deploy React App to cPanel
 on:
   push:
     branches:
-      - dev  # Change if you're using a different branch like 'dev'
+      - main
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # or your Node.js version
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
@@ -24,12 +24,12 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Deploy via FTP
+      - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          local-dir: dist/                 # <-- Vite's build folder
-          server-dir: /
+          protocol: ftps                # ✅ switch from ftp → ftps
+          local-dir: dist/
+          server-dir: public_html/dev2.backoffice/
