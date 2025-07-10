@@ -61,7 +61,6 @@ export default function Header() {
     setSelectedUserId(userId);
     setSelectedUser(userType);
     setSettingOpen(!settingOpen);
-    console.log(settingOpen);
   };
 
   useEffect(() => {
