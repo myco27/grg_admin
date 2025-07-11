@@ -5,6 +5,7 @@ import {
   ListItem,
   ListItemPrefix,
   Collapse,
+  Tooltip,
 } from "@material-tailwind/react";
 import {
   UserRound,
@@ -943,13 +944,15 @@ const Sidebar = () => {
           <div className="mx-5 flex items-center justify-between border-b-2 border-white border-opacity-30 p-5">
             <div className="flex items-center">
               <img src="/logo.png" alt="logo" className="h-10 w-10" />
-              <Typography
-                variant="h5"
-                color="white"
-                className="ml-3 whitespace-nowrap"
-              >
-                Back Office
-              </Typography>
+              <Tooltip content="Back Office" placement="right">
+                <Typography
+                  variant="h5"
+                  color="white"
+                  className="ml-3 whitespace-nowrap"
+                >
+                  Back Office
+                </Typography>
+              </Tooltip>
             </div>
           </div>
 
