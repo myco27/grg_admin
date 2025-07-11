@@ -386,8 +386,8 @@ const RestaurantManagementPage = () => {
                                       : store.store.is_active == 3
                                       ? "red"
                                       : store.store.is_active == 4
-                                      ? "yellow"
-                                      : "blue-gray"
+                                      ? "deep-orange"
+                                      : ""
                                   }
                                 />
                               </div>
