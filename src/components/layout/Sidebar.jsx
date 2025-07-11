@@ -948,7 +948,7 @@ const Sidebar = () => {
                 color="white"
                 className="ml-3 whitespace-nowrap"
               >
-                Dev Back Office
+                Back Office
               </Typography>
             </div>
           </div>
