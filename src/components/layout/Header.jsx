@@ -61,7 +61,6 @@ export default function Header() {
     setSelectedUserId(userId);
     setSelectedUser(userType);
     setSettingOpen(!settingOpen);
-    console.log(settingOpen);
   };
 
   useEffect(() => {
@@ -142,6 +141,8 @@ export default function Header() {
         return "Global Items";
       case "/promotions/free-items":
         return "Free Items";
+      case "/store-group":
+        return "Store Group";
       default:
         return "Dashboard";
     }

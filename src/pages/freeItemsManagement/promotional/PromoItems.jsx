@@ -33,6 +33,7 @@ const PromoItems = () => {
     "Status",
     "Promo Used",
     "Max Quantity Per Day",
+    "Users Max Quantity Per Day",
     "Limit Usage",
     "Description",
     "Busy Description",
@@ -74,8 +75,6 @@ const PromoItems = () => {
         },
       });
 
-      console.log("test data", response);
-
       const { data, current_page, last_page, total, links, per_page } =
         response.data;
 
@@ -99,12 +98,17 @@ const PromoItems = () => {
   const confirmToggle = async () => {
     setConfirmationLoading(true);
     try {
+      const payload = {};
+      if (freeItemIsBusy !== null) {
+        payload.is_busy = freeItemIsBusy;
+      }
+      if (freeItemsStatus !== null) {
+        payload.status = freeItemsStatus;
+      }
+
       const response = await axiosClient.put(
         `/admin/promo-free-items/status/${selectedId}/update`,
-        {
-          is_busy: freeItemIsBusy,
-          status: freeItemsStatus,
-        }
+        payload
       );
 
       showAlert("Status updated successfully!", "success");
@@ -114,6 +118,8 @@ const PromoItems = () => {
     } finally {
       setOpenConfirmation(false);
       setConfirmationLoading(false);
+      setFreeItemIsBusy(null); // Reset after confirm
+      setFreeItemsStatus(null);
     }
   };
 
@@ -156,12 +162,14 @@ const PromoItems = () => {
   const handleStatusChange = (promoId, statusId) => {
     setSelectedId(promoId);
     setFreeItemsStatus(statusId);
+    setFreeItemIsBusy(null);
     setOpenConfirmation(true);
   };
 
   const handleIsBusyChange = (promoId, isBusy) => {
     setSelectedId(promoId);
     setFreeItemIsBusy(isBusy);
+    setFreeItemsStatus(null);
     setOpenConfirmation(true);
   };
 
@@ -342,7 +350,7 @@ const PromoItems = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {data.limit_usage}
+                          {data.users_max_qty_day}
                         </Typography>
                       </td>
 
@@ -352,6 +360,16 @@ const PromoItems = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
+                          {data.limit_usage}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal max-w-[300px] truncate"
+                        >
                           {data.description}
                         </Typography>
                       </td>
@@ -360,7 +378,7 @@ const PromoItems = () => {
                         <Typography
                           variant="small"
                           color="blue-gray"
-                          className="font-normal"
+                          className="font-normal max-w-[300px] truncate"
                         >
                           {data.busy_description}
                         </Typography>

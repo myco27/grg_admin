@@ -40,7 +40,7 @@ const RestaurantManagementPage = () => {
   const debounceSearch = useDebounce({ value: searchTerm });
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedStore,setSelectedStore] = useState(null)
+  const [selectedStore, setSelectedStore] = useState(null);
   const [selectedStoreId, setSelectedStoreId] = useState(null);
   const [selectedApplicantId, setSelectedApplicantId] = useState(null);
   const [pagination, setPagination] = useState({
@@ -86,8 +86,6 @@ const RestaurantManagementPage = () => {
     } catch (error) {
       // navigate("/notfound");
     }
-
-    
   };
 
   useEffect(() => {
@@ -295,7 +293,8 @@ const RestaurantManagementPage = () => {
                                     color="blue-gray"
                                     className="font-normal"
                                   >
-                                    {store.store.store_name} {store.store.store_branch}
+                                    {store.store.store_name}{" "}
+                                    {store.store.store_branch}
                                   </Typography>
                                 </div>
                               </div>
@@ -305,7 +304,7 @@ const RestaurantManagementPage = () => {
                           return (
                             <td className="p-4" key={`col-${colIndex}`}>
                               <div className="space-y-2">
-                              <div className="flex gap-2">
+                                <div className="flex gap-2">
                                   <Typography
                                     variant="small"
                                     color="blue-gray"
@@ -365,22 +364,30 @@ const RestaurantManagementPage = () => {
                                   variant="ghost"
                                   size="sm"
                                   value={
-                                    store.store.is_active == 1
+                                    store.store.is_active == 0
+                                      ? "Inactive"
+                                      : store.store.is_active == 1
                                       ? "Active"
                                       : store.store.is_active == 2
                                       ? "Suspended"
                                       : store.store.is_active == 3
                                       ? "Deleted"
-                                      : "Inactive"
+                                      : store.store.is_active == 4
+                                      ? "Terminated"
+                                      : "Unknown"
                                   }
                                   color={
-                                    store.store.is_active == 1
+                                    store.store.is_active == 0
+                                      ? "blue-gray"
+                                      : store.store.is_active == 1
                                       ? "green"
                                       : store.store.is_active == 2
                                       ? "orange"
                                       : store.store.is_active == 3
                                       ? "red"
-                                      : "blue-gray"
+                                      : store.store.is_active == 4
+                                      ? "deep-orange"
+                                      : ""
                                   }
                                 />
                               </div>
@@ -395,14 +402,13 @@ const RestaurantManagementPage = () => {
                                   color="blue-gray"
                                   className="font-normal"
                                 >
-                                  {new Date(store.store.date_created).toLocaleString(
-                                    "en-US",
-                                    {
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    }
-                                  )}
+                                  {new Date(
+                                    store.store.date_created
+                                  ).toLocaleString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })}
                                 </Typography>
                               </div>
                             </td>
@@ -413,7 +419,13 @@ const RestaurantManagementPage = () => {
                               <Tooltip content="Edit Store">
                                 <IconButton
                                   variant="text"
-                                  onClick={() => {handleEditOpen(store.store.id, store.applicant_id); setSelectedStore(store);}}
+                                  onClick={() => {
+                                    handleEditOpen(
+                                      store.store.id,
+                                      store.applicant_id
+                                    );
+                                    setSelectedStore(store);
+                                  }}
                                 >
                                   <PencilIcon className="h-4 w-4" />
                                 </IconButton>

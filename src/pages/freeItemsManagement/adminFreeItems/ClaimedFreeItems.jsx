@@ -55,6 +55,7 @@ export default function ClaimedFreeItems() {
   });
   const [lastPage, setLastPage] = useState(1);
   const [promo, setPromo] = useState(null);
+  const [freeItemData, setFreeItemData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -117,11 +118,16 @@ export default function ClaimedFreeItems() {
 
       console.log("resssponwse", response.data);
 
-      setPromoImage(response.data.free_item_image);
+      setPromoImage(response.data.free_item.free_item_image);
+      console.log(`${import.meta.env.VITE_APP_FRONT_IMAGE_PATH}/${promoImage}`);
+
       setData(response.data.customers || []);
       setPromo(response.data);
+      setFreeItemData(response.data.free_item);
       setTabCounts(response.data.counts || {});
       setPagination(response.data.pagination);
+
+      console.log("image", promoImage);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -191,14 +197,14 @@ export default function ClaimedFreeItems() {
               />
             </div>
             <Typography variant="h5" color="blue-gray">
-              {promo?.promo_code || "Loading Promo Code..."}
+              {freeItemData?.promo_code || "Loading Promo Code..."}
             </Typography>
             <Typography color="gray" className="mt-1 font-sm">
-              {promo?.title || "Loading..."}
+              {freeItemData?.title || "Loading..."}
             </Typography>
             <Typography color="gray" className="mt-1 font-sm">
-              Start Date: {formatDate(promo?.start_date)} - End Date:{" "}
-              {formatDate(promo?.until_date)}
+              Start Date: {formatDate(freeItemData?.start_date)} - End Date:{" "}
+              {formatDate(freeItemData?.until_date)}
             </Typography>
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">

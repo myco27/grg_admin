@@ -25,6 +25,7 @@ import {
   Boxes,
   FileText,
   Car,
+  Store,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -102,6 +103,11 @@ const Sidebar = () => {
   const canViewInvoiceModule =
     user?.all_permissions?.some(
       (p) => p.name === "view invoice module" && p.status_id === 1
+    ) || false;
+
+  const canStoreGroupModule =
+    user?.all_permissions?.some(
+      (p) => p.name === "view store group module" && p.status_id === 1
     ) || false;
 
   useEffect(() => {
@@ -184,9 +190,9 @@ const Sidebar = () => {
                       location.pathname === "/dashboard" ? "!bg-[#3A1066]" : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LayoutDashboard
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/dashboard"
                             ? "text-purple-500"
                             : ""
@@ -221,9 +227,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LayoutDashboard
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname.startsWith("/orders")
                             ? "text-purple-500"
                             : ""
@@ -256,7 +262,7 @@ const Sidebar = () => {
                               : ""
                           }`}
                         >
-                          <ListItemPrefix className="min-w-[24px]">
+                          <ListItemPrefix className="min-w-[24px] mr-1">
                             <FileText className="h-5 w-5 text-white" />
                           </ListItemPrefix>
                           <Typography
@@ -279,7 +285,7 @@ const Sidebar = () => {
                               : ""
                           }`}
                         >
-                          <ListItemPrefix className="min-w-[24px]">
+                          <ListItemPrefix className="min-w-[24px] mr-1">
                             <Car className="h-5 w-5 text-white" />
                           </ListItemPrefix>
                           <Typography
@@ -308,9 +314,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <UserRound
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/user-management"
                             ? "text-purple-500"
                             : ""
@@ -348,9 +354,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Utensils
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/restaurant-management"
                             ? ""
                             : ""
@@ -388,9 +394,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <ShieldCheck
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/admin-management" ? "" : ""
                         }`}
                       />
@@ -426,9 +432,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Newspaper
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/applications" ? "" : ""
                         }`}
                       />
@@ -462,9 +468,9 @@ const Sidebar = () => {
                       location.pathname === "/settings" ? "!bg-[#3A1066]" : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Settings
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/settings" ? "" : ""
                         }`}
                       />
@@ -502,7 +508,7 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <FileSliders className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
@@ -650,7 +656,7 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
@@ -714,8 +720,10 @@ const Sidebar = () => {
                     </div>
 
                     <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
-                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px]  ${
+                        freeItemConfigOpen ? "max-h-40 " : "max-h-0"
+                      } ${
+                        sidebarCollapsed && !sidebarHovered ? "ml-1" : "ml-4"
                       }`}
                     >
                       <Link
@@ -723,27 +731,32 @@ const Sidebar = () => {
                         className="flex w-full items-center"
                       >
                         <ListItem
-                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white
+                          ${
                             sidebarCollapsed && !sidebarHovered
                               ? "w-[40px] px-2"
                               : "w-[220px]"
-                          } ${
+                          }
+                          ${
                             location.pathname.startsWith(
                               "/promotions/free-items"
                             )
-                              ? "!bg-[#3A1066] text-white !important"
+                              ? "bg-[#3A1066] text-white"
                               : ""
                           }`}
                         >
                           <ListItemPrefix className="rounded">
                             <Gift className="h-4 w-4 text-white" />
                           </ListItemPrefix>
-                          <Typography
-                            color="white"
-                            className="whitespace-nowrap text-sm font-normal"
-                          >
-                            Free Items
-                          </Typography>
+
+                          {(!sidebarCollapsed || sidebarHovered) && (
+                            <Typography
+                              color="white"
+                              className="whitespace-nowrap text-sm font-normal"
+                            >
+                              Free Items
+                            </Typography>
+                          )}
                         </ListItem>
                       </Link>
                     </div>
@@ -786,7 +799,7 @@ const Sidebar = () => {
                 </>
               )}
 
-              {/* Invoice Management */}
+              {/* Invoice */}
               {canViewInvoiceModule && (
                 <Link to="/invoice-management">
                   <ListItem
@@ -800,9 +813,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <ShieldCheck
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/invoice-management" ? "" : ""
                         }`}
                       />
@@ -818,7 +831,46 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Invoice Management
+                        Invoice
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+
+              {/* Store Group */}
+              {canStoreGroupModule && (
+                <Link to="/store-group">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/store-group"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px] mr-1">
+                      <Store
+                        className={`h-4 w-4 text-white ${
+                          location.pathname === "/store-group" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Store Group
                       </Typography>
                     </div>
                   </ListItem>
@@ -839,9 +891,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LockKeyhole
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/roles-and-permissions"
                             ? ""
                             : ""
@@ -896,7 +948,7 @@ const Sidebar = () => {
                 color="white"
                 className="ml-3 whitespace-nowrap"
               >
-                Back Office
+                Dev Back Office
               </Typography>
             </div>
           </div>
@@ -911,9 +963,9 @@ const Sidebar = () => {
                       location.pathname === "/dashboard" ? "bg-[#3A1066]" : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LayoutDashboard
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/dashboard"
                             ? "text-purple-500"
                             : ""
@@ -926,7 +978,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {canViewOrderModule && (
                 <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>
                   <ListItem
@@ -934,9 +985,9 @@ const Sidebar = () => {
                       location.pathname === "/orders" ? "bg-[#3A1066]" : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LayoutDashboard
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/orders"
                             ? "text-purple-500"
                             : ""
@@ -949,7 +1000,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* User Management */}
               {canViewUserModule && (
                 <Link
@@ -963,9 +1013,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <UserRound
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/user-management"
                             ? "text-purple-500"
                             : ""
@@ -978,7 +1028,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Restaurant Management */}
               {canViewRestaurantModule && (
                 <Link to="/restaurant-management">
@@ -993,9 +1042,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Utensils
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/restaurant-management"
                             ? ""
                             : ""
@@ -1019,7 +1068,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Admin Management */}
               {canViewAdminModule && (
                 <Link
@@ -1033,9 +1081,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <ShieldCheck
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/admin-management" ? "" : ""
                         }`}
                       />
@@ -1046,7 +1094,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Applications */}
               {canViewApplicationsModule && (
                 <Link
@@ -1060,9 +1107,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Newspaper
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/applications" ? "" : ""
                         }`}
                       />
@@ -1073,7 +1120,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Settings */}
               {canViewSettingsModule && (
                 <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>
@@ -1082,9 +1128,9 @@ const Sidebar = () => {
                       location.pathname === "/settings" ? "bg-[#3A1066]" : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Settings
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/settings" ? "" : ""
                         }`}
                       />
@@ -1095,7 +1141,6 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
-
               {/* Configuration Management */}
               {canViewConfigurationModule && (
                 <>
@@ -1111,7 +1156,7 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <FileSliders className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
@@ -1243,7 +1288,6 @@ const Sidebar = () => {
                   </Collapse>
                 </>
               )}
-
               {/* Free Items Management */}
               {canViewFreeItems && (
                 <>
@@ -1259,7 +1303,7 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <Boxes className="h-5 w-5 text-white" />
                     </ListItemPrefix>
                     <div
@@ -1393,8 +1437,7 @@ const Sidebar = () => {
                   </Collapse>
                 </>
               )}
-
-              {/* Invoice Management */}
+              {/* Invoice */}
               {canViewInvoiceModule && (
                 <Link to="/invoice-management">
                   <ListItem
@@ -1408,9 +1451,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <ShieldCheck
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/invoice-management" ? "" : ""
                         }`}
                       />
@@ -1426,7 +1469,45 @@ const Sidebar = () => {
                         color="white"
                         className="whitespace-nowrap text-sm font-normal"
                       >
-                        Invoice Management
+                        Invoice
+                      </Typography>
+                    </div>
+                  </ListItem>
+                </Link>
+              )}
+              {/* Store Group */}
+              {canStoreGroupModule && (
+                <Link to="/store-group">
+                  <ListItem
+                    className={`hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } ${
+                      location.pathname === "/store-group"
+                        ? "!bg-[#3A1066]"
+                        : ""
+                    }`}
+                  >
+                    <ListItemPrefix className="min-w-[24px] mr-1">
+                      <Store
+                        className={`h-4 w-4 text-white ${
+                          location.pathname === "/store-group" ? "" : ""
+                        }`}
+                      />
+                    </ListItemPrefix>
+                    <div
+                      className={`${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="whitespace-nowrap text-sm font-normal"
+                      >
+                        Store Group
                       </Typography>
                     </div>
                   </ListItem>
@@ -1446,9 +1527,9 @@ const Sidebar = () => {
                         : ""
                     }`}
                   >
-                    <ListItemPrefix className="min-w-[24px]">
+                    <ListItemPrefix className="min-w-[24px] mr-1">
                       <LockKeyhole
-                        className={`h-5 w-5 text-white ${
+                        className={`h-4 w-4 text-white ${
                           location.pathname === "/roles-and-permissions"
                             ? ""
                             : ""

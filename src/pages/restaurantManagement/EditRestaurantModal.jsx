@@ -9,6 +9,8 @@ import {
   DialogHeader,
   IconButton,
   Input,
+  Select,
+  Option,
 } from "@material-tailwind/react";
 import axiosClient from "../../axiosClient";
 import { X, PaperclipIcon, Info } from "lucide-react";
@@ -46,6 +48,7 @@ const EditRestaurantModal = ({
   const [businessLandline, setBusinessLandline] = useState("");
   const [businessMobile, setBusinessMobile] = useState("");
   const [businessEmail, setBusinessEmail] = useState("");
+  const [status, setStatus] = useState("");
 
   const fetchRestaurantDetails = async () => {
     try {
@@ -55,6 +58,8 @@ const EditRestaurantModal = ({
       setBusinessStore(selectedStore.store.store_branch);
       setBusinessLandline(selectedStore.store.phone);
       setBusinessMobile(selectedStore.store.mobile);
+      setStatus(String(selectedStore.store.is_active));
+
       const formData = new FormData();
       formData.append("token", import.meta.env.VITE_ROCKYGO_TOKEN);
       formData.append("applicant_id", applicantId);
@@ -96,6 +101,7 @@ const EditRestaurantModal = ({
       phone: businessLandline,
       mobile: businessMobile,
       email: businessEmail,
+      status: Number(status),
     };
     try {
       const response = await axiosClient.put(
@@ -216,6 +222,12 @@ const EditRestaurantModal = ({
     }
   };
 
+  const handleStatusChange = (val) => {
+    setStatus((prev) => {
+      return val;
+    });
+  };
+
   const tabs = [
     {
       value: "Information",
@@ -255,7 +267,7 @@ const EditRestaurantModal = ({
                 onChange={(e) => {
                   const value = e.target.value;
                   if (/^\d*$/.test(value)) {
-                    setBusinessLandline(e.target.value)
+                    setBusinessLandline(e.target.value);
                   }
                 }}
               />
@@ -268,10 +280,23 @@ const EditRestaurantModal = ({
                 onChange={(e) => {
                   const value = e.target.value;
                   if (/^\d*$/.test(value)) {
-                    setBusinessMobile(e.target.value)
+                    setBusinessMobile(e.target.value);
                   }
                 }}
               />
+
+              <Select
+                required
+                label="Status"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <Option value="0">Inactive</Option>
+                <Option value="1">Active</Option>
+                <Option value="2">Suspended</Option>
+                <Option value="3">Deleted</Option>
+                <Option value="4">Terminated</Option>
+              </Select>
             </div>
           )}
         </>

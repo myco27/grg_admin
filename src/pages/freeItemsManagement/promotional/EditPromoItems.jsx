@@ -1,13 +1,19 @@
 import {
   Avatar,
   Button,
+  Card,
+  CardBody,
   Checkbox,
+  Chip,
   Dialog,
   DialogBody,
   DialogHeader,
   IconButton,
   Input,
   Option,
+  Popover,
+  PopoverContent,
+  PopoverHandler,
   Select,
   Tabs,
   Textarea,
@@ -32,6 +38,7 @@ const EditPromoItems = ({
 }) => {
   const [centralItems, setCentralItems] = useState([]);
   const [selectedCentralItems, setSelectedCentralItems] = useState([]);
+  const [open, setOpen] = useState(false);
   const [allCentralItemsId, setAllCentralItemsId] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -39,6 +46,7 @@ const EditPromoItems = ({
     startDate: "",
     untilDate: "",
     maxQtyDay: 1,
+    usersMaxQtyDay: 1,
     limitUsage: 1,
     description: "",
     busyDescription: "",
@@ -53,7 +61,7 @@ const EditPromoItems = ({
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { showAlert } = useAlert();
-  const [selectedStore, setSelectedStore] = useState("");
+  const [selectedStore, setSelectedStore] = useState([]);
   const [stores, setStores] = useState([]);
   const [activeTab, setActiveTab] = useState("Promo Free Items");
   const [centralItemSearchTerm, setCentralItemSearchTerm] = useState("");
@@ -80,6 +88,7 @@ const EditPromoItems = ({
         startDate: "",
         untilDate: "",
         maxQtyDay: 1,
+        usersMaxQtyDay: 1,
         limitUsage: 1,
         description: "",
         busyDescription: "",
@@ -89,7 +98,6 @@ const EditPromoItems = ({
       setImagePreview(null);
       setStores([]);
       setLottieJsonContent("");
-      setSelectedStore("");
       setCentralItems([]);
       setSelectedCentralItems([]);
       setCentralItemSearchTerm("");
@@ -102,7 +110,6 @@ const EditPromoItems = ({
     }
   }, [
     activeTab,
-    selectedStore,
     debounceCentralItemSearch,
     centralItemTablePagination.page,
     centralItemTablePagination.itemsPerPage,
@@ -126,16 +133,13 @@ const EditPromoItems = ({
   const fetchAllCentralItems = async () => {
     setLoading(true);
     try {
-      const response = await axiosClient.get(
-        `/admin/get/central-items/${selectedStore}`,
-        {
-          params: {
-            search: debounceCentralItemSearch,
-            page: centralItemTablePagination.page,
-            page_size: centralItemTablePagination.itemsPerPage,
-          },
-        }
-      );
+      const response = await axiosClient.get(`/admin/get/central-items`, {
+        params: {
+          search: debounceCentralItemSearch,
+          page: centralItemTablePagination.page,
+          page_size: centralItemTablePagination.itemsPerPage,
+        },
+      });
 
       const responseData = response.data.modelData.data;
 
@@ -180,10 +184,11 @@ const EditPromoItems = ({
         new Date(formData.untilDate).toISOString()
       );
       formDataInstance.append("maxQtyDay", formData.maxQtyDay);
+      formDataInstance.append("usersMaxQtyDay", formData.usersMaxQtyDay);
       formDataInstance.append("limitUsage", formData.limitUsage);
       formDataInstance.append("description", formData.description);
       formDataInstance.append("busy_description", formData.busyDescription);
-      formDataInstance.append("centralId", selectedStore);
+
       if (formData.image instanceof File) {
         formDataInstance.append("image", formData.image);
       }
@@ -192,8 +197,12 @@ const EditPromoItems = ({
         formDataInstance.append("lottie", formData.lottie);
       }
 
-      selectedCentralItems.forEach((item, index) => {
-        formDataInstance.append(`selectedCentralItems[${index}]`, item);
+      selectedStore.forEach((data, index) => {
+        formDataInstance.append(`centralIds[${index}]`, data.id);
+      });
+
+      selectedCentralItems.forEach((data, index) => {
+        formDataInstance.append(`selectedCentralItems[${index}]`, data.food_id);
       });
 
       const response = await axios.post(
@@ -238,14 +247,28 @@ const EditPromoItems = ({
       );
 
       const responseData = response.data;
-      console.log("response", response);
 
-      setSelectedStore(responseData.central_id);
-      setSelectedCentralItems(responseData.items.map((data) => data.food_id));
+      setSelectedStore(responseData?.stores.map((data) => data.store));
+      setSelectedCentralItems(responseData?.items.map((data) => data.food));
 
       const imageUrl = `${import.meta.env.VITE_APP_FRONT_IMAGE_PATH}${
-        responseData.free_item_image
+        responseData?.free_item_image
       }`;
+
+      setFormData((prev) => ({
+        ...prev,
+        title: responseData.title,
+        promoCode: responseData.promo_code,
+        startDate: new Date(responseData.start_date),
+        untilDate: new Date(responseData.until_date),
+        limitUsage: responseData.limit_usage,
+        maxQtyDay: responseData.max_qty_day,
+        usersMaxQtyDay: responseData.users_max_qty_day,
+        description: responseData.description,
+        busyDescription: responseData.busy_description,
+        image: imageUrl,
+      }));
+
       if (responseData.lottie_link) {
         const lottieUrl = `${import.meta.env.VITE_ROCKYGO_URL}/lottie/${
           responseData.central_id
@@ -258,20 +281,6 @@ const EditPromoItems = ({
         setLottieJsonContent(JSON.stringify(data));
         setFormData((prev) => ({ ...prev, lottie: data }));
       }
-
-      // ✅ Set form data
-      setFormData((prev) => ({
-        ...prev,
-        title: responseData.title,
-        promoCode: responseData.promo_code,
-        startDate: new Date(responseData.start_date),
-        untilDate: new Date(responseData.until_date),
-        limitUsage: responseData.limit_usage,
-        maxQtyDay: responseData.max_qty_day,
-        description: responseData.description,
-        busyDescription: responseData.busy_description,
-        image: imageUrl,
-      }));
 
       // setLottieJsonContent(JSON.stringify(lottieJson));
     } catch (error) {
@@ -286,11 +295,38 @@ const EditPromoItems = ({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSelect = (value) => {
-    setSelectedStore(value);
+  // -----------------------------PROMO ITEMS EVENT LISTENER---------------------------------------
+
+  // const handleToggle = (id) => {
+  //   setSelectedStore((prev) =>
+  //     prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
+  //   );
+  // };
+
+  const handleToggle = (storeData) => {
+    setSelectedStore((prev) => {
+      const exists = prev.some((item) => item.id === storeData.id);
+      if (exists) {
+        return prev.filter((item) => item.id !== storeData.id);
+      } else {
+        return [...prev, storeData];
+      }
+    });
   };
 
-  // -----------------------------PROMO ITEMS EVENT LISTENER---------------------------------------
+  const handleRemoveSelectedItem = (foodId) => {
+    setSelectedCentralItems((prev) =>
+      prev.filter((item) => item.food_id !== foodId)
+    );
+  };
+
+  const handleSelectAllStores = () => {
+    const allSelected = stores.every((store) => selectedStore.includes(store));
+
+    const newSelection = allSelected ? [] : stores.map((store) => store);
+
+    setSelectedStore(newSelection);
+  };
 
   const handleCentralItemSearchInput = (event) => {
     const { value } = event.target;
@@ -317,23 +353,19 @@ const EditPromoItems = ({
     });
   };
 
-  const toggleSelectAllCentralItems = () => {
-    const allSelected = allCentralItemsId.every((id) =>
-      selectedCentralItems.includes(id)
-    );
-    if (allSelected) {
-      setSelectedCentralItems([]);
-    } else {
-      setSelectedCentralItems(allCentralItemsId);
-    }
-  };
-
   const handleCheckboxChange = (e, foodId) => {
-    if (e.target.checked) {
-      setSelectedCentralItems((prev) => [...prev, foodId]);
-    } else {
-      setSelectedCentralItems((prev) => prev.filter((id) => id !== foodId));
-    }
+    const isChecked = e.target.checked;
+
+    setSelectedCentralItems((prev) => {
+      if (isChecked) {
+        const itemToAdd = centralItems.find((item) => item.food_id === foodId);
+        const alreadySelected = prev.some((item) => item.food_id === foodId);
+
+        return alreadySelected ? prev : [...prev, itemToAdd];
+      } else {
+        return prev.filter((item) => item.food_id !== foodId);
+      }
+    });
   };
 
   const handleImageChange = (event) => {
@@ -571,6 +603,14 @@ const EditPromoItems = ({
             required
           />
           <Input
+            label="Users Max Quantity Per Day"
+            name="usersMaxQtyDay"
+            type="number"
+            value={formData.usersMaxQtyDay}
+            onChange={handleInputChange}
+            required
+          />
+          <Input
             label="Limit Usage"
             name="limitUsage"
             type="number"
@@ -602,19 +642,57 @@ const EditPromoItems = ({
       label: "Assign Free Items",
       content: (
         <>
-          <div className="w-full flex flex-col md:flex-row md:justify-end gap-2 p-2">
+          <div className="w-full flex flex-col md:flex-row md:justify-between gap-2 p-2">
             <div className="w-full md:w-1/3">
-              <Select
-                label="Select Central"
-                onChange={handleSelect}
-                value={selectedStore}
-              >
-                {stores.map((store) => (
-                  <Option key={store.id} value={store.id}>
-                    {store.store_name} {store.store_branch}
-                  </Option>
-                ))}
-              </Select>
+              <Popover open={open} handler={setOpen}>
+                <PopoverHandler>
+                  <Button>Select Central</Button>
+                </PopoverHandler>
+                <PopoverContent className="max-h-[50%] overflow-y-auto z-[9999]">
+                  <div
+                    className="flex items-center gap-2 py-1 px-2 border-b cursor-pointer bg-gray-800 text-white hover:bg-gray-700"
+                    onClick={handleSelectAllStores}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        stores.length > 0 &&
+                        stores.every((store) =>
+                          selectedStore.includes(store)
+                        )
+                      }
+                      readOnly
+                    />
+                    <span>Select All</span>
+                  </div>
+
+                  {/* Store list */}
+                  {stores.map((store) => {
+                    // console.log({
+                    //   'store': store,
+                    //   'selectedStore': selectedStore
+                    // })
+                    return (
+                      <div
+                        key={store.id}
+                        className="flex items-center gap-2 py-1 px-2 cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleToggle(store)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedStore.some(
+                            (data) => data.id === store.id
+                          )}
+                          readOnly
+                        />
+                        <span>
+                          {store.store_name} {store.store_branch}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="w-full md:w-1/3">
@@ -636,6 +714,60 @@ const EditPromoItems = ({
           </div>
 
           <div className="max-h-[65vh] overflow-auto w-full">
+            {/* Selected Store Container */}
+            {selectedStore.length > 0 && stores.length > 0 && (
+              <>
+                <Card className="m-2">
+                  <CardBody>
+                    <Typography variant="h6">Selected Stores:</Typography>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedStore.map((data) => {
+                        console.log({
+                          selectedStore: selectedStore,
+                        });
+
+                        const store = stores.find((s) => s.id === data.id);
+
+                        if (store) {
+                          return (
+                            <Chip
+                              key={data.id}
+                              value={`${data.store_name} ${data.store_branch}`}
+                              onClose={() => handleToggle(data)}
+                              variant="outlined"
+                            />
+                          );
+                        }
+
+                        return null; // fallback if not found
+                      })}
+                    </div>
+                  </CardBody>
+                </Card>
+              </>
+            )}
+
+            {/* Selected Item Container */}
+            {selectedCentralItems.length > 0 && (
+              <Card className="m-2">
+                <CardBody>
+                  <Typography variant="h6">Selected Items:</Typography>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCentralItems.map((item) => {
+                      return (
+                        <Chip
+                          key={item.food_id}
+                          value={item.name}
+                          onClose={() => handleRemoveSelectedItem(item.food_id)}
+                          variant="outlined"
+                        />
+                      );
+                    })}
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
             <div className="w-full overflow-x-auto">
               <table className="min-w-full table-auto text-left">
                 <thead>
@@ -646,15 +778,8 @@ const EditPromoItems = ({
                         color="black"
                         className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                       >
-                        All
+                        Select
                       </Typography>
-                      <Checkbox
-                        id="selectAll"
-                        onChange={toggleSelectAllCentralItems}
-                        checked={allCentralItemsId.every((id) =>
-                          selectedCentralItems.includes(id)
-                        )}
-                      />
                     </th>
                     <th className="bg-tableHeaderBg p-4">
                       <Typography
@@ -677,40 +802,44 @@ const EditPromoItems = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {centralItems.map((data) => (
-                    <tr
-                      key={data.food_id}
-                      className="border-b border-gray-300 hover:bg-gray-100"
-                    >
-                      <td width={10} className="px-4 py-2">
-                        <Checkbox
-                          id={`store-${data.food_id}`}
-                          onChange={(e) =>
-                            handleCheckboxChange(e, data.food_id)
-                          }
-                          checked={selectedCentralItems.includes(data.food_id)}
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {data.name}
-                        </Typography>
-                      </td>
-                      <td className="px-4 py-2">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {data.description}
-                        </Typography>
-                      </td>
-                    </tr>
-                  ))}
+                  {centralItems.map((data) => {
+                    return (
+                      <tr
+                        key={data.food_id}
+                        className="border-b border-gray-300 hover:bg-gray-100"
+                      >
+                        <td width={10} className="px-4 py-2">
+                          <Checkbox
+                            id={`store-${data.food_id}`}
+                            onChange={(e) =>
+                              handleCheckboxChange(e, data.food_id)
+                            }
+                            checked={selectedCentralItems.some(
+                              (item) => item.food_id === data.food_id
+                            )}
+                          />
+                        </td>
+                        <td className="px-4 py-2">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {data.name}
+                          </Typography>
+                        </td>
+                        <td className="px-4 py-2">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {data.description}
+                          </Typography>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -730,10 +859,15 @@ const EditPromoItems = ({
   ];
   return (
     <>
-      <Base open={editOpen} handleOpen={editHandleOpen} size="lg">
+      <Base
+        open={editOpen}
+        handleOpen={editHandleOpen}
+        size="xl"
+        className={"h-[85dvh]"}
+      >
         <Tabs
           value={activeTab}
-          className="flex  rounded-lg"
+          className="flex rounded-lg h-full"
           orientation="horizontal"
         >
           <div className="flex w-full flex-col sm:flex-row">
@@ -744,10 +878,10 @@ const EditPromoItems = ({
               tabs={tabs}
               sidebarTitle=""
             />
-            <div className="w-full">
+            <div className="w-full flex flex-col">
               <Header title={activeTab} onClose={editHandleOpen} />
               <Body
-                className="flex"
+                className="flex flex-1 "
                 tabs={tabs}
                 activeTab={activeTab}
                 loading={loading}
