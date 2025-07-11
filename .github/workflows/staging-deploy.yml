@@ -1,9 +1,9 @@
-name: Deploy React App to cPanel - DEV
+name: Deploy React App to cPanel - STAGING
 
 on:
   push:
     branches:
-      - dev
+      - staging
 
 jobs:
   deploy:
@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Use .env.dev as .env
-        run: cp .env.dev .env
+      - name: Use .env.staging as .env
+        run: cp .env.staging .env
 
       - name: Build app
         run: npm run build
@@ -30,9 +30,9 @@ jobs:
       - name: Deploy via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.STAGING_FTP_SERVER }}
+          username: ${{ secrets.STAGING_FTP_USERNAME }}
+          password: ${{ secrets.STAGING_FTP_PASSWORD }}
           protocol: ftps
           local-dir: dist/
           server-dir: /
