@@ -56,7 +56,7 @@ const settings = () => {
     "Setting Name",
     "Setting Value 1",
     "Setting Value 2",
-    "Status",
+    // "Status",
     "Action",
   ];
 
@@ -291,28 +291,28 @@ const settings = () => {
                       ),
                       className: "p-4",
                     },
-                    {
-                      key: "status_id",
-                      value: (
-                        <div className="items-center p-4">
-                          {setting.status && typeof setting.status === "object" && (
-                            <Tooltip
-                              className="text-xs"
-                              content={setting.status.name.toUpperCase()}
-                            >
-                              <Switch
-                                onChange={() =>
-                                  handleSwitch(setting.setting_id, setting.status_id)
-                                }
-                                checked={setting.status.name === "active"}
-                                color="green"
-                              />
-                            </Tooltip>
-                          )}
-                        </div>
-                      ),
-                      className: "p-4",
-                    },
+                    // {
+                    //   key: "status_id",
+                    //   value: (
+                    //     <div className="items-center p-4">
+                    //       {setting.status && typeof setting.status === "object" && (
+                    //         <Tooltip
+                    //           className="text-xs"
+                    //           content={setting.status.name.toUpperCase()}
+                    //         >
+                    //           <Switch
+                    //             onChange={() =>
+                    //               handleSwitch(setting.setting_id, setting.status_id)
+                    //             }
+                    //             checked={setting.status.name === "active"}
+                    //             color="green"
+                    //           />
+                    //         </Tooltip>
+                    //       )}
+                    //     </div>
+                    //   ),
+                    //   className: "p-4",
+                    // },
                     {
                       key: "actions",
                       value: (
