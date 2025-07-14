@@ -245,6 +245,13 @@ const UserManagementPage = () => {
       label: "Central",
       value: "central",
       icon: <Store className="h-4 w-4" />,
+      color: "bg-red-500",
+      count: totalCount.central,
+    },
+    {
+      label: "Restaurant",
+      value: "restaurant",
+      icon: <Store className="h-4 w-4" />,
       color: "bg-blue-500",
       count: totalCount.restaurant,
     },
