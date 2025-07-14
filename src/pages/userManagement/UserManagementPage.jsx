@@ -271,8 +271,6 @@ const UserManagementPage = () => {
     },
   ];
 
-  console.log("tabs counts", TABS);
-
   const TABLE_HEAD = [
     "User ID",
     "User Information",
