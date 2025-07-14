@@ -55,6 +55,7 @@ const UserManagementPage = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [totalCount, setTotalCount] = useState({});
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -146,7 +147,9 @@ const UserManagementPage = () => {
 
       const responseData = response.data.data;
       const { current_page, last_page, total, links, per_page } = responseData;
+
       setUsers(responseData.data);
+      setTotalCount(response.data.totalCount || 0);
       setPagination((prev) => ({
         ...prev,
         page: current_page,
@@ -228,28 +231,40 @@ const UserManagementPage = () => {
       label: "All",
       value: "",
       icon: <LayoutDashboard className="h-4 w-4" />,
+      color: "bg-purple-500",
+      count: totalCount.all,
     },
     {
       label: "Area Manager",
       value: "operator",
       icon: <LandPlot className="h-4 w-4" />,
+      color: "bg-green-500",
+      count: totalCount.operator,
     },
     {
       label: "Central",
       value: "central",
       icon: <Store className="h-4 w-4" />,
+      color: "bg-blue-500",
+      count: totalCount.restaurant,
     },
     {
       label: "Rider",
       value: "rider",
       icon: <Bike className="h-4 w-4" />,
+      color: "bg-orange-500",
+      count: totalCount.rider,
     },
     {
       label: "Customer",
       value: "customer",
       icon: <UserRound className="h-4 w-4" />,
+      color: "bg-pink-500",
+      count: totalCount.customer,
     },
   ];
+
+  console.log("tabs counts", TABS);
 
   const TABLE_HEAD = [
     "User ID",
@@ -283,7 +298,7 @@ const UserManagementPage = () => {
               className="relative w-full overflow-x-auto rounded-md md:w-fit xl:overflow-visible"
             >
               <TabsHeader className="gap-x-4 bg-headerBg">
-                {TABS.map(({ label, value, icon }) => (
+                {TABS.map(({ label, value, icon, color, count }) => (
                   <Tab
                     key={value}
                     className="rounded-md"
@@ -292,8 +307,15 @@ const UserManagementPage = () => {
                   >
                     <div className="flex items-center gap-2 text-nowrap px-4 text-sm font-medium text-gray-800">
                       {icon}
-                      {label}
+                      <span className="text-sm">{label}</span>
                     </div>
+                    {typeof count === "number" && (
+                      <span
+                        className={`absolute -top-2 -right-2 z-20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full ${color}`}
+                      >
+                        {count}
+                      </span>
+                    )}
                   </Tab>
                 ))}
               </TabsHeader>
