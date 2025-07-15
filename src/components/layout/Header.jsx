@@ -64,6 +64,8 @@ export default function Header() {
   };
 
   useEffect(() => {
+    console.log("USER: ", user);
+
     if (!user) {
       localStorage.removeItem("ACCESS_TOKEN");
       localStorage.removeItem("USER");
@@ -171,115 +173,121 @@ export default function Header() {
   };
 
   return (
-    <div className="flex flex-row items-center justify-between border-b border-purple-600 bg-[#612B9B] py-1 shadow-sm">
-      <div className="flex items-center gap-2">
-        <IconButton
-          variant="text"
-          size="lg"
-          onClick={toggleSidebar}
-          className="z-10"
-        >
-          <MenuIcon className="h-6 w-6 text-white" />
-        </IconButton>
-        <Typography color="white" className="text-nowrap font-medium">
-          {getPageTitle()}
-        </Typography>
-      </div>
-
-      <div className="flex w-full items-end justify-end">
-        <Menu placement="bottom-end">
-          <MenuHandler>
-            <Button
+    <>
+      {user && (
+        <div className="flex flex-row items-center justify-between border-b border-purple-600 bg-[#612B9B] py-1 shadow-sm">
+          <div className="flex items-center gap-2">
+            <IconButton
               variant="text"
-              className="flex items-center gap-2 p-2 normal-case"
+              size="lg"
+              onClick={toggleSidebar}
+              className="z-10"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
-                <img
-                  src={
-                    user?.profile_picture
-                      ? `${import.meta.env.VITE_APP_IMAGE_PATH}/profileImage/${
-                          user?.profile_picture
-                        }`
-                      : ""
-                  }
-                  alt="Profile"
-                  className="h-full w-full rounded-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                  onError={(e) => {
-                    e.target.src = "/rockygo_logo.png";
-                    e.target.onerror = null;
-                  }}
-                />
-                {/* <span className="text-lg font-bold text-blue-600">
+              <MenuIcon className="h-6 w-6 text-white" />
+            </IconButton>
+            <Typography color="white" className="text-nowrap font-medium">
+              {getPageTitle()}
+            </Typography>
+          </div>
+
+          <div className="flex w-full items-end justify-end">
+            <Menu placement="bottom-end">
+              <MenuHandler>
+                <Button
+                  variant="text"
+                  className="flex items-center gap-2 p-2 normal-case"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100">
+                    <img
+                      src={
+                        user?.profile_picture
+                          ? `${
+                              import.meta.env.VITE_APP_IMAGE_PATH
+                            }/profileImage/${user?.profile_picture}`
+                          : ""
+                      }
+                      alt="Profile"
+                      className="h-full w-full rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.target.src = "/rockygo_logo.png";
+                        e.target.onerror = null;
+                      }}
+                    />
+                    {/* <span className="text-lg font-bold text-blue-600">
                   {" "}
                   {user?.first_name?.[0]}
                   {user?.last_name?.[0]}
                 </span> */}
-              </div>
-              <div className="hidden flex-col items-start sm:flex">
-                <Typography color="white" className="font-medium">
-                  {user?.first_name} {user?.last_name}
-                </Typography>
-                <Typography className="mt-[-6px] text-sm text-gray-300">
-                  {user.roles[0].name.toUpperCase()}
-                </Typography>
-              </div>
-              <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
-            </Button>
-          </MenuHandler>
-          <MenuList>
-            {/* <MenuItem className="flex items-center gap-2">
+                  </div>
+                  <div className="hidden flex-col items-start sm:flex">
+                    <Typography color="white" className="font-medium">
+                      {user?.first_name} {user?.last_name}
+                    </Typography>
+                    <Typography className="mt-[-6px] text-sm text-gray-300">
+                      {user?.roles?.[0]?.name
+                        ? user.roles[0].name.toUpperCase()
+                        : "No Role"}
+                    </Typography>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-white" strokeWidth={3} />
+                </Button>
+              </MenuHandler>
+              <MenuList>
+                {/* <MenuItem className="flex items-center gap-2">
               <User className="h-4 w-4" /> Profile
             </MenuItem>
             <MenuItem className="flex items-center gap-2">
               <Settings className="h-4 w-4" /> Settings
             </MenuItem>
             <hr className="my-2 border-blue-gray-50" /> */}
-            <MenuItem
-              className="flex items-center gap-2"
-              onClick={openProfileModal}
-            >
-              <User className="h-4 w-4" /> Profile
-            </MenuItem>
-            <MenuItem
-              className="flex items-center gap-2 text-nowrap"
-              onClick={handleExport}
-            >
-              <Download className="h-4 w-4" /> Export Menu Template
-            </MenuItem>
-            <MenuItem
-              className="flex items-center gap-2 text-red-500"
-              onClick={handleOpen}
-            >
-              <LogOut className="h-4 w-4" /> Sign Out
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </div>
-      <ProfileModal
-        open={profileOpen}
-        handleOpen={handleProfileOpen}
-        userId={selectedUserId}
-        userType={selectedUser}
-      />
+                <MenuItem
+                  className="flex items-center gap-2"
+                  onClick={openProfileModal}
+                >
+                  <User className="h-4 w-4" /> Profile
+                </MenuItem>
+                <MenuItem
+                  className="flex items-center gap-2 text-nowrap"
+                  onClick={handleExport}
+                >
+                  <Download className="h-4 w-4" /> Export Menu Template
+                </MenuItem>
+                <MenuItem
+                  className="flex items-center gap-2 text-red-500"
+                  onClick={handleOpen}
+                >
+                  <LogOut className="h-4 w-4" /> Sign Out
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </div>
+          <ProfileModal
+            open={profileOpen}
+            handleOpen={handleProfileOpen}
+            userId={selectedUserId}
+            userType={selectedUser}
+          />
 
-      {/* CONFIRMATION DIALOG BOX */}
-      <ConfirmationDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onConfirm={handleLogout}
-        isLoading={loading}
-        message={"Are you sure you want to log out?"}
-      />
+          {/* CONFIRMATION DIALOG BOX */}
+          <ConfirmationDialog
+            open={open}
+            onClose={() => setOpen(false)}
+            onConfirm={handleLogout}
+            isLoading={loading}
+            message={"Are you sure you want to log out?"}
+          />
 
-      <SettingsModal
-        openSetting={settingOpen}
-        settingHandler={handleSettingOpen}
-        userId={selectedUserId}
-        userType={selectedUser}
-        isLoading={loading}
-      />
-    </div>
+          <SettingsModal
+            openSetting={settingOpen}
+            settingHandler={handleSettingOpen}
+            userId={selectedUserId}
+            userType={selectedUser}
+            isLoading={loading}
+          />
+        </div>
+      )}
+    </>
   );
 }
