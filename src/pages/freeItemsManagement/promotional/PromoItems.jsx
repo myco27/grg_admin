@@ -29,7 +29,7 @@ const PromoItems = () => {
     "Promo Code",
     "Start Date",
     "Until Date",
-    "Is Busy",
+    "Busy",
     "Status",
     "Promo Used",
     "Max Quantity Per Day",
@@ -249,13 +249,21 @@ const PromoItems = () => {
 
               <tbody className="">
                 {tableData.map((data) => {
-                  //   const start_date = data.start_date
-                  //     ? new Date(data.start_date).toLocaleDateString(undefined, {
-                  //         year: "numeric",
-                  //         month: "long",
-                  //         day: "numeric",
-                  //       })
-                  //     : "";
+                  const start_date = data.start_date
+                    ? new Date(data.start_date).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "";
+
+                  const until_date = data.until_date
+                    ? new Date(data.until_date).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "";
 
                   //   const date_created = new Date(
                   //     data.created_at
@@ -282,7 +290,7 @@ const PromoItems = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {data.start_date}
+                          {start_date}
                         </Typography>
                       </td>
 
@@ -292,7 +300,7 @@ const PromoItems = () => {
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {data.until_date}
+                          {until_date}
                         </Typography>
                       </td>
 
