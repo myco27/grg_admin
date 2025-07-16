@@ -146,7 +146,7 @@ export default function Header() {
       case "/store-group":
         return "Store Group";
       default:
-        return "Dashboard";
+        return "";
     }
   };
 
