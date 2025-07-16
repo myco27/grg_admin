@@ -207,7 +207,7 @@ export default function ClaimedFreeItems() {
               {formatDate(freeItemData?.until_date)}
             </Typography>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+          {/* <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             <Button
               className="flex items-center gap-3 rounded-md"
               size="sm"
@@ -215,13 +215,16 @@ export default function ClaimedFreeItems() {
             >
               <EyeIcon strokeWidth={2} className="h-4 w-4" /> View Free Items
             </Button>
-          </div>
+          </div> */}
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mt-4">
+        <div className="flex flex-col gap-4 xl:flex-row md:items-center md:justify-between mt-4">
           {/* Tabs on the left */}
-          <Tabs value={tab} className="w-full md:w-max py-4 pr-4">
-            <TabsHeader>
+          <Tabs
+            value={tab}
+            className="relative w-full overflow-x-auto rounded-md md:w-fit md:overflow-visible"
+          >
+            <TabsHeader className="gap-x-4 bg-headerBg">
               {dynamicTabs.map(({ label, value, count, color }) => (
                 <Tab
                   key={value}
@@ -241,87 +244,87 @@ export default function ClaimedFreeItems() {
               ))}
             </TabsHeader>
           </Tabs>
+        </div>
 
-          {/* Search and date filters on the right */}
-          <div className="w-full md:w-auto flex flex-wrap justify-end gap-3 items-center">
-            <div className="w-56">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                }}
-              />
-            </div>
-
-            {[
-              { label: "Start", date: startDate, setDate: setStartDate },
-              { label: "End", date: endDate, setDate: setEndDate },
-            ].map((field, idx) => (
-              <Popover placement="bottom" key={idx}>
-                <PopoverHandler>
-                  <div className="w-56 mx-auto">
-                    <Input
-                      label={`${field.label} Date`}
-                      value={
-                        field.date ? format(new Date(field.date), "PPP") : ""
-                      }
-                      icon={<CalendarDaysIcon className="h-5 w-5" />}
-                      onChange={() => null}
-                    />
-                  </div>
-                </PopoverHandler>
-                <PopoverContent>
-                  <DayPicker
-                    mode="single"
-                    selected={field.date ? new Date(field.date) : undefined}
-                    onSelect={(date) => {
-                      if (date) field.setDate(format(date, "yyyy-MM-dd"));
-                    }}
-                    showOutsideDays
-                    classNames={{
-                      caption:
-                        "flex justify-center py-2 mb-4 relative items-center",
-                      nav_button: "h-6 w-6 p-1 rounded-md hover:bg-gray-200",
-                      day_selected: "bg-gray-900 text-white",
-                      day_today: "bg-gray-200",
-                    }}
-                    components={{
-                      IconLeft: (props) => (
-                        <ChevronLeftIcon
-                          {...props}
-                          className="h-4 w-4 stroke-2"
-                        />
-                      ),
-                      IconRight: (props) => (
-                        <ChevronRightIcon
-                          {...props}
-                          className="h-4 w-4 stroke-2"
-                        />
-                      ),
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            ))}
-
-            {/* Clear Button */}
-            <Button
-              size="md"
-              onClick={() => {
-                setSearch("");
-                setStartDate("");
-                setEndDate("");
+        {/* Search and date filters on the right */}
+        <div className="flex flex-col w-full md:w-auto lg:flex-row justify-end gap-3 items-center lg:float-right">
+          <div className="w-full sm:max-w-56">
+            <Input
+              label="Search"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
               }}
-            >
-              Clear
-            </Button>
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+            />
           </div>
+
+          {[
+            { label: "Start", date: startDate, setDate: setStartDate },
+            { label: "End", date: endDate, setDate: setEndDate },
+          ].map((field, idx) => (
+            <Popover placement="bottom" key={idx}>
+              <PopoverHandler>
+                <div className="w-full sm:max-w-56 mx-auto">
+                  <Input
+                    label={`${field.label} Date`}
+                    value={
+                      field.date ? format(new Date(field.date), "PPP") : ""
+                    }
+                    icon={<CalendarDaysIcon className="h-5 w-5" />}
+                    onChange={() => null}
+                  />
+                </div>
+              </PopoverHandler>
+              <PopoverContent>
+                <DayPicker
+                  mode="single"
+                  selected={field.date ? new Date(field.date) : undefined}
+                  onSelect={(date) => {
+                    if (date) field.setDate(format(date, "yyyy-MM-dd"));
+                  }}
+                  showOutsideDays
+                  classNames={{
+                    caption:
+                      "flex justify-center py-2 mb-4 relative items-center",
+                    nav_button: "h-6 w-6 p-1 rounded-md hover:bg-gray-200",
+                    day_selected: "bg-gray-900 text-white",
+                    day_today: "bg-gray-200",
+                  }}
+                  components={{
+                    IconLeft: (props) => (
+                      <ChevronLeftIcon
+                        {...props}
+                        className="h-4 w-4 stroke-2"
+                      />
+                    ),
+                    IconRight: (props) => (
+                      <ChevronRightIcon
+                        {...props}
+                        className="h-4 w-4 stroke-2"
+                      />
+                    ),
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          ))}
+
+          {/* Clear Button */}
+          <Button
+            size="md"
+            onClick={() => {
+              setSearch("");
+              setStartDate("");
+              setEndDate("");
+            }}
+          >
+            Clear
+          </Button>
         </div>
       </CardHeader>
 
