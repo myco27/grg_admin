@@ -123,6 +123,8 @@ export default function Header() {
     switch (location.pathname) {
       case "/dashboard":
         return "Dashboard";
+      case "/orders":
+        return "Orders";
       case "/user-management":
         return "User Management";
       case "/restaurant-management":

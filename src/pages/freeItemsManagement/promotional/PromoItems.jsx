@@ -29,7 +29,7 @@ const PromoItems = () => {
     "Promo Code",
     "Start Date",
     "Until Date",
-    "Is Busy",
+    "Busy",
     "Status",
     "Promo Used",
     "Max Quantity Per Day",

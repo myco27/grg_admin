@@ -27,6 +27,7 @@ import {
   FileText,
   Car,
   Store,
+  ShoppingBasket,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../contexts/contextProvider";
@@ -119,7 +120,7 @@ const Sidebar = () => {
     <>
       {/* Desktop Sidebar */}
       <div
-        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-30
+        className={`bg-[#612B9B] fixed top-0 left-0 h-full shadow-xl transition-all duration-300 ease-in-out z-[51]
           ${sidebarCollapsed ? "w-16" : "w-64"}
           ${sidebarHovered && sidebarCollapsed ? "w-64" : ""}
           overflow-hidden
@@ -217,61 +218,77 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
               {/* Orders */}
               {canViewOrderModule && (
                 <>
                   <ListItem
                     onClick={() => setSubmenuOpen(!submenuOpen)}
-                    className={`hover:bg-[#3A1066] cursor-pointer w-[220px] ${
-                      location.pathname.startsWith("/orders")
-                        ? "bg-[#3A1066]"
-                        : ""
-                    }`}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } `}
                   >
                     <ListItemPrefix className="min-w-[24px] mr-1">
-                      <LayoutDashboard
-                        className={`h-4 w-4 text-white ${
-                          location.pathname.startsWith("/orders")
-                            ? "text-purple-500"
-                            : ""
-                        }`}
-                      />
+                      <ShoppingBasket className="h-4 w-4 text-white" />
                     </ListItemPrefix>
-                    <Typography
-                      color="white"
-                      className="text-sm font-normal flex-1"
+
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered ? "hidden" : ""
+                      } transition-all duration-300`}
                     >
-                      Orders
-                    </Typography>
-                    <ChevronDown
-                      className={`h-4 w-4 text-white transition-transform ${
-                        submenuOpen ? "rotate-180" : ""
-                      }`}
-                    />
+                      <Typography
+                        color="white"
+                        className="text-sm font-normal flex-1"
+                      >
+                        Orders
+                      </Typography>
+
+                      <span className="ml-auto pr-2">
+                        {submenuOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
                   </ListItem>
 
-                  {submenuOpen && (
-                    <div className="ml-8">
-                      <Link
-                        to="/orders"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
+                  <Collapse open={submenuOpen} className="flex flex-col gap-1">
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px]  ${
+                        submenuOpen ? "max-h-40 " : "max-h-0"
+                      } ${
+                        sidebarCollapsed && !sidebarHovered ? "ml-1" : "ml-4"
+                      }`}
+                    >
+                      <Link to="/orders" className="flex w-full items-center">
                         <ListItem
-                          className={`hover:bg-[#3A1066] w-[190px] rounded-md ${
-                            location.pathname === "/orders"
-                              ? "bg-[#3A1066]"
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white
+                          ${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          }
+                          ${
+                            location.pathname.startsWith("/orders")
+                              ? "bg-[#3A1066] text-white"
                               : ""
                           }`}
                         >
-                          <ListItemPrefix className="min-w-[24px] mr-1">
-                            <FileText className="h-5 w-5 text-white" />
+                          <ListItemPrefix className="rounded">
+                            <FileText className="h-4 w-4 text-white" />
                           </ListItemPrefix>
-                          <Typography
-                            color="white"
-                            className="text-sm font-normal"
-                          >
-                            Order Transaction
-                          </Typography>
+                          {(!sidebarCollapsed || sidebarHovered) && (
+                            <Typography
+                              color="white"
+                              className="whitespace-nowrap text-sm font-normal"
+                            >
+                              Order Transaction
+                            </Typography>
+                          )}
                         </ListItem>
                       </Link>
 
@@ -298,9 +315,10 @@ const Sidebar = () => {
                         </ListItem>
                       </Link> */}
                     </div>
-                  )}
+                  </Collapse>
                 </>
               )}
+
               {/* User Management */}
               {canViewUserModule && (
                 <Link to="/user-management">
@@ -341,6 +359,7 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
               {/* Restaurant Management */}
               {canViewRestaurantModule && (
                 <Link to="/restaurant-management">
@@ -381,6 +400,7 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
               {/* Admin Management */}
               {canViewAdminModule && (
                 <Link to="/admin-management">
@@ -419,6 +439,7 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
               {/* Applications */}
               {canViewApplicationsModule && (
                 <Link to="/applications">
@@ -457,6 +478,7 @@ const Sidebar = () => {
                   </ListItem>
                 </Link>
               )}
+
               {/* Settings */}
               {canViewSettingsModule && (
                 <Link to="/settings">
@@ -658,13 +680,11 @@ const Sidebar = () => {
                     }`}
                   >
                     <ListItemPrefix className="min-w-[24px] mr-1">
-                      <Boxes className="h-5 w-5 text-white" />
+                      <Boxes className="h-4 w-4 text-white" />
                     </ListItemPrefix>
                     <div
                       className={`rounded-sm flex items-center justify-between w-full ${
-                        sidebarCollapsed && !sidebarHovered
-                          ? "absolute left-[-9999px]"
-                          : ""
+                        sidebarCollapsed && !sidebarHovered ? "hidden" : ""
                       } transition-all duration-300`}
                     >
                       <Typography
@@ -687,39 +707,6 @@ const Sidebar = () => {
                     open={freeItemConfigOpen}
                     className="flex flex-col gap-1"
                   >
-                    <div
-                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px] ml-4 ${
-                        freeItemConfigOpen ? "max-h-40" : "max-h-0"
-                      }`}
-                    >
-                      {/* <Link
-                        to="/free-items"
-                        className="flex w-full items-center"
-                      >
-                        <ListItem
-                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white${
-                            sidebarCollapsed && !sidebarHovered
-                              ? "w-[40px] px-2"
-                              : "w-[220px]"
-                          } ${
-                            location.pathname.startsWith("/free-items")
-                              ? "!bg-[#3A1066] text-white !important"
-                              : ""
-                          }`}
-                        >
-                          <ListItemPrefix className="rounded">
-                            <Globe className="h-4 w-4 text-white" />
-                          </ListItemPrefix>
-                          <Typography
-                            color="white"
-                            className="whitespace-nowrap text-sm font-normal"
-                          >
-                            Global Items
-                          </Typography>
-                        </ListItem>
-                      </Link> */}
-                    </div>
-
                     <div
                       className={`transition-all rounded duration-300 overflow-hidden max-w-[180px]  ${
                         freeItemConfigOpen ? "max-h-40 " : "max-h-0"
@@ -982,26 +969,104 @@ const Sidebar = () => {
                 </Link>
               )}
               {canViewOrderModule && (
-                <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>
+                <>
                   <ListItem
-                    className={`hover:bg-[#3A1066] w-[220px] ${
-                      location.pathname === "/orders" ? "bg-[#3A1066]" : ""
-                    }`}
+                    onClick={() => setSubmenuOpen(!submenuOpen)}
+                    className={`cursor-pointer hover:bg-[#3A1066] ${
+                      sidebarCollapsed && !sidebarHovered
+                        ? "w-[40px] px-2"
+                        : "w-[220px]"
+                    } `}
                   >
                     <ListItemPrefix className="min-w-[24px] mr-1">
-                      <LayoutDashboard
-                        className={`h-4 w-4 text-white ${
-                          location.pathname === "/orders"
-                            ? "text-purple-500"
-                            : ""
-                        }`}
-                      />
+                      <LayoutDashboard className="h-5 w-5 text-white" />
                     </ListItemPrefix>
-                    <Typography color="white" className="text-sm font-normal">
-                      Orders
-                    </Typography>
+
+                    <div
+                      className={`rounded-sm flex items-center justify-between w-full ${
+                        sidebarCollapsed && !sidebarHovered
+                          ? "absolute left-[-9999px]"
+                          : ""
+                      } transition-all duration-300`}
+                    >
+                      <Typography
+                        color="white"
+                        className="text-sm font-normal flex-1"
+                      >
+                        Orders
+                      </Typography>
+
+                      <span className="ml-auto pr-2">
+                        {submenuOpen ? (
+                          <ChevronDown className="h-4 w-4 text-white" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        )}
+                      </span>
+                    </div>
                   </ListItem>
-                </Link>
+
+                  <Collapse open={submenuOpen} className="flex flex-col gap-1">
+                    <div
+                      className={`transition-all rounded duration-300 overflow-hidden max-w-[180px]  ${
+                        submenuOpen ? "max-h-40 " : "max-h-0"
+                      } ${
+                        sidebarCollapsed && !sidebarHovered ? "ml-1" : "ml-4"
+                      }`}
+                    >
+                      <Link to="/orders" className="flex w-full items-center">
+                        <ListItem
+                          className={`text-white cursor-pointer hover:bg-[#3A1066] focus:text-white active:text-white
+                          ${
+                            sidebarCollapsed && !sidebarHovered
+                              ? "w-[40px] px-2"
+                              : "w-[220px]"
+                          }
+                          ${
+                            location.pathname.startsWith("/orders")
+                              ? "bg-[#3A1066] text-white"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="rounded">
+                            <FileText className="h-4 w-4 text-white" />
+                          </ListItemPrefix>
+                          {(!sidebarCollapsed || sidebarHovered) && (
+                            <Typography
+                              color="white"
+                              className="whitespace-nowrap text-sm font-normal"
+                            >
+                              Order Transaction
+                            </Typography>
+                          )}
+                        </ListItem>
+                      </Link>
+
+                      {/* <Link
+                        to="/orders/pickup"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <ListItem
+                          className={`hover:bg-[#3A1066] w-[190px] rounded-md ${
+                            location.pathname === "/orders/pickup"
+                              ? "bg-[#3A1066]"
+                              : ""
+                          }`}
+                        >
+                          <ListItemPrefix className="min-w-[24px] mr-1">
+                            <Car className="h-5 w-5 text-white" />
+                          </ListItemPrefix>
+                          <Typography
+                            color="white"
+                            className="text-sm font-normal"
+                          >
+                            Pick Up with a Car
+                          </Typography>
+                        </ListItem>
+                      </Link> */}
+                    </div>
+                  </Collapse>
+                </>
               )}
               {/* User Management */}
               {canViewUserModule && (
