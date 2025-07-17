@@ -71,13 +71,11 @@ function PrivacyPolicy() {
       {loading ? (
         <Loading />
       ) : (
-        <CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-          <div className="relative h-[70vh] overflow-y-auto rounded">
-            <TextEditor
-              value={_content}
-              onChange={(e) => setContent(e)}
-            ></TextEditor>
-          </div>
+        <CardBody className="relative overflow-y-auto max-h-[600px] py-0 mt-2">
+          <TextEditor
+            value={_content}
+            onChange={(e) => setContent(e)}
+          ></TextEditor>
         </CardBody>
       )}
       <CardFooter className="flex justify-end">

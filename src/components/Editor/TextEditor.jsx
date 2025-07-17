@@ -47,14 +47,14 @@ const formats = [
 
 const TextEditor = ({ value = "", onChange }) => {
   return (
-    <div className="overflow-y-auto rounded-md border border-gray-300 bg-white">
+    <div className="ql-container-custom">
       <ReactQuill
         theme="snow"
         value={value}
         onChange={onChange}
         modules={modules}
         formats={formats}
-        className="min-h-[30rem] w-full break-words"
+        className="min-h-[30rem]"
       />
     </div>
   );
