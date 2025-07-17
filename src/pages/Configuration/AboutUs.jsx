@@ -13,6 +13,7 @@ import Loading from "../../components/layout/Loading";
 import { useAlert } from "../../contexts/alertContext";
 
 function AboutUs() {
+  const [termsId, setTermsId] = useState(0);
   const [_content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
@@ -22,6 +23,7 @@ function AboutUs() {
       setLoading(true);
       const response = await axiosClient.get("admin/config/about_us");
       setContent(response.data.content);
+      setTermsId(response.data.id);
     } catch (e) {
       console.error(e.error);
     } finally {
@@ -32,14 +34,24 @@ function AboutUs() {
   const saveTerms = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.post("admin/config/about_us", {
+      const configType = "about_us";
+      const response = await axiosClient.post(`admin/config/${termsId}`, {
+        configType: configType,
         content: _content,
+        title: "About Us",
       });
-      console.log(response.data);
-    } catch (e) {
-      console.error(e.response?.data || e.message);
-    } finally {
       showAlert("Succesfully Saved!", "success");
+    } catch (e) {
+      if (error.response.data.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => {
+            showAlert(`${errorMessage}`, "error");
+          });
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
       fetchTerms();
       setLoading(false);
     }
