@@ -13,6 +13,7 @@ import Loading from "../../components/layout/Loading";
 import { useAlert } from "../../contexts/alertContext";
 
 function PrivacyPolicy() {
+  const [termsId, setTermsId] = useState(0);
   const [_content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
@@ -22,6 +23,7 @@ function PrivacyPolicy() {
       setLoading(true);
       const response = await axiosClient.get("admin/config/privacy_policy");
       setContent(response.data.content);
+      setTermsId(response.data.id);
     } catch (e) {
       console.error(e.error);
     } finally {
@@ -32,14 +34,24 @@ function PrivacyPolicy() {
   const saveTerms = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.post("admin/config/privacy_policy", {
+      const configType = "privacy_policy";
+      const response = await axiosClient.post(`admin/config/${termsId}`, {
+        configType: configType,
         content: _content,
+        title: "Privacy Policy",
       });
-      console.log(response.data);
-    } catch (e) {
-      console.error(e.response?.data || e.message);
-    } finally {
       showAlert("Succesfully Saved!", "success");
+    } catch (e) {
+      if (error.response.data.errors) {
+        Object.values(error.response.data.errors)
+          .flat()
+          .forEach((errorMessage) => {
+            showAlert(`${errorMessage}`, "error");
+          });
+      } else {
+        showAlert("An error occurred. Please try again.", "error");
+      }
+    } finally {
       fetchTerms();
       setLoading(false);
     }
@@ -59,13 +71,11 @@ function PrivacyPolicy() {
       {loading ? (
         <Loading />
       ) : (
-        <CardBody className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-          <div className="relative h-[70vh] overflow-y-auto rounded">
-            <TextEditor
-              value={_content}
-              onChange={(e) => setContent(e)}
-            ></TextEditor>
-          </div>
+        <CardBody className="relative overflow-y-auto max-h-[600px] py-0 mt-2">
+          <TextEditor
+            value={_content}
+            onChange={(e) => setContent(e)}
+          ></TextEditor>
         </CardBody>
       )}
       <CardFooter className="flex justify-end">
