@@ -308,6 +308,15 @@ const AddStoreGroup = ({ open, handleOpen, fetchData }) => {
                         <Typography
                           variant="small"
                           color="black"
+                          className="flex items-center justify-center font-normal leading-none opacity-70"
+                        >
+                          Store ID
+                        </Typography>
+                      </th>
+                      <th className="bg-tableHeaderBg rounded-tr-md rounded-br-md p-4">
+                        <Typography
+                          variant="small"
+                          color="black"
                           className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                         >
                           Store Information
@@ -359,6 +368,15 @@ const AddStoreGroup = ({ open, handleOpen, fetchData }) => {
                                 )}
                               />
                             )}
+                          </td>
+                          <td className="px-4 py-2">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal text-center"
+                            >
+                              {data.id}
+                            </Typography>
                           </td>
                           <td className="px-4 py-2">
                             <Typography
