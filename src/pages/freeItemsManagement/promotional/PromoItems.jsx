@@ -173,6 +173,15 @@ const PromoItems = () => {
     setOpenConfirmation(true);
   };
 
+  const formatDateLocal = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <>
       <Card className="h-full w-full">
@@ -249,23 +258,26 @@ const PromoItems = () => {
 
               <tbody className="">
                 {tableData.map((data) => {
-                  const start_date = data.start_date
-                    ? new Date(data.start_date).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : "";
+                  const start_date = formatDateLocal(data.start_date);
+                  const until_date = formatDateLocal(data.until_date);
 
-                  const until_date = data.until_date
-                    ? new Date(data.until_date).toLocaleDateString(undefined, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : "";
+                  // const start_date = data.start_date
+                  //   ? new Date(data.start_date).toLocaleDateString(undefined, {
+                  //       year: "numeric",
+                  //       month: "long",
+                  //       day: "numeric",
+                  //     })
+                  //   : "";
 
-                  //   const date_created = new Date(
+                  // const until_date = data.until_date
+                  //   ? new Date(data.until_date).toLocaleDateString(undefined, {
+                  //       year: "numeric",
+                  //       month: "long",
+                  //       day: "numeric",
+                  //     })
+                  //   : "";
+
+                  //   const start_date = new Date(
                   //     data.created_at
                   //   ).toLocaleString();
 
